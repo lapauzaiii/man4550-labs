@@ -10,45 +10,48 @@
 <body>
   <nav class="package-nav" aria-label="Analyst Challenge navigation">
     <div class="nav-topline">
-      <a class="nav-brand" href="./">
+      <a class="nav-brand" href="#top">
         <span class="brand-kicker">MAN4550 Student Workspace</span>
         <strong>The Analyst Challenge</strong>
       </a>
-      <div class="nav-current"><span>Current Page</span><strong>Resource Home</strong></div>
+      <div class="nav-current"><span>One-Page Audit Hub</span><strong>Jump to a Section</strong></div>
     </div>
     <div class="nav-groups">
       <div class="nav-group">
         <span>Start Here</span>
         <div>
-          <a href="./" aria-current="page">Home</a>
-          <a href="canvas/canvas-overview.html">Overview</a>
+          <a href="#top">Top</a>
+          <a href="#overview">Overview</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#severity">Severity Guide</a>
         </div>
       </div>
       <div class="nav-group">
         <span>Submission Templates</span>
         <div>
-          <a href="templates/cover-sheet.html">Cover Sheet</a>
-          <a href="templates/audit-findings-template.html">Findings</a>
-          <a href="templates/student-executive-brief-template.html">Executive Brief</a>
-          <a href="templates/confidence-statement-template.html">Confidence</a>
-          <a href="templates/ai-disclosure-template.html">AI Disclosure</a>
+          <a href="#cover-sheet">Cover Sheet</a>
+          <a href="#findings">Findings</a>
+          <a href="#brief">Executive Brief</a>
+          <a href="#confidence">Confidence</a>
+          <a href="#ai-disclosure">AI Disclosure</a>
         </div>
       </div>
     </div>
   </nav>
-  <main class="page">
+
+  <main class="page" id="top">
     <header class="hero">
       <div>
         <p class="course">MAN4550 | Introduction to Management Science</p>
         <h1>The Analyst Challenge: AI Decision Model Audits</h1>
         <p class="lede">
-          A semester-long professional simulation in which students review executive reports,
-          verify quantitative models, classify errors, and write concise recommendations for
-          leadership.
+          You are acting as a Business Analytics Associate for Cowford Advisory Group.
+          Your role is to verify quantitative reports before they are trusted for leadership
+          decisions.
         </p>
         <div class="button-row">
-          <a class="button" href="canvas/canvas-overview.html">Canvas Overview</a>
-          <a class="button secondary" href="templates/cover-sheet.html">Student Templates</a>
+          <a class="button" href="#overview">Begin</a>
+          <a class="button secondary" href="#cover-sheet">Go to Templates</a>
         </div>
       </div>
       <div class="visual" aria-hidden="true">
@@ -66,8 +69,33 @@
       </div>
     </header>
 
-    <section class="section">
-      <h2>Audit Workflow</h2>
+    <section class="section" id="overview">
+      <p class="course">Overview</p>
+      <h2>Your Role</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>Professional Context</h3>
+          <p>
+            Throughout the semester, executives from across Cowford Holdings will send
+            quantitative analyses before they are presented to leadership. Some reports contain
+            mathematical mistakes, some contain incorrect assumptions, and some produce the right
+            calculations but the wrong business recommendation.
+          </p>
+        </article>
+        <article class="card">
+          <h3>The Analyst's Rule</h3>
+          <p>
+            "The math checks out" is not verification. Your job is to determine whether the
+            model, assumptions, interpretation, and recommendation are appropriate for the
+            business decision.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <p class="course">Workflow</p>
+      <h2>Use the Same Seven Steps Every Time</h2>
       <div class="steps">
         <div class="step"><strong>Step 1</strong><span>Read the executive report.</span></div>
         <div class="step"><strong>Step 2</strong><span>Verify the quantitative model.</span></div>
@@ -79,21 +107,149 @@
       </div>
     </section>
 
-    <section class="section">
-      <h2>Student Resources</h2>
-      <ul class="asset-list">
-        <li><a href="canvas/canvas-overview.html">1. Overview</a></li>
-        <li><a href="templates/cover-sheet.html">2. Consulting-Style Cover Sheet</a></li>
-        <li><a href="templates/audit-findings-template.html">3. Audit Findings Template</a></li>
-        <li><a href="templates/student-executive-brief-template.html">4. Executive Brief Template</a></li>
-        <li><a href="templates/confidence-statement-template.html">5. Confidence Statement Template</a></li>
-        <li><a href="templates/ai-disclosure-template.html">6. AI Disclosure Template</a></li>
-      </ul>
+    <section class="section" id="severity">
+      <p class="course">Severity Guide</p>
+      <h2>Classify Findings by Decision Impact</h2>
+      <table>
+        <thead>
+          <tr><th>Severity</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="critical">Critical</td><td>Would likely lead leadership to make the wrong decision.</td></tr>
+          <tr><td class="major">Major</td><td>Significantly changes interpretation, feasibility, profitability, risk, or resource use.</td></tr>
+          <tr><td class="minor">Minor</td><td>Should be corrected but does not change the overall recommendation.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section template-section" id="cover-sheet">
+      <p class="course">Template 1</p>
+      <h2>Consulting-Style Cover Sheet</h2>
+      <div class="template-panel">
+        <table>
+          <tbody>
+            <tr><th>Student Name</th><td>&nbsp;</td></tr>
+            <tr><th>Course / Section</th><td>MAN4550 | Introduction to Management Science</td></tr>
+            <tr><th>Audit Number</th><td>&nbsp;</td></tr>
+            <tr><th>Decision Model Topic</th><td>&nbsp;</td></tr>
+            <tr><th>Client Division</th><td>&nbsp;</td></tr>
+            <tr><th>Submission Date</th><td>&nbsp;</td></tr>
+          </tbody>
+        </table>
+        <h3>Audit Disposition</h3>
+        <table>
+          <tbody>
+            <tr><th>Recommended Status</th><td>Accept as written / Accept with corrections / Revise before use / Reject recommendation</td></tr>
+            <tr><th>Most Serious Finding</th><td>Critical / Major / Minor / None</td></tr>
+            <tr><th>Overall Confidence</th><td>Very High / High / Moderate / Low</td></tr>
+          </tbody>
+        </table>
+        <h3>Leadership Summary</h3>
+        <div class="fillable">In one or two sentences, state the decision consequence of your audit.</div>
+      </div>
+    </section>
+
+    <section class="section template-section" id="findings">
+      <p class="course">Template 2</p>
+      <h2>Audit Findings Table</h2>
+      <div class="template-panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Finding #</th>
+              <th>Location in Report</th>
+              <th>Issue Identified</th>
+              <th>Corrected Result or Interpretation</th>
+              <th>Severity</th>
+              <th>Business Consequence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section template-section" id="brief">
+      <p class="course">Template 3</p>
+      <h2>Student Executive Brief</h2>
+      <div class="template-panel">
+        <div class="grid">
+          <article class="card">
+            <h3>Required Paragraph Structure</h3>
+            <ol>
+              <li>State whether leadership should accept, revise, or reject the original recommendation.</li>
+              <li>Name the most important audit finding.</li>
+              <li>Explain the business consequence of the correction.</li>
+              <li>Close with a clear recommendation for leadership.</li>
+            </ol>
+          </article>
+          <article class="card">
+            <h3>Self-Check</h3>
+            <ul class="checklist">
+              <li>My brief is one paragraph.</li>
+              <li>My brief avoids equations and spreadsheet language.</li>
+              <li>My brief explains the decision consequence, not only the calculation error.</li>
+            </ul>
+          </article>
+        </div>
+        <h3>Executive Brief</h3>
+        <div class="fillable tall">Type one professional paragraph here.</div>
+      </div>
+    </section>
+
+    <section class="section template-section" id="confidence">
+      <p class="course">Template 4</p>
+      <h2>Confidence Statement</h2>
+      <div class="template-panel">
+        <table>
+          <tbody>
+            <tr><td>Very High</td><td>All major assumptions, formulas, and interpretations were verified with little remaining uncertainty.</td></tr>
+            <tr><td>High</td><td>The main recommendation is well supported, with minor uncertainty remaining.</td></tr>
+            <tr><td>Moderate</td><td>The model is useful, but one or more assumptions could materially affect the recommendation.</td></tr>
+            <tr><td>Low</td><td>The analysis should not be used for leadership decision-making without additional verification.</td></tr>
+          </tbody>
+        </table>
+        <p><strong>Overall confidence in my audit:</strong> Very High / High / Moderate / Low</p>
+        <p><strong>The assumption that gives me the least confidence is:</strong></p>
+        <div class="fillable"></div>
+        <p><strong>If I had one additional piece of information before presenting this to leadership, it would be:</strong></p>
+        <div class="fillable"></div>
+        <p><strong>Why this matters for the decision:</strong></p>
+        <div class="fillable"></div>
+      </div>
+    </section>
+
+    <section class="section template-section" id="ai-disclosure">
+      <p class="course">Template 5</p>
+      <h2>AI Disclosure</h2>
+      <div class="template-panel">
+        <table>
+          <tbody>
+            <tr><th>Did you use generative AI?</th><td>Yes / No</td></tr>
+            <tr><th>Tool used, if any</th><td>&nbsp;</td></tr>
+            <tr><th>Purpose of use</th><td>Brainstorming / Explanation / Spreadsheet troubleshooting / Draft editing / Other</td></tr>
+          </tbody>
+        </table>
+        <h3>Required Statement</h3>
+        <div class="fillable tall">Briefly describe how AI was used or write: I did not use generative AI for this submission.</div>
+        <h3>Student Acknowledgment</h3>
+        <p>
+          By submitting this audit, I confirm that I verified the quantitative work myself,
+          reviewed any AI-supported output for accuracy, and accept responsibility for the final
+          recommendation.
+        </p>
+        <p><strong>Student initials:</strong> ________</p>
+      </div>
     </section>
 
     <section class="section">
       <div class="note">
-        Use these resources to complete each audit submission. Template pages can be printed or saved as PDF when a separate upload is required.
+        Keep this page open while completing an audit. Use the navigation at the top to jump
+        between the workflow, severity guide, and submission templates.
       </div>
     </section>
   </main>

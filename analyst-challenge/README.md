@@ -1,10 +1,10 @@
 # The Analyst Challenge: AI Decision Model Audits
 
-Publish-ready asset package for MAN4550: Introduction to Management Science.
+Publish-ready one-page student hub for MAN4550: Introduction to Management Science.
 
 ## Files
 
-- `index.html`: GitHub Pages landing page for the package.
+- `index.html`: GitHub Pages one-page student hub with in-page navigation.
 - `canvas/canvas-overview.html`: Canvas-safe overview page HTML.
 - `canvas/canvas-assignment-template.html`: Reusable Canvas assignment HTML.
 - `templates/cover-sheet.html`: Consulting-style cover sheet, print/PDF-ready.
@@ -22,16 +22,28 @@ Publish-ready asset package for MAN4550: Introduction to Management Science.
 https://lapauzaiii.github.io/man4550-labs/analyst-challenge/
 ```
 
+## Student Section Links
+
+```text
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#overview
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#workflow
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#severity
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#cover-sheet
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#findings
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#brief
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#confidence
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/#ai-disclosure
+```
+
 ## Canvas Embed
 
 ```html
 <div style="width:100%;overflow:hidden;">
   <iframe
     src="https://lapauzaiii.github.io/man4550-labs/analyst-challenge/"
-    style="width:100%;min-height:1200px;border:none;"
+    style="width:100%;min-height:3200px;border:none;"
     loading="lazy"
     allowfullscreen>
   </iframe>
 </div>
 ```
-

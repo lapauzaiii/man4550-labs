@@ -21,6 +21,10 @@ body {
   background: #ffffff;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 a {
   color: var(--blue);
 }
@@ -245,6 +249,7 @@ h1 {
 }
 
 .section {
+  scroll-margin-top: 190px;
   padding: 28px 0 0;
 }
 
@@ -275,6 +280,12 @@ h1 {
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
+}
+
+.card ol,
+.card ul {
+  margin: 0;
+  padding-left: 20px;
 }
 
 .steps {
@@ -362,6 +373,30 @@ h1 {
   line-height: 1.55;
 }
 
+.template-section {
+  padding-top: 38px;
+}
+
+.template-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--panel);
+}
+
+.template-panel h3 {
+  margin: 20px 0 8px;
+  font-size: 18px;
+}
+
+.template-panel h3:first-child {
+  margin-top: 0;
+}
+
+.template-panel table {
+  background: #ffffff;
+}
+
 .document {
   width: min(900px, calc(100% - 32px));
   margin: 0 auto;
@@ -391,6 +426,14 @@ h1 {
   border-radius: 7px;
   padding: 12px;
   background: #ffffff;
+}
+
+.fillable.tall {
+  min-height: 160px;
+}
+
+.checklist {
+  color: #2c3748;
 }
 
 table {
@@ -445,6 +488,10 @@ th {
     display: none;
   }
 
+  .section {
+    scroll-margin-top: 0;
+  }
+
   .card,
   .brief-sheet,
   .fillable,
@@ -485,5 +532,9 @@ th {
   .nav-current {
     min-width: 0;
     text-align: left;
+  }
+
+  .section {
+    scroll-margin-top: 24px;
   }
 }
