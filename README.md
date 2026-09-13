@@ -7,8 +7,10 @@ Interactive lab pages for MAN4550: Introduction to Management Science.
 - Week 5.E: Interactive Sensitivity Lab (`week5/`)
   - Logistics concept-intro pane
   - Professional Services staffing sensitivity pane
-
-Week 6 is reserved for the Cowford Properties integer-programming portfolio lab.
+- Week 6.E: Interactive Integer Programming Lab (`week6/`)
+  - Cowford Fleet Ventures practice entity
+  - Binary equipment package selection
+  - Greedy heuristic and LP relaxation comparison
 
 ## GitHub Pages
 
@@ -22,6 +24,12 @@ The Week 5.E lab should be available at:
 
 ```text
 https://lapauzaiii.github.io/man4550-labs/week5/
+```
+
+The Week 6.E lab should be available at:
+
+```text
+https://lapauzaiii.github.io/man4550-labs/week6/
 ```
 
 ## Canvas Embed Code
@@ -55,6 +63,7 @@ man4550-labs/
 │   ├── index.html              ← W5.E Interactive Sensitivity Lab
 │   └── assets/
 ├── week6/
+│   ├── index.html              ← W6.E Interactive Integer Programming Lab
 │   └── assets/
 ├── week7/
 └── shared/
