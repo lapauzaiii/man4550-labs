@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instructor Implementation Guide</title>
+  <link rel="stylesheet" href="../assets/analyst-challenge.css">
+</head>
+<body>
+  <main class="document">
+    <p class="course">MAN4550 | Instructor Guide</p>
+    <h1>Instructor Implementation Guide</h1>
+
+    <h2>Purpose</h2>
+    <p>The Analyst Challenge turns model-checking into a recurring professional routine. Students practice the management science habit of moving from formulation and computation to defensible managerial judgment. The AI-generated report frame is useful because it gives students a realistic reason to verify outputs without making the assignment primarily about technology.</p>
+
+    <h2>Recommended Semester Use</h2>
+    <table>
+      <thead><tr><th>Course Area</th><th>Audit Focus</th><th>Typical Error Types</th></tr></thead>
+      <tbody>
+        <tr><td>Linear Programming</td><td>Formulation, Solver solution, binding constraints, slack</td><td>Wrong objective, missing constraint, incorrect recommendation from sensitivity result</td></tr>
+        <tr><td>Sensitivity Analysis</td><td>Shadow prices, allowable ranges, managerial interpretation</td><td>Using a shadow price outside its range, treating slack resources as scarce</td></tr>
+        <tr><td>Integer / Binary Models</td><td>Indivisible decisions, logical constraints, feasibility</td><td>Rounding an LP solution, violating either-or constraints</td></tr>
+        <tr><td>Decision Analysis</td><td>Expected value, risk, value of information</td><td>Confusing best expected value with guaranteed outcome</td></tr>
+        <tr><td>Forecasting / Inventory / Queuing</td><td>Assumptions, service levels, capacity implications</td><td>Using the wrong demand measure, ignoring variability, overclaiming precision</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Setup Steps</h2>
+    <ol>
+      <li>Publish the overview page in Canvas before the first audit.</li>
+      <li>Create one Canvas assignment per audit using the reusable assignment template.</li>
+      <li>Attach or link the relevant executive report, data file, spreadsheet, or model prompt.</li>
+      <li>Attach the student templates or link to the GitHub Pages package.</li>
+      <li>Add the grading rubric to Canvas as a rubric or paste the point rows into the assignment description.</li>
+    </ol>
+
+    <h2>Instructor Notes</h2>
+    <ul>
+      <li>Keep the workflow identical across audits so students spend their effort on analysis rather than decoding directions.</li>
+      <li>Design at least one error that is computational and one error that is interpretive.</li>
+      <li>Reward students for identifying when a mathematically correct model is still a poor decision basis.</li>
+      <li>Ask for one paragraph in the executive brief to prevent spreadsheet dumping and encourage managerial synthesis.</li>
+      <li>Use the confidence statement to normalize uncertainty as a professional behavior rather than a weakness.</li>
+    </ul>
+
+    <h2>Fast Launch Plan</h2>
+    <ol>
+      <li>Upload or publish this folder with GitHub Pages.</li>
+      <li>Paste the overview HTML into a Canvas page named The Analyst Challenge.</li>
+      <li>Create the first assignment from the assignment template.</li>
+      <li>Link students to the package index page for templates.</li>
+      <li>Use the rubric at 100 points for the first full audit, or scale it down for a shorter weekly activity.</li>
+    </ol>
+    <div class="button-row"><button class="button" onclick="window.print()">Print or Save as PDF</button></div>
+  </main>
+</body>
+</html>
+

@@ -11,6 +11,10 @@ Interactive lab pages for MAN4550: Introduction to Management Science.
   - Cowford Fleet Ventures practice entity
   - Binary equipment package selection
   - Greedy heuristic and LP relaxation comparison
+- The Analyst Challenge (`analyst-challenge/`)
+  - Canvas overview and reusable assignment template
+  - Student audit templates, rubric, and instructor implementation guide
+  - GitHub Pages and Canvas publishing instructions
 
 ## GitHub Pages
 
@@ -30,6 +34,12 @@ The Week 6.E lab should be available at:
 
 ```text
 https://lapauzaiii.github.io/man4550-labs/week6/
+```
+
+The Analyst Challenge package should be available at:
+
+```text
+https://lapauzaiii.github.io/man4550-labs/analyst-challenge/
 ```
 
 ## Canvas Embed Code
@@ -62,6 +72,19 @@ Week 6.E:
 </div>
 ```
 
+The Analyst Challenge:
+
+```html
+<div style="width:100%;overflow:hidden;">
+  <iframe
+    src="https://lapauzaiii.github.io/man4550-labs/analyst-challenge/"
+    style="width:100%;min-height:1200px;border:none;"
+    loading="lazy"
+    allowfullscreen>
+  </iframe>
+</div>
+```
+
 ## Repository Structure
 
 ```text
@@ -79,6 +102,12 @@ man4550-labs/
 │   └── assets/
 ├── week6/
 │   ├── index.html              ← W6.E Interactive Integer Programming Lab
+│   └── assets/
+├── analyst-challenge/
+│   ├── index.html              ← AI Decision Model Audit package
+│   ├── canvas/
+│   ├── templates/
+│   ├── instructor/
 │   └── assets/
 ├── week7/
 └── shared/
