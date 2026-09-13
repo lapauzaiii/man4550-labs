@@ -8,39 +8,8 @@
   <link rel="stylesheet" href="assets/analyst-challenge.css">
 </head>
 <body>
-  <nav class="package-nav" aria-label="Analyst Challenge navigation">
-    <div class="nav-topline">
-      <a class="nav-brand" href="#top">
-        <span class="brand-kicker">MAN4550 Student Workspace</span>
-        <strong>The Analyst Challenge</strong>
-      </a>
-      <div class="nav-current"><span>One-Page Audit Hub</span><strong>Jump to a Section</strong></div>
-    </div>
-    <div class="nav-groups">
-      <div class="nav-group">
-        <span>Start Here</span>
-        <div>
-          <a href="#top">Top</a>
-          <a href="#overview">Overview</a>
-          <a href="#workflow">Workflow</a>
-          <a href="#severity">Severity Guide</a>
-        </div>
-      </div>
-      <div class="nav-group">
-        <span>Submission Templates</span>
-        <div>
-          <a href="#cover-sheet">Cover Sheet</a>
-          <a href="#findings">Findings</a>
-          <a href="#brief">Executive Brief</a>
-          <a href="#confidence">Confidence</a>
-          <a href="#ai-disclosure">AI Disclosure</a>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <main class="page" id="top">
-    <header class="hero">
+  <main class="page">
+    <header class="hero student-hero">
       <div>
         <p class="course">MAN4550 | Introduction to Management Science</p>
         <h1>The Analyst Challenge: AI Decision Model Audits</h1>
@@ -49,24 +18,15 @@
           Your role is to verify quantitative reports before they are trusted for leadership
           decisions.
         </p>
-        <div class="button-row">
-          <a class="button" href="#overview">Begin</a>
-          <a class="button secondary" href="#cover-sheet">Go to Templates</a>
-        </div>
       </div>
-      <div class="visual" aria-hidden="true">
-        <img src="assets/cowford-mark.svg" alt="" style="width:100%;display:block;">
-        <div class="brief-sheet">
-          <span class="stamp">Internal Review</span>
-          <h2>Cowford Advisory Group</h2>
-          <p>Decision models should be trusted only after the assumptions, formulas, constraints, and recommendation have been verified.</p>
-          <div class="status-row">
-            <div class="status"><strong>Model</strong><span>Check</span></div>
-            <div class="status"><strong>Findings</strong><span>Classify</span></div>
-            <div class="status"><strong>Brief</strong><span>Advise</span></div>
-          </div>
-        </div>
-      </div>
+      <aside class="submission-note" aria-label="Submission reminder">
+        <p class="course">Submission Reminder</p>
+        <h2>Submit your completed audit in Canvas.</h2>
+        <p>
+          This page explains the required parts of the audit. It is not a worksheet, form,
+          or submission portal.
+        </p>
+      </aside>
     </header>
 
     <section class="section" id="overview">
@@ -122,134 +82,66 @@
       </table>
     </section>
 
-    <section class="section template-section" id="cover-sheet">
-      <p class="course">Template 1</p>
-      <h2>Consulting-Style Cover Sheet</h2>
-      <div class="template-panel">
-        <table>
-          <tbody>
-            <tr><th>Student Name</th><td>&nbsp;</td></tr>
-            <tr><th>Course / Section</th><td>MAN4550 | Introduction to Management Science</td></tr>
-            <tr><th>Audit Number</th><td>&nbsp;</td></tr>
-            <tr><th>Decision Model Topic</th><td>&nbsp;</td></tr>
-            <tr><th>Client Division</th><td>&nbsp;</td></tr>
-            <tr><th>Submission Date</th><td>&nbsp;</td></tr>
-          </tbody>
-        </table>
-        <h3>Audit Disposition</h3>
-        <table>
-          <tbody>
-            <tr><th>Recommended Status</th><td>Accept as written / Accept with corrections / Revise before use / Reject recommendation</td></tr>
-            <tr><th>Most Serious Finding</th><td>Critical / Major / Minor / None</td></tr>
-            <tr><th>Overall Confidence</th><td>Very High / High / Moderate / Low</td></tr>
-          </tbody>
-        </table>
-        <h3>Leadership Summary</h3>
-        <div class="fillable">In one or two sentences, state the decision consequence of your audit.</div>
-      </div>
-    </section>
-
-    <section class="section template-section" id="findings">
-      <p class="course">Template 2</p>
-      <h2>Audit Findings Table</h2>
-      <div class="template-panel">
-        <table>
-          <thead>
-            <tr>
-              <th>Finding #</th>
-              <th>Location in Report</th>
-              <th>Issue Identified</th>
-              <th>Corrected Result or Interpretation</th>
-              <th>Severity</th>
-              <th>Business Consequence</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-            <tr><td>2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-            <tr><td>3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="section template-section" id="brief">
-      <p class="course">Template 3</p>
-      <h2>Student Executive Brief</h2>
-      <div class="template-panel">
-        <div class="grid">
-          <article class="card">
-            <h3>Required Paragraph Structure</h3>
-            <ol>
-              <li>State whether leadership should accept, revise, or reject the original recommendation.</li>
-              <li>Name the most important audit finding.</li>
-              <li>Explain the business consequence of the correction.</li>
-              <li>Close with a clear recommendation for leadership.</li>
-            </ol>
-          </article>
-          <article class="card">
-            <h3>Self-Check</h3>
-            <ul class="checklist">
-              <li>My brief is one paragraph.</li>
-              <li>My brief avoids equations and spreadsheet language.</li>
-              <li>My brief explains the decision consequence, not only the calculation error.</li>
-            </ul>
-          </article>
-        </div>
-        <h3>Executive Brief</h3>
-        <div class="fillable tall">Type one professional paragraph here.</div>
-      </div>
-    </section>
-
-    <section class="section template-section" id="confidence">
-      <p class="course">Template 4</p>
-      <h2>Confidence Statement</h2>
-      <div class="template-panel">
-        <table>
-          <tbody>
-            <tr><td>Very High</td><td>All major assumptions, formulas, and interpretations were verified with little remaining uncertainty.</td></tr>
-            <tr><td>High</td><td>The main recommendation is well supported, with minor uncertainty remaining.</td></tr>
-            <tr><td>Moderate</td><td>The model is useful, but one or more assumptions could materially affect the recommendation.</td></tr>
-            <tr><td>Low</td><td>The analysis should not be used for leadership decision-making without additional verification.</td></tr>
-          </tbody>
-        </table>
-        <p><strong>Overall confidence in my audit:</strong> Very High / High / Moderate / Low</p>
-        <p><strong>The assumption that gives me the least confidence is:</strong></p>
-        <div class="fillable"></div>
-        <p><strong>If I had one additional piece of information before presenting this to leadership, it would be:</strong></p>
-        <div class="fillable"></div>
-        <p><strong>Why this matters for the decision:</strong></p>
-        <div class="fillable"></div>
-      </div>
-    </section>
-
-    <section class="section template-section" id="ai-disclosure">
-      <p class="course">Template 5</p>
-      <h2>AI Disclosure</h2>
-      <div class="template-panel">
-        <table>
-          <tbody>
-            <tr><th>Did you use generative AI?</th><td>Yes / No</td></tr>
-            <tr><th>Tool used, if any</th><td>&nbsp;</td></tr>
-            <tr><th>Purpose of use</th><td>Brainstorming / Explanation / Spreadsheet troubleshooting / Draft editing / Other</td></tr>
-          </tbody>
-        </table>
-        <h3>Required Statement</h3>
-        <div class="fillable tall">Briefly describe how AI was used or write: I did not use generative AI for this submission.</div>
-        <h3>Student Acknowledgment</h3>
-        <p>
-          By submitting this audit, I confirm that I verified the quantitative work myself,
-          reviewed any AI-supported output for accuracy, and accept responsibility for the final
-          recommendation.
-        </p>
-        <p><strong>Student initials:</strong> ________</p>
+    <section class="section">
+      <p class="course">Canvas Submission</p>
+      <h2>What Your Audit Should Include</h2>
+      <div class="submission-grid">
+        <article class="card">
+          <h3>Cover Information</h3>
+          <p>
+            Identify your name, course section, audit number, decision model topic, client
+            division, and submission date in Canvas or in the file you upload there.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Audit Disposition</h3>
+          <p>
+            State whether the original recommendation should be accepted as written, accepted
+            with corrections, revised before use, or rejected.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Findings</h3>
+          <p>
+            For each issue, identify where it appears in the report, what is wrong, the corrected
+            result or interpretation, its severity, and the business consequence.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Model Evidence</h3>
+          <p>
+            Provide the corrected calculations, Solver output, sensitivity interpretation, or
+            other quantitative evidence requested by the Canvas assignment.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Executive Brief</h3>
+          <p>
+            Write one professional paragraph for leadership. It should avoid equations and
+            spreadsheet language and focus on the decision consequence.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Confidence Statement</h3>
+          <p>
+            State your overall confidence, identify the assumption that gives you the least
+            confidence, and explain what additional information would improve the audit.
+          </p>
+        </article>
+        <article class="card">
+          <h3>AI Disclosure</h3>
+          <p>
+            Report whether you used generative AI, what tool you used if applicable, and how it
+            supported your work. You remain responsible for verifying the final submission.
+          </p>
+        </article>
       </div>
     </section>
 
     <section class="section">
       <div class="note">
-        Keep this page open while completing an audit. Use the navigation at the top to jump
-        between the workflow, severity guide, and submission templates.
+        All completed audit work should be submitted through the Canvas assignment. Use this page
+        only as a reference for the expected structure and professional standard.
       </div>
     </section>
   </main>

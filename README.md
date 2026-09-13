@@ -12,7 +12,7 @@ Interactive lab pages for MAN4550: Introduction to Management Science.
   - Binary equipment package selection
   - Greedy heuristic and LP relaxation comparison
 - The Analyst Challenge (`analyst-challenge/`)
-  - One-page student audit hub with in-page navigation
+  - One-page student guidance hub for audit expectations
   - Canvas overview and reusable assignment template
   - Student audit templates, rubric, and instructor implementation guide
   - GitHub Pages and Canvas publishing instructions
@@ -79,7 +79,7 @@ The Analyst Challenge:
 <div style="width:100%;overflow:hidden;">
   <iframe
     src="https://lapauzaiii.github.io/man4550-labs/analyst-challenge/"
-    style="width:100%;min-height:3200px;border:none;"
+    style="width:100%;min-height:1900px;border:none;"
     loading="lazy"
     allowfullscreen>
   </iframe>
