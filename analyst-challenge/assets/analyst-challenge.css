@@ -26,12 +26,24 @@ a {
 }
 
 .package-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   width: min(1080px, calc(100% - 32px));
   margin: 16px auto 0;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--panel);
-  padding: 10px;
+  background: rgba(246, 248, 251, .98);
+  box-shadow: 0 10px 24px rgba(28, 39, 56, .08);
+  padding: 12px;
+}
+
+.package-nav .nav-label {
+  margin-bottom: 6px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
 }
 
 .package-nav .crumbs {
@@ -68,6 +80,7 @@ a {
   font-size: 13px;
   font-weight: 750;
   text-decoration: none;
+  box-shadow: 0 1px 0 rgba(28, 39, 56, .03);
 }
 
 .package-nav .links a:hover,
@@ -402,5 +415,9 @@ th {
   h1,
   .document h1 {
     font-size: 32px;
+  }
+
+  .package-nav {
+    position: static;
   }
 }
