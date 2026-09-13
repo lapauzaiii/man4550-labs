@@ -54,7 +54,7 @@ Week 6.E:
 ```html
 <div style="width:100%;overflow:hidden;">
   <iframe
-    src="https://lapauzaiii.github.io/man4550-labs/week6/?v=w6e1"
+    src="https://lapauzaiii.github.io/man4550-labs/week6/?v=w6e2"
     style="width:100%;min-height:1200px;border:none;"
     loading="lazy"
     allowfullscreen>
