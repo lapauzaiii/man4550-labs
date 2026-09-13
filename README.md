@@ -34,12 +34,27 @@ https://lapauzaiii.github.io/man4550-labs/week6/
 
 ## Canvas Embed Code
 
-Use this iframe on the Canvas page after GitHub Pages finishes deploying:
+Use the corresponding iframe on the Canvas page after GitHub Pages finishes deploying.
+
+Week 5.E:
 
 ```html
 <div style="width:100%;overflow:hidden;">
   <iframe
     src="https://lapauzaiii.github.io/man4550-labs/week5/"
+    style="width:100%;min-height:1200px;border:none;"
+    loading="lazy"
+    allowfullscreen>
+  </iframe>
+</div>
+```
+
+Week 6.E:
+
+```html
+<div style="width:100%;overflow:hidden;">
+  <iframe
+    src="https://lapauzaiii.github.io/man4550-labs/week6/?v=w6e1"
     style="width:100%;min-height:1200px;border:none;"
     loading="lazy"
     allowfullscreen>
