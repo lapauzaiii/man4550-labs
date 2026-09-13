@@ -22,6 +22,10 @@
     <p>Your job is to determine whether the <strong>model, assumptions, interpretation, and recommendation</strong> are appropriate for the business decision.</p>
   </div>
 
+  <h3>What You Are Actually Doing</h3>
+  <p>In each audit, you will receive an executive-style report that makes a recommendation based on a quantitative model. Your job is not simply to agree or disagree. Your job is to decide whether the recommendation is trustworthy enough for leadership to use.</p>
+  <p>Check both the technical side and the managerial side. The technical side includes formulas, constraints, Solver setup, calculations, feasibility, and sensitivity results. The managerial side includes whether the numbers are interpreted correctly and whether the recommendation follows from the model.</p>
+
   <h3>The Audit Workflow</h3>
   <ol>
     <li><strong>Read the Executive Report.</strong> Identify the decision, recommendation, and stated assumptions.</li>
@@ -57,6 +61,18 @@
     </tbody>
   </table>
 
+  <h3>Examples of Audit Findings</h3>
+  <ul>
+    <li><strong>Model structure:</strong> A decision variable is missing, the objective function is wrong, or a constraint does not match the business situation.</li>
+    <li><strong>Computation:</strong> A formula is incorrect, the reported solution does not match the model output, or a calculation is copied incorrectly.</li>
+    <li><strong>Feasibility:</strong> The recommendation violates a stated resource limit, minimum requirement, logical condition, or business rule.</li>
+    <li><strong>Interpretation:</strong> The report misreads slack, binding constraints, shadow prices, allowable ranges, risk, or the practical meaning of the result.</li>
+  </ul>
+
+  <h3>Mini-Audit Example</h3>
+  <p>Suppose an executive report says, "The company should request more labor hours because labor is the limiting resource." When you review the Solver output, you find that the labor-hours constraint has positive slack, while the budget constraint has zero slack.</p>
+  <p>A strong audit finding would say that the report misidentified the scarce resource. This is a <strong>Major</strong> finding because it changes the resource request leadership should make. The corrected recommendation would be to evaluate whether additional budget is available, not to request additional labor hours.</p>
+
   <h3>What Your Canvas Submission Should Include</h3>
   <ul>
     <li>Audit identifying information</li>
@@ -65,6 +81,18 @@
     <li>Confidence statement</li>
     <li>One-paragraph executive brief</li>
     <li>AI disclosure statement</li>
+  </ul>
+
+  <h3>Executive Brief Formula</h3>
+  <p>Leadership should <strong>[accept / revise / reject]</strong> the original recommendation because <strong>[main finding]</strong>. The corrected analysis shows <strong>[business consequence]</strong>. Therefore, Cowford should <strong>[recommended action]</strong>.</p>
+
+  <h3>Common Mistakes to Avoid</h3>
+  <ul>
+    <li>Do not only say whether the arithmetic is correct.</li>
+    <li>Do not paste raw Solver output without explaining what it means.</li>
+    <li>Do not call every issue Critical; severity depends on decision impact.</li>
+    <li>Do not write the executive brief like a step-by-step math solution.</li>
+    <li>Do not use AI-generated language without checking the model and reasoning yourself.</li>
   </ul>
 
   <p><strong>Professional standard:</strong> Your Canvas submission should be clear enough that an executive could understand the decision risk without reading your spreadsheet line by line.</p>

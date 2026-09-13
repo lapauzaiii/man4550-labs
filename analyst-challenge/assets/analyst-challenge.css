@@ -296,6 +296,91 @@ h1 {
   gap: 14px;
 }
 
+.guidance-panel,
+.brief-guide {
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--blue);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--panel);
+}
+
+.guidance-panel p,
+.brief-guide p {
+  margin: 0;
+  color: #2c3748;
+  line-height: 1.65;
+}
+
+.guidance-panel p + p,
+.brief-guide p + p {
+  margin-top: 12px;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.example-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.example-card h3 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+
+.example-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.critical-example {
+  border-top: 4px solid var(--red);
+}
+
+.major-example {
+  border-top: 4px solid var(--gold);
+}
+
+.minor-example {
+  border-top: 4px solid var(--green);
+}
+
+.sentence-frame {
+  margin-top: 14px;
+  border: 1px solid #c9d6e6;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+  color: #2c3748;
+  line-height: 1.65;
+}
+
+.mistake-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mistake-list li {
+  border-left: 4px solid var(--gold);
+  border-radius: 7px;
+  padding: 12px 14px;
+  background: var(--panel);
+  color: #2c3748;
+  line-height: 1.45;
+}
+
 .card {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -536,6 +621,7 @@ th {
   .hero,
   .grid,
   .submission-grid,
+  .example-grid,
   .asset-list {
     grid-template-columns: 1fr;
   }

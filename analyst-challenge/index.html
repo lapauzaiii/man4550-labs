@@ -53,6 +53,24 @@
       </div>
     </section>
 
+    <section class="section">
+      <p class="course">What You Are Actually Doing</p>
+      <h2>You Are Auditing a Decision, Not Just Checking a Spreadsheet</h2>
+      <div class="guidance-panel">
+        <p>
+          In each audit, you will receive an executive-style report that makes a recommendation
+          based on a quantitative model. Your job is not simply to agree or disagree. Your job is
+          to decide whether the recommendation is trustworthy enough for leadership to use.
+        </p>
+        <p>
+          That means you should look for two kinds of problems. First, check the technical side:
+          formulas, constraints, Solver setup, calculations, feasibility, and sensitivity results.
+          Second, check the managerial side: whether the numbers are being interpreted correctly
+          and whether the recommendation follows from the model.
+        </p>
+      </div>
+    </section>
+
     <section class="section" id="workflow">
       <p class="course">Workflow</p>
       <h2>Use the Same Seven Steps Every Time</h2>
@@ -64,6 +82,41 @@
         <div class="step"><strong>Step 5</strong><span>State confidence and uncertainty.</span></div>
         <div class="step"><strong>Step 6</strong><span>Write a one-paragraph executive brief.</span></div>
         <div class="step"><strong>Step 7</strong><span>Disclose responsible AI use.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="course">Findings</p>
+      <h2>What Counts as an Audit Finding?</h2>
+      <div class="submission-grid">
+        <article class="card">
+          <h3>Model Structure</h3>
+          <p>
+            A decision variable is missing, the objective function is wrong, a constraint is
+            omitted, or the model does not match the business situation.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Computation</h3>
+          <p>
+            A formula is incorrect, the reported solution does not match the model output, or a
+            calculation is copied incorrectly into the report.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Feasibility</h3>
+          <p>
+            The recommendation violates a stated resource limit, minimum requirement, logical
+            condition, or other business rule.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Interpretation</h3>
+          <p>
+            The math may be correct, but the report misreads slack, binding constraints, shadow
+            prices, allowable ranges, risk, or the practical meaning of the result.
+          </p>
+        </article>
       </div>
     </section>
 
@@ -80,6 +133,47 @@
           <tr><td class="minor">Minor</td><td>Should be corrected but does not change the overall recommendation.</td></tr>
         </tbody>
       </table>
+      <div class="example-grid">
+        <article class="example-card critical-example">
+          <h3>Critical Example</h3>
+          <p>
+            The report recommends a production plan that violates a capacity constraint. If
+            leadership follows it, the plan cannot actually be executed.
+          </p>
+        </article>
+        <article class="example-card major-example">
+          <h3>Major Example</h3>
+          <p>
+            The report says more labor hours should be requested, but the model shows labor has
+            slack and budget is the binding constraint. The recommendation should change.
+          </p>
+        </article>
+        <article class="example-card minor-example">
+          <h3>Minor Example</h3>
+          <p>
+            A table label is unclear or a rounded value is slightly inconsistent, but the final
+            recommendation remains supported.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="course">Mini-Audit Example</p>
+      <h2>How a Finding Becomes a Recommendation</h2>
+      <div class="guidance-panel">
+        <p>
+          Suppose an executive report says, "The company should request more labor hours because
+          labor is the limiting resource." When you review the Solver output, you find that the
+          labor-hours constraint has positive slack, while the budget constraint has zero slack.
+        </p>
+        <p>
+          A strong audit finding would say that the report misidentified the scarce resource. This
+          is a <strong>Major</strong> finding because it changes the resource request leadership
+          should make. The corrected recommendation would be to evaluate whether additional
+          budget is available, not to request additional labor hours.
+        </p>
+      </div>
     </section>
 
     <section class="section">
@@ -136,6 +230,35 @@
           </p>
         </article>
       </div>
+    </section>
+
+    <section class="section">
+      <p class="course">Executive Brief</p>
+      <h2>How to Write the Leadership Paragraph</h2>
+      <div class="brief-guide">
+        <p>
+          Your executive brief should translate your audit into a decision. It should not read
+          like a math solution, and it should not require leadership to inspect your spreadsheet.
+        </p>
+        <div class="sentence-frame">
+          Leadership should <strong>[accept / revise / reject]</strong> the original recommendation
+          because <strong>[main finding]</strong>. The corrected analysis shows
+          <strong>[business consequence]</strong>. Therefore, Cowford should
+          <strong>[recommended action]</strong>.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="course">Common Mistakes</p>
+      <h2>Before You Submit, Avoid These Problems</h2>
+      <ul class="mistake-list">
+        <li>Do not only say whether the arithmetic is correct.</li>
+        <li>Do not paste raw Solver output without explaining what it means.</li>
+        <li>Do not call every issue Critical; severity depends on decision impact.</li>
+        <li>Do not write the executive brief like a step-by-step math solution.</li>
+        <li>Do not use AI-generated language without checking the model and reasoning yourself.</li>
+      </ul>
     </section>
 
     <section class="section">
