@@ -4,7 +4,11 @@ Interactive lab pages for MAN4550: Introduction to Management Science.
 
 ## Current Labs
 
-- Week 5: Cowford Public Safety Staffing Sensitivity Lab (`week5/`)
+- Week 5.E: Interactive Sensitivity Lab (`week5/`)
+  - Logistics concept-intro pane
+  - Professional Services staffing sensitivity pane
+
+Week 6 is reserved for the Cowford Properties integer-programming portfolio lab.
 
 ## GitHub Pages
 
@@ -14,7 +18,7 @@ After GitHub Pages is enabled for this repository, the public site should be ava
 https://lapauzaiii.github.io/man4550-labs/
 ```
 
-The Week 5 lab should be available at:
+The Week 5.E lab should be available at:
 
 ```text
 https://lapauzaiii.github.io/man4550-labs/week5/
@@ -48,7 +52,7 @@ man4550-labs/
 │   │   └── man4550.js
 │   └── img/
 ├── week5/
-│   ├── index.html
+│   ├── index.html              ← W5.E Interactive Sensitivity Lab
 │   └── assets/
 ├── week6/
 │   └── assets/
