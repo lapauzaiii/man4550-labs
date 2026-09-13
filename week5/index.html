@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_parent">
+  <title>Cowford PS Staffing Lab</title>
+  <style>
+    :root {
+      --ink: #1e293b;
+      --muted: #64748b;
+      --faint: #94a3b8;
+      --line: #e2e8f0;
+      --soft: #f8fafc;
+      --blue: #2563eb;
+      --red: #dc2626;
+      --amber: #d97706;
+      --green: #16a34a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: white;
+    }
+
+    .lab {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 16px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 21px;
+      line-height: 1.2;
+      margin: 0 0 2px;
+      font-weight: 750;
+    }
+
+    .formula {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .mode-toggle {
+      display: flex;
+      padding: 3px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: var(--soft);
+      flex-shrink: 0;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .mode-btn {
+      padding: 6px 12px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      background: transparent;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .mode-btn.active {
+      background: var(--blue);
+      color: white;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      align-items: flex-start;
+    }
+
+    main {
+      flex: 1 1 640px;
+      min-width: 0;
+    }
+
+    aside {
+      flex: 1 1 300px;
+      max-width: 340px;
+      position: sticky;
+      top: 18px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 22px;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+    }
+
+    .padded {
+      padding: 18px 20px;
+    }
+
+    .brief {
+      background: var(--soft);
+      padding: 16px 20px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .body-copy {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .dimmed {
+      opacity: 0.72;
+    }
+
+    .focused {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .slider-panel {
+      background: var(--soft);
+      padding: 18px 22px;
+    }
+
+    .slider-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .capacity-value {
+      font-size: 26px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+
+    input[type="range"]:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .scenario-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .scenario-btn {
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #475569;
+    }
+
+    .scenario-btn.active {
+      font-weight: 700;
+      border-color: var(--blue);
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .scenario-btn:disabled {
+      color: var(--faint);
+      cursor: not-allowed;
+    }
+
+    .locked-note {
+      font-size: 11px;
+      color: var(--faint);
+      margin-top: 9px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    h2, h3 {
+      margin: 0;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 14px;
+    }
+
+    .chart-wrap {
+      height: 230px;
+      display: flex;
+      align-items: end;
+      gap: 14px;
+      padding: 8px 4px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .bar-col {
+      min-width: 0;
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .bar {
+      width: 78%;
+      min-height: 8px;
+      border-radius: 5px 5px 0 0;
+      transition: height 0.25s, opacity 0.25s;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--faint);
+      margin-top: 9px;
+    }
+
+    .objective {
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      border-radius: 8px;
+    }
+
+    .objective.focused-inner {
+      background: #eff6ff;
+      padding: 10px 12px 12px;
+      margin: 0 -2px 4px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--faint);
+      margin-bottom: 2px;
+    }
+
+    .revenue {
+      font-size: 24px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .delta {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .constraint {
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+      border-radius: 8px;
+    }
+
+    .constraint.focused-inner {
+      background: var(--soft);
+    }
+
+    .constraint-top, .alloc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .constraint-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 10px;
+      background: #fef3c7;
+      color: #92400e;
+      white-space: nowrap;
+    }
+
+    .badge.slack {
+      font-weight: 600;
+      background: #f1f5f9;
+      color: var(--muted);
+    }
+
+    .shadow {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .alloc-list {
+      margin-top: 10px;
+    }
+
+    .alloc-row {
+      padding: 3px 0;
+      font-size: 12px;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .insight {
+      padding: 16px 20px;
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+    }
+
+    .insight h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .recommendation {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .choice-btn.active {
+      border-color: var(--blue);
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 800;
+      border-bottom: 2px solid var(--line);
+      text-align: left;
+    }
+
+    td:not(:first-child), th:not(:first-child) {
+      text-align: right;
+    }
+
+    .hot-budget {
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 800;
+    }
+
+    .hot-hours {
+      background: #fef2f2;
+      color: var(--red);
+      font-weight: 800;
+    }
+
+    .ai-body {
+      display: none;
+      padding: 0 20px 20px;
+    }
+
+    .ai-toggle {
+      width: 100%;
+      padding: 13px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border: 0;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.5;
+      color: #334155;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .send-btn, .red-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: 0;
+      background: var(--blue);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .red-btn {
+      width: 100%;
+      background: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-track {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--line);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: var(--blue);
+      transition: width 0.2s;
+    }
+
+    .lecture-title {
+      font-size: 18px;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .nav-btn.prev {
+      border: 1px solid #cbd5e1;
+      background: white;
+      color: #475569;
+    }
+
+    .nav-btn.next {
+      border: 0;
+      background: var(--blue);
+      color: white;
+    }
+
+    .nav-btn:disabled {
+      cursor: not-allowed;
+      background: #e2e8f0;
+      color: var(--faint);
+      border-color: #e2e8f0;
+    }
+
+    .debrief {
+      display: none;
+      background: #0f172a;
+      color: white;
+      border-color: #0f172a;
+      padding: 18px 20px;
+    }
+
+    .debrief-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .debrief-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .debrief-label {
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-bottom: 5px;
+    }
+
+    .footer {
+      font-size: 11px;
+      color: #cbd5e1;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 760px) {
+      aside {
+        position: static;
+        max-width: none;
+      }
+
+      .capacity-value {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lab" id="lab">
+    <div class="topbar">
+      <div>
+        <h1>Cowford PS Staffing Lab</h1>
+        <p class="formula">Maximize Z = 95C + 72A + 58K + 44S &nbsp;|&nbsp; Hours &le; capacity &nbsp;|&nbsp; Budget &le; $93,300 &nbsp;|&nbsp; Contractual minimums</p>
+      </div>
+      <div class="mode-toggle" aria-label="Lab mode">
+        <button class="mode-btn active" id="exploreMode" type="button">Explore</button>
+        <button class="mode-btn" id="lectureMode" type="button">Lecture</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <main>
+        <section class="panel brief" data-focus="brief" id="briefPanel" hidden>
+          <div class="eyebrow">Executive Brief</div>
+          <p class="body-copy">Leadership wants to know whether PS should ask for more budget or more deployable hours. The lab begins with the stated 3,200-hour assumption, then tests what happens when Logistics capacity makes that assumption too optimistic.</p>
+        </section>
+
+        <section class="panel slider-panel" data-focus="run reversal">
+          <div class="slider-heading">
+            <span class="label">Deployable Hours Capacity</span>
+            <span class="capacity-value" id="capacityValue">3,200</span>
+          </div>
+          <input id="capacitySlider" type="range" min="2800" max="3400" step="10" value="3200" aria-label="Deployable hours capacity">
+          <div class="scenario-row">
+            <button class="scenario-btn active" type="button" data-rhs="3200">Stated (3,200)</button>
+            <button class="scenario-btn" type="button" data-rhs="3150">Transition (3,150)</button>
+            <button class="scenario-btn" type="button" data-rhs="3050">Real (3,050)</button>
+          </div>
+          <div class="locked-note" id="lockedNote" hidden>Lecture Mode unlocks capacity changes in Step 8.</div>
+        </section>
+
+        <section class="results-grid">
+          <div class="panel padded" data-focus="variables run">
+            <h3 class="panel-title">Optimal Allocation</h3>
+            <div class="chart-wrap" id="chart"></div>
+            <div class="hint">Faded bars = held at contractual minimum</div>
+          </div>
+
+          <div class="panel padded" data-focus="objective constraints answer debrief">
+            <div class="objective" id="objectiveBlock">
+              <div class="metric-label">Weekly Billable Revenue</div>
+              <div class="revenue" id="revenueValue">$180,000</div>
+              <div class="delta" id="deltaValue"></div>
+            </div>
+
+            <div id="constraints"></div>
+            <div class="alloc-list" id="allocList"></div>
+          </div>
+        </section>
+
+        <section class="panel insight" data-focus="recommend debrief" id="insightPanel">
+          <h3 id="insightTitle">Budget is the bottleneck</h3>
+          <p class="body-copy" id="insightBody"></p>
+          <div class="recommendation" id="insightRec"></div>
+        </section>
+
+        <section class="panel padded" data-focus="recommend" id="checkpointPanel" hidden>
+          <h3 class="panel-title">Decision Checkpoint</h3>
+          <p class="body-copy" style="margin-bottom: 12px;">Based only on the stated 3,200-hour model, what would you recommend to leadership?</p>
+          <div class="choice-grid" id="choiceGrid">
+            <button class="choice-btn" type="button">More budget</button>
+            <button class="choice-btn" type="button">More deployable hours</button>
+            <button class="choice-btn" type="button">Neither yet</button>
+          </div>
+          <p class="body-copy" id="choiceNote" style="display: none; margin-top: 10px;">Hold that recommendation, then move to Step 8 and test whether the capacity assumption survives contact with operating reality.</p>
+        </section>
+
+        <section class="panel padded" data-focus="crossover">
+          <h3 class="panel-title">Efficiency Crossover - Which Ranking Governs?</h3>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Rev/hr</th>
+                  <th>Cost/hr</th>
+                  <th id="budgetHead">Rev / budget $</th>
+                  <th id="hoursHead">Rev / hour</th>
+                </tr>
+              </thead>
+              <tbody id="crossoverBody"></tbody>
+            </table>
+          </div>
+          <p class="body-copy" style="margin-top: 10px;" id="crossoverNote"></p>
+        </section>
+
+        <section class="panel" data-focus="debrief" id="aiPanel">
+          <button class="ai-toggle" type="button" id="aiToggle">
+            <span>Ask Claude About This Problem</span>
+            <span id="aiCaret">v</span>
+          </button>
+          <div class="ai-body" id="aiBody">
+            <p class="body-copy" style="margin-bottom: 12px;">Submit the Cowford PS problem and see how an AI assistant handles it. The pre-loaded prompt uses the stated 3,200-hour capacity. Compare the response to what the model explorer shows, especially after you drag the slider.</p>
+            <textarea id="aiPrompt" rows="8"></textarea>
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
+              <button class="send-btn" type="button" id="fakeSend">Send to AI</button>
+              <span class="hint">In Canvas, connect this button to an approved AI endpoint before using it live.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel debrief" data-focus="debrief" id="debriefPanel">
+          <h3 style="font-size: 15px;">Executive Debrief</h3>
+          <div class="debrief-grid">
+            <div class="debrief-card"><div class="debrief-label">Initial recommendation</div><strong>Request more budget</strong></div>
+            <div class="debrief-card"><div class="debrief-label">What changed</div><strong>Deployable hours fell to 3,050</strong></div>
+            <div class="debrief-card"><div class="debrief-label">Why it changed</div><strong>Both constraints became binding</strong></div>
+            <div class="debrief-card"><div class="debrief-label">Management lesson</div><strong>Verify the assumption before defending the solution</strong></div>
+          </div>
+        </section>
+      </main>
+
+      <aside id="lecturePanel" hidden>
+        <div class="progress-row">
+          <span class="eyebrow" style="margin: 0;">Lecture Mode</span>
+          <span class="body-copy" id="stepCount">1 of 10</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <h2 class="lecture-title" id="lectureTitle">Executive Brief</h2>
+        <p class="body-copy" id="lectureCallout"></p>
+        <button class="red-btn" type="button" id="setRealCapacity" hidden>Set capacity to 3,050</button>
+        <p class="body-copy" id="finalFrame" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px;">Final framing: Solver optimized correctly. The leadership risk was accepting the stated capacity as operational truth.</p>
+        <div class="nav-row">
+          <button class="nav-btn prev" type="button" id="prevStep">Previous</button>
+          <button class="nav-btn next" type="button" id="nextStep">Next</button>
+        </div>
+      </aside>
+    </div>
+
+    <p class="footer">MAN 4550 | Cowford Holdings, Inc. | Solutions pre-computed from PuLP-verified model</p>
+  </div>
+
+  <script>
+    const CATS = [
+      { key: "C", label: "Consultants", short: "Cons", rate: 95, cost: 52, min: 400, color: "#2563eb" },
+      { key: "A", label: "Analysts", short: "Anal", rate: 72, cost: 38, min: 600, color: "#7c3aed" },
+      { key: "K", label: "Coordinators", short: "Coor", rate: 58, cost: 30, min: 300, color: "#0d9488" },
+      { key: "S", label: "Support", short: "Supp", rate: 44, cost: 22, min: 200, color: "#059669" },
+    ];
+
+    const DEFAULT_PROMPT = `Cowford Professional Services allocates weekly billable hours across four staffing categories:
+- Consultants (C): billed at $95/hour, fully loaded cost $52/hour
+- Analysts (A): billed at $72/hour, fully loaded cost $38/hour
+- Coordinators (K): billed at $58/hour, fully loaded cost $30/hour
+- Support (S): billed at $44/hour, fully loaded cost $22/hour
+
+The division has 3,200 deployable hours per week and a weekly cost budget of $93,300. Contractual minimums require at least 400 hours of Consultant time, 600 hours of Analyst time, 300 hours of Coordinator time, and 200 hours of Support time.
+
+Please formulate this as a linear program to maximize weekly billable revenue, solve it, identify which constraint is binding, and recommend whether PS leadership should request more budget or more deployable hours from the holding company.`;
+
+    const LECTURE_STEPS = [
+      ["Executive Brief", "brief", 3200, "Cowford PS appears to have 3,200 deployable hours and a $93,300 weekly budget. The initial model points to one recommendation, but the case is designed to show why managers must verify the numbers behind a model."],
+      ["Decision Variables", "variables", 3200, "The decision variables are the hours assigned to Consultants, Analysts, Coordinators, and Support. Solver changes these values while respecting minimum staffing requirements."],
+      ["Objective Function", "objective", 3200, "The objective is to maximize weekly billable revenue: 95C + 72A + 58K + 44S. This is the number Solver improves while it searches the feasible region."],
+      ["Constraints", "constraints", 3200, "The model is limited by deployable hours, weekly budget, and contractual minimum staffing. These constraints define what solutions are possible."],
+      ["Run/Solve", "run", 3200, "At the stated 3,200-hour capacity, the optimal solution holds Consultants, Analysts, and Coordinators at their minimums, then assigns remaining budget to Support."],
+      ["Read Answer Report", "answer", 3200, "The answer report tells the managerial story: budget is binding, while deployable hours still have slack. The model says money is scarce and hours are not."],
+      ["Make Recommendation", "recommend", 3200, "Pause here before revealing the twist. Based only on the stated model, the defensible recommendation is to request more budget."],
+      ["Reduce Capacity to 3,050", "reversal", 3050, "Now account for Logistics delays and reduce deployable capacity to 3,050. The same model resolves with both constraints binding, and the recommendation reverses.", true],
+      ["Efficiency Crossover", "crossover", 3050, "When budget is the scarce resource, revenue per budget dollar governs. When hours become scarce, revenue per hour becomes decisive. That is the crossover students need to see.", true],
+      ["Executive Debrief", "debrief", 3050, "The model was not wrong; the assumption was. Optimization faithfully solves the world described by the inputs, so managers must verify whether those inputs match operating reality.", true],
+    ].map(([title, focus, targetRhs, callout, unlockSlider]) => ({ title, focus, targetRhs, callout, unlockSlider: Boolean(unlockSlider) }));
+
+    let rhs = 3200;
+    let mode = "explore";
+    let lectureStep = 0;
+
+    const $ = (id) => document.getElementById(id);
+    const f = (n) => Number(n).toLocaleString("en-US", { maximumFractionDigits: 1 });
+    const fd = (n) => "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+    function solve(capacity) {
+      const T = 3150;
+      if (capacity > T) {
+        return {
+          a: { C: 400, A: 600, K: 300, S: 1850 }, Z: 180000,
+          hr: { used: 3150, cap: capacity, slack: capacity - 3150, bind: false, shadow: 0 },
+          bg: { used: 93300, cap: 93300, slack: 0, bind: true, shadow: 2.0 },
+          regime: "budget",
+        };
+      }
+      const A = (78900 - 22 * capacity) / 16;
+      const S = (38 * capacity - 90100) / 16;
+      return {
+        a: { C: 400, A, K: 300, S }, Z: 162675 + 5.5 * capacity,
+        hr: { used: capacity, cap: capacity, slack: 0, bind: true, shadow: 5.5 },
+        bg: { used: 93300, cap: 93300, slack: 0, bind: true, shadow: 1.75 },
+        regime: "both",
+      };
+    }
+
+    function insightFor(sol, base, dZ) {
+      if (rhs >= 3200) return {
+        title: "Budget is the bottleneck",
+        body: `Support gets ${f(sol.a.S)} of ${f(sol.hr.cap)} hours because it returns $2.00 per budget dollar, the best ratio of any category. With ${f(sol.hr.slack)} hours of slack on capacity, additional hours would not improve the solution. A manager looking at this report asks for more budget.`,
+        rec: "Ask for more budget",
+        color: "#2563eb", bg: "#eff6ff",
+      };
+      if (rhs > 3150) return {
+        title: "Budget is the bottleneck, barely",
+        body: `Only ${f(sol.hr.slack)} hours of slack remain on deployable capacity. The budget still binds at $2.00 per dollar, but a modest reduction in available hours would change which constraint matters. The stated 3,200-hour figure deserves verification.`,
+        rec: "Ask for more budget, but verify hours first",
+        color: "#2563eb", bg: "#eff6ff",
+      };
+      if (rhs === 3150) return {
+        title: "The tipping point",
+        body: "Both constraints are exactly binding. Below this point, every lost hour costs $5.50 in revenue and the optimal mix starts shifting toward higher-revenue-per-hour categories. Above it, those same hours are worth nothing because the budget holds the model in place.",
+        rec: "Transition: either resource matters",
+        color: "#d97706", bg: "#fffbeb",
+      };
+      if (rhs === 3050) {
+        const dA = sol.a.A - base.a.A;
+        const dS = sol.a.S - base.a.S;
+        return {
+          title: "The recommendation reverses",
+          body: `This is the real capacity, accounting for Logistics delivery delays. An additional hour is now worth $5.50; an additional budget dollar is worth $1.75. The mix shifted ${f(Math.abs(dS))} hours out of Support and ${f(dA)} into Analysts. Revenue fell ${fd(Math.abs(dZ))}/week. The binding constraint flipped, and with it the correct ask.`,
+          rec: "Ask for more deployable hours",
+          color: "#dc2626", bg: "#fef2f2",
+        };
+      }
+      const dA = sol.a.A - base.a.A;
+      return {
+        title: "Both constraints are binding",
+        body: `At ${f(rhs)} hours, both budget and capacity are fully consumed. Hours shadow price: $5.50/hr. Budget shadow price: $1.75/$. The mix shifted ${f(dA)} hours toward Analysts. Revenue per hour now matters, not just revenue per dollar.`,
+        rec: "Ask for more deployable hours",
+        color: "#dc2626", bg: "#fef2f2",
+      };
+    }
+
+    function setCapacity(next) {
+      rhs = Number(next);
+      $("capacitySlider").value = rhs;
+      render();
+    }
+
+    function setLectureStep(next) {
+      lectureStep = Math.max(0, Math.min(LECTURE_STEPS.length - 1, next));
+      setCapacity(LECTURE_STEPS[lectureStep].targetRhs);
+    }
+
+    function setMode(next) {
+      mode = next;
+      $("exploreMode").classList.toggle("active", mode === "explore");
+      $("lectureMode").classList.toggle("active", mode === "lecture");
+      if (mode === "lecture") lectureStep = 0;
+      if (mode === "lecture") rhs = 3200;
+      render();
+    }
+
+    function badge(c) {
+      return c.bind
+        ? `<span class="badge">BINDING</span>`
+        : `<span class="badge slack">${f(c.slack)} ${c.unit} slack</span>`;
+    }
+
+    function applyLectureFocus() {
+      const active = LECTURE_STEPS[lectureStep];
+      document.querySelectorAll("[data-focus]").forEach((el) => {
+        const focuses = el.dataset.focus.split(" ");
+        const match = focuses.includes(active.focus);
+        el.classList.toggle("focused", mode === "lecture" && match);
+        el.classList.toggle("dimmed", mode === "lecture" && !match && !["brief", "debrief"].includes(active.focus));
+      });
+      $("objectiveBlock").classList.toggle("focused-inner", mode === "lecture" && active.focus === "objective");
+      document.querySelectorAll(".constraint").forEach((el) => {
+        el.classList.toggle("focused-inner", mode === "lecture" && ["constraints", "answer"].includes(active.focus));
+      });
+    }
+
+    function render() {
+      const sol = solve(rhs);
+      const base = solve(3200);
+      const dZ = sol.Z - base.Z;
+      const active = LECTURE_STEPS[lectureStep];
+      const sliderLocked = mode === "lecture" && !active.unlockSlider;
+
+      $("briefPanel").hidden = mode !== "lecture";
+      $("lecturePanel").hidden = mode !== "lecture";
+      $("capacityValue").textContent = f(rhs);
+      $("capacityValue").style.color = sol.regime === "both" ? "var(--red)" : "var(--ink)";
+      $("capacitySlider").disabled = sliderLocked;
+      $("capacitySlider").style.accentColor = sol.regime === "both" ? "var(--red)" : "var(--blue)";
+      $("lockedNote").hidden = !sliderLocked;
+
+      document.querySelectorAll(".scenario-btn").forEach((btn) => {
+        btn.disabled = sliderLocked;
+        btn.classList.toggle("active", Number(btn.dataset.rhs) === rhs);
+      });
+
+      const maxHours = Math.max(...CATS.map((c) => sol.a[c.key]));
+      $("chart").innerHTML = CATS.map((c) => {
+        const hours = sol.a[c.key];
+        const atFloor = Math.abs(hours - c.min) < 0.5;
+        const height = Math.max(8, (hours / maxHours) * 190);
+        return `<div class="bar-col" title="${c.label}: ${f(hours)} hours">
+          <div class="bar" style="height: ${height}px; background: ${c.color}; opacity: ${atFloor ? 0.45 : 1}; border: ${atFloor ? `2px solid ${c.color}` : "0"};"></div>
+          <strong>${c.short}</strong>
+        </div>`;
+      }).join("");
+
+      $("revenueValue").textContent = fd(sol.Z);
+      $("deltaValue").textContent = Math.abs(dZ) > 0.5 ? `${dZ > 0 ? "+" : ""}${fd(dZ)} vs. stated capacity` : "";
+      $("deltaValue").style.color = dZ < 0 ? "var(--red)" : "var(--green)";
+
+      const rows = [
+        { label: "Deployable Hours", ...sol.hr, unit: "hrs", sfx: "/hr" },
+        { label: "Weekly Budget", ...sol.bg, unit: "$", sfx: "/$" },
+      ];
+      $("constraints").innerHTML = rows.map((c) => `<div class="constraint">
+        <div class="constraint-top"><span class="constraint-name">${c.label}</span>${badge(c)}</div>
+        <div class="shadow">Shadow price: <strong style="color: ${c.shadow > 0 ? "#1e293b" : "#94a3b8"};">${fd(c.shadow)}${c.sfx}</strong></div>
+      </div>`).join("");
+
+      $("allocList").innerHTML = CATS.map((c) => {
+        const hours = sol.a[c.key];
+        const baseHours = base.a[c.key];
+        const diff = hours - baseHours;
+        const atFloor = Math.abs(hours - c.min) < 0.5;
+        const diffText = Math.abs(diff) > 0.5 ? `<span style="color: ${diff > 0 ? "var(--green)" : "var(--red)"}; margin-left: 6px; font-size: 11px;">${diff > 0 ? "+" : ""}${f(diff)}</span>` : "";
+        return `<div class="alloc-row">
+          <span><span class="swatch" style="background: ${c.color};"></span>${c.label}</span>
+          <span style="font-variant-numeric: tabular-nums;"><strong style="color: ${atFloor ? "var(--faint)" : "var(--ink)"};">${f(hours)}</strong>${atFloor ? `<span style="color: #cbd5e1; margin-left: 4px;">(min)</span>` : ""}${diffText}</span>
+        </div>`;
+      }).join("");
+
+      const insight = insightFor(sol, base, dZ);
+      $("insightPanel").style.background = insight.bg;
+      $("insightPanel").style.borderLeftColor = insight.color;
+      $("insightTitle").textContent = insight.title;
+      $("insightBody").textContent = insight.body;
+      $("insightRec").textContent = "-> " + insight.rec;
+      $("insightRec").style.color = insight.color;
+
+      $("checkpointPanel").hidden = !(mode === "lecture" && lectureStep === 6);
+      $("debriefPanel").style.display = mode === "lecture" && lectureStep === 9 ? "block" : "none";
+      $("aiPanel").style.display = mode === "lecture" && lectureStep < 5 ? "none" : "block";
+
+      const budgetHot = sol.regime === "budget";
+      $("budgetHead").className = budgetHot ? "hot-budget" : "";
+      $("hoursHead").className = !budgetHot ? "hot-hours" : "";
+      $("crossoverBody").innerHTML = CATS.map((c) => `<tr>
+        <td><span class="swatch" style="background: ${c.color};"></span>${c.label}</td>
+        <td>${fd(c.rate)}</td>
+        <td>${fd(c.cost)}</td>
+        <td class="${budgetHot ? "hot-budget" : ""}">$${(c.rate / c.cost).toFixed(2)}</td>
+        <td class="${!budgetHot ? "hot-hours" : ""}">${fd(c.rate)}</td>
+      </tr>`).join("");
+      $("crossoverNote").textContent = budgetHot
+        ? "Budget is the only binding constraint, so revenue per budget dollar determines the mix. Support leads at $2.00 per dollar."
+        : "Both constraints bind, so both rankings matter. Revenue per hour favors Analysts ($72) over Support ($44), pulling the mix upward.";
+
+      $("stepCount").textContent = `${lectureStep + 1} of ${LECTURE_STEPS.length}`;
+      $("progressFill").style.width = `${((lectureStep + 1) / LECTURE_STEPS.length) * 100}%`;
+      $("lectureTitle").textContent = active.title;
+      $("lectureCallout").textContent = active.callout;
+      $("setRealCapacity").hidden = !(mode === "lecture" && lectureStep === 7);
+      $("finalFrame").style.display = mode === "lecture" && lectureStep === 9 ? "block" : "none";
+      $("prevStep").disabled = lectureStep === 0;
+      $("nextStep").disabled = lectureStep === LECTURE_STEPS.length - 1;
+
+      applyLectureFocus();
+    }
+
+    $("capacitySlider").addEventListener("input", (event) => setCapacity(event.target.value));
+    document.querySelectorAll(".scenario-btn").forEach((btn) => btn.addEventListener("click", () => setCapacity(btn.dataset.rhs)));
+    $("exploreMode").addEventListener("click", () => setMode("explore"));
+    $("lectureMode").addEventListener("click", () => setMode("lecture"));
+    $("prevStep").addEventListener("click", () => setLectureStep(lectureStep - 1));
+    $("nextStep").addEventListener("click", () => setLectureStep(lectureStep + 1));
+    $("setRealCapacity").addEventListener("click", () => setCapacity(3050));
+    $("aiToggle").addEventListener("click", () => {
+      const body = $("aiBody");
+      const isOpen = body.style.display === "block";
+      body.style.display = isOpen ? "none" : "block";
+      $("aiCaret").textContent = isOpen ? "v" : "^";
+      if (!$("aiPrompt").value.trim()) $("aiPrompt").value = DEFAULT_PROMPT;
+    });
+    $("fakeSend").addEventListener("click", () => {
+      alert("This standalone Canvas version does not send data to an AI service. Use the prompt text as a classroom comparison or connect it to an approved endpoint.");
+    });
+    document.querySelectorAll(".choice-btn").forEach((btn) => btn.addEventListener("click", () => {
+      document.querySelectorAll(".choice-btn").forEach((other) => other.classList.remove("active"));
+      btn.classList.add("active");
+      $("choiceNote").style.display = "block";
+    }));
+
+    render();
+  </script>
+</body>
+</html>
