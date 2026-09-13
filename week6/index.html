@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_parent">
+  <title>W6.E Interactive Integer Programming Lab</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5d6c82;
+      --line: #dbe3ee;
+      --soft: #f7f9fc;
+      --blue: #1f5fbf;
+      --green: #12815d;
+      --red: #c73535;
+      --amber: #b66a12;
+      --purple: #6750b8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .lab {
+      width: min(1200px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 34px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .kicker {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.12;
+    }
+
+    .subhead {
+      max-width: 850px;
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      margin-bottom: 16px;
+    }
+
+    .pad {
+      padding: 16px 18px;
+    }
+
+    .control-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      background: var(--soft);
+    }
+
+    .panel-title {
+      margin: 0 0 12px;
+      font-size: 14px;
+      font-weight: 850;
+      color: #33445c;
+    }
+
+    .body-copy {
+      margin: 0;
+      color: #4a5b72;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: #7e8a9b;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .packages {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .pkg {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 150px;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+    }
+
+    .pkg.selected {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(31, 95, 191, .16);
+      background: #eef5ff;
+    }
+
+    .pkg.frac {
+      border-color: var(--amber);
+      background: #fff8eb;
+    }
+
+    .pkg h3 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .pkg p {
+      margin: 0 0 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .ratio {
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      min-width: min(520px, 100%);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+    }
+
+    label {
+      color: #415168;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: #415168;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--soft);
+    }
+
+    .metric-label {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th,
+    td {
+      padding: 7px 8px;
+      border-bottom: 1px solid #edf1f6;
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    td:not(:first-child),
+    th:not(:first-child) {
+      text-align: right;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #eef5ff;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .badge.warn {
+      background: #fff8eb;
+      color: #8b560e;
+    }
+
+    .badge.good {
+      background: #ecf8f2;
+      color: var(--green);
+    }
+
+    .barbox {
+      height: 260px;
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      padding: 8px 4px 0;
+      border-bottom: 1px solid #edf1f6;
+    }
+
+    .bar-col {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .bar {
+      width: 80%;
+      min-height: 5px;
+      border-radius: 4px 4px 0 0;
+      background: var(--blue);
+    }
+
+    .bar-col span {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .side {
+      position: sticky;
+      top: 16px;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .choice-btn,
+    .nav-btn {
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      background: #fff;
+      color: #43546c;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 9px 10px;
+      text-align: left;
+    }
+
+    .choice-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .nav-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      text-align: center;
+    }
+
+    .nav-btn.next {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .nav-btn:disabled {
+      color: #9aa7b7;
+      background: #eef2f7;
+      border-color: #e3e9f2;
+      cursor: not-allowed;
+    }
+
+    .progress {
+      height: 7px;
+      border-radius: 999px;
+      background: #e5ebf4;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 20%;
+      background: var(--blue);
+      transition: width .18s;
+    }
+
+    .step-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .focus {
+      box-shadow: 0 0 0 3px rgba(31, 95, 191, .18);
+      border-color: var(--blue);
+    }
+
+    .footer {
+      margin: 18px 0 0;
+      color: #8c98aa;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .shell,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .packages {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .side {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .packages,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lab">
+    <header class="topbar">
+      <div>
+        <p class="kicker">MAN4550 · Week 6.E</p>
+        <h1>Interactive Integer Programming Lab</h1>
+        <p class="subhead">Practice binary selection, LP relaxation, greedy heuristics, and non-binding business rules with Cowford Fleet Ventures. This is a practice entity, not the Cowford Properties assignment scenario.</p>
+      </div>
+    </header>
+
+    <section class="panel control-strip" data-focus="controls">
+      <div class="slider-row">
+        <label for="budgetSlider">Capital budget for equipment packages</label>
+        <strong id="budgetValue">$1,900K</strong>
+      </div>
+      <input id="budgetSlider" type="range" min="1300" max="2500" step="50" value="1900">
+      <label class="toggle-row">
+        <input id="ruleToggle" type="checkbox" checked>
+        Require at least one port-readiness package
+      </label>
+    </section>
+
+    <div class="shell">
+      <main>
+        <section class="panel pad" data-focus="packages">
+          <h2 class="panel-title">Candidate Equipment Packages</h2>
+          <div class="packages" id="packageGrid"></div>
+          <p class="hint">Each package is all-or-nothing: x = 1 if selected, x = 0 if not selected.</p>
+        </section>
+
+        <div class="grid">
+          <section class="panel pad" data-focus="solution">
+            <h2 class="panel-title">Best Integer Portfolio</h2>
+            <div class="metric-grid">
+              <div class="metric">
+                <p class="metric-label">NPV</p>
+                <div class="metric-value" id="bestValue">$0K</div>
+              </div>
+              <div class="metric">
+                <p class="metric-label">Capital Used</p>
+                <div class="metric-value" id="bestCost">$0K</div>
+              </div>
+              <div class="metric">
+                <p class="metric-label">Unused</p>
+                <div class="metric-value" id="unusedValue">$0K</div>
+              </div>
+            </div>
+            <table style="margin-top: 12px;">
+              <thead>
+                <tr><th>Package</th><th>Decision</th><th>Cost</th><th>NPV</th></tr>
+              </thead>
+              <tbody id="decisionRows"></tbody>
+            </table>
+          </section>
+
+          <section class="panel pad" data-focus="comparison">
+            <h2 class="panel-title">Greedy and Relaxed Comparisons</h2>
+            <table>
+              <thead>
+                <tr><th>Method</th><th>Selection</th><th>NPV</th></tr>
+              </thead>
+              <tbody id="comparisonRows"></tbody>
+            </table>
+            <p class="hint" id="comparisonNote"></p>
+          </section>
+        </div>
+
+        <div class="grid">
+          <section class="panel pad" data-focus="sweep">
+            <h2 class="panel-title">Budget Sweep</h2>
+            <div class="barbox" id="sweepChart"></div>
+            <p class="hint">Integer solutions jump. More budget can rebuild the portfolio instead of simply adding one more package.</p>
+          </section>
+
+          <section class="panel pad" data-focus="gates">
+            <h2 class="panel-title">Prediction Gates</h2>
+            <div class="choice-grid">
+              <button class="choice-btn" type="button" data-gate="greedy">Rank by NPV per dollar and take packages in order.</button>
+              <button class="choice-btn" type="button" data-gate="relax">Relax binary variables and allow fractional package purchases.</button>
+              <button class="choice-btn" type="button" data-gate="rule">Remove the port-readiness requirement.</button>
+              <button class="choice-btn" type="button" data-gate="jump">Raise the budget from $1,900K to $2,050K.</button>
+            </div>
+            <p class="hint" id="gateNote">Choose a gate to connect the screen to the Week 6 concepts.</p>
+          </section>
+        </div>
+
+        <section class="panel pad" data-focus="interpretation">
+          <h2 class="panel-title">Managerial Interpretation</h2>
+          <p class="body-copy" id="interpretation"></p>
+        </section>
+      </main>
+
+      <aside class="panel pad side">
+        <p class="kicker" id="stepKicker">Lecture Mode</p>
+        <div class="progress"><div id="progressFill"></div></div>
+        <h2 class="step-title" id="stepTitle">Binary Means Yes or No</h2>
+        <p class="body-copy" id="stepBody"></p>
+        <div class="nav-row">
+          <button class="nav-btn" id="prevStep" type="button">Previous</button>
+          <button class="nav-btn next" id="nextStep" type="button">Next</button>
+        </div>
+      </aside>
+    </div>
+
+    <p class="footer">MAN4550 · Week 6.E practice lab · Cowford Fleet Ventures, not the graded Cowford Properties case</p>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const k = (n) => "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 2 }) + "K";
+
+    const packages = [
+      { id: "F1", name: "Autonomous Yard Tractors", cost: 760, value: 315, port: false, color: "#1f5fbf" },
+      { id: "F2", name: "Telematics Retrofit", cost: 520, value: 210, port: false, color: "#6750b8" },
+      { id: "F3", name: "Cold-Chain Dock Sensors", cost: 910, value: 390, port: true, color: "#12815d" },
+      { id: "F4", name: "Maintenance Analytics", cost: 430, value: 150, port: false, color: "#b66a12" },
+      { id: "F5", name: "EV Charging Bay", cost: 690, value: 275, port: true, color: "#c73535" },
+    ];
+
+    const steps = [
+      { focus: "packages", title: "Binary Means Yes or No", body: "Every package is a 0/1 decision. The model cannot buy 80 percent of a truck package or half of a charging bay." },
+      { focus: "solution", title: "Read the Integer Optimum", body: "The best portfolio is found by checking feasible combinations. With five binary variables there are 32 possible portfolios." },
+      { focus: "comparison", title: "Greedy Can Fail", body: "Ranking by NPV per dollar is tempting, but it does not search combinations. It can leave value on the table." },
+      { focus: "gates", title: "Relaxation Is a Bound", body: "The LP relaxation can beat the integer solution by buying a fractional package. That is useful as a bound, not as an executable plan." },
+      { focus: "interpretation", title: "Rules and Budgets Jump", body: "Some business rules cost nothing because the optimum already satisfies them. Extra budget can also rebuild the entire selected set." },
+    ];
+
+    let budget = 1900;
+    let requirePort = true;
+    let step = 0;
+
+    function feasible(mask, cap = budget, rule = requirePort) {
+      const chosen = packages.filter((_, i) => mask & (1 << i));
+      const cost = chosen.reduce((s, p) => s + p.cost, 0);
+      const value = chosen.reduce((s, p) => s + p.value, 0);
+      const portOk = !rule || chosen.some((p) => p.port);
+      return { mask, chosen, cost, value, feasible: cost <= cap && portOk };
+    }
+
+    function best(cap = budget, rule = requirePort) {
+      let winner = feasible(0, cap, rule);
+      for (let mask = 0; mask < 32; mask++) {
+        const trial = feasible(mask, cap, rule);
+        if (trial.feasible && trial.value > winner.value) winner = trial;
+      }
+      return winner;
+    }
+
+    function greedy(cap = budget, rule = requirePort) {
+      const chosen = [];
+      let cost = 0;
+      for (const p of [...packages].sort((a, b) => (b.value / b.cost) - (a.value / a.cost))) {
+        if (cost + p.cost <= cap) {
+          chosen.push(p);
+          cost += p.cost;
+        }
+      }
+      if (rule && !chosen.some((p) => p.port)) return { chosen: [], cost: 0, value: 0, feasible: false };
+      return { chosen, cost, value: chosen.reduce((s, p) => s + p.value, 0), feasible: true };
+    }
+
+    function relaxation(cap = budget) {
+      const chosen = [];
+      let cost = 0;
+      let value = 0;
+      let fraction = null;
+      for (const p of [...packages].sort((a, b) => (b.value / b.cost) - (a.value / a.cost))) {
+        if (cost + p.cost <= cap) {
+          chosen.push({ ...p, x: 1 });
+          cost += p.cost;
+          value += p.value;
+        } else if (!fraction) {
+          const x = Math.max(0, (cap - cost) / p.cost);
+          if (x > 0) {
+            fraction = { ...p, x };
+            chosen.push(fraction);
+            cost = cap;
+            value += p.value * x;
+          }
+          break;
+        }
+      }
+      return { chosen, cost, value, fraction };
+    }
+
+    function names(items) {
+      return items.length ? items.map((p) => p.id + (p.x && p.x < 1 ? ` ${p.x.toFixed(2)}` : "")).join(" + ") : "None";
+    }
+
+    function renderPackages(winner, relaxed) {
+      $("packageGrid").innerHTML = packages.map((p) => {
+        const selected = winner.chosen.some((c) => c.id === p.id);
+        const frac = relaxed.fraction && relaxed.fraction.id === p.id;
+        return `<article class="pkg ${selected ? "selected" : ""} ${frac ? "frac" : ""}">
+          <h3>${p.id}: ${p.name}</h3>
+          <p>Cost: <strong>${k(p.cost)}</strong></p>
+          <p>NPV: <strong>${k(p.value)}</strong></p>
+          <p class="ratio">Ratio: ${(p.value / p.cost).toFixed(3)}</p>
+          <p>${p.port ? '<span class="badge good">Port-readiness</span>' : '<span class="badge">General fleet</span>'}</p>
+        </article>`;
+      }).join("");
+    }
+
+    function renderSolution(winner) {
+      $("bestValue").textContent = k(winner.value);
+      $("bestCost").textContent = k(winner.cost);
+      $("unusedValue").textContent = k(budget - winner.cost);
+      $("decisionRows").innerHTML = packages.map((p) => {
+        const selected = winner.chosen.some((c) => c.id === p.id);
+        return `<tr>
+          <td>${p.id}</td>
+          <td>${selected ? '<span class="badge good">x = 1</span>' : '<span class="badge">x = 0</span>'}</td>
+          <td>${k(p.cost)}</td>
+          <td>${k(p.value)}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderComparison(winner, g, r) {
+      $("comparisonRows").innerHTML = `
+        <tr><td>Integer optimum</td><td>${names(winner.chosen)}</td><td>${k(winner.value)}</td></tr>
+        <tr><td>Greedy ratio</td><td>${names(g.chosen)}</td><td>${k(g.value)}</td></tr>
+        <tr><td>LP relaxation</td><td>${names(r.chosen)}</td><td>${k(r.value)}</td></tr>`;
+      const gap = winner.value - g.value;
+      $("comparisonNote").textContent = gap > 0
+        ? `Greedy leaves ${k(gap)} of NPV unclaimed at this budget. The relaxation is higher because it permits a fractional package.`
+        : "At this budget the greedy walk happens to match the integer optimum, but that is not guaranteed.";
+    }
+
+    function renderSweep() {
+      const caps = [];
+      for (let cap = 1300; cap <= 2500; cap += 100) caps.push(cap);
+      const vals = caps.map((cap) => best(cap, requirePort).value);
+      const max = Math.max(...vals, 1);
+      $("sweepChart").innerHTML = caps.map((cap, i) => {
+        const b = best(cap, requirePort);
+        return `<div class="bar-col" title="${k(cap)}: ${names(b.chosen)} = ${k(b.value)}">
+          <div class="bar" style="height:${Math.max(5, vals[i] / max * 220)}px;background:${cap === budget ? "var(--red)" : "var(--blue)"}"></div>
+          <span>${cap / 1000}M</span>
+        </div>`;
+      }).join("");
+    }
+
+    function renderInterpretation(winner) {
+      const noRule = best(budget, false);
+      if (budget === 1900 && requirePort) {
+        $("interpretation").textContent = "At the baseline $1,900K budget, the best integer portfolio is F2 + F3 + F4. The port-readiness rule sounds restrictive, but the optimum already includes F3, so removing the rule does not change the decision.";
+      } else if (budget === 2050) {
+        $("interpretation").textContent = "At $2,050K, the selected set changes to F3 + F4 + F5, replacing F2 with F5. That is the integer-programming lesson: more budget can change the combination rather than simply scale the old answer.";
+      } else if (!requirePort && noRule.value === winner.value) {
+        $("interpretation").textContent = "The port-readiness rule is currently non-binding. It is a real business rule, but it costs nothing because the selected package set already satisfies it.";
+      } else {
+        $("interpretation").textContent = "This is a binary capital selection model. The useful managerial question is not only which package has the best ratio, but which combination fits the budget and business rules.";
+      }
+    }
+
+    function renderGateMessage(gate) {
+      const winner = best();
+      const g = greedy();
+      const r = relaxation();
+      const noRule = best(budget, false);
+      const messages = {
+        greedy: `Greedy chooses ${names(g.chosen)} for ${k(g.value)}. The optimum is ${names(winner.chosen)} for ${k(winner.value)}, so the ratio shortcut is not reliable.`,
+        relax: `The LP relaxation reaches ${k(r.value)} by allowing ${r.fraction ? r.fraction.id + " = " + r.fraction.x.toFixed(4) : "only whole packages"}. That is a bound, not a purchase plan.`,
+        rule: `Without the port-readiness rule, the optimum is ${names(noRule.chosen)} for ${k(noRule.value)}. At the baseline this is unchanged, so the rule is non-binding.`,
+        jump: "Set the budget to $2,050K. The model switches to F3 + F4 + F5, showing that integer solutions jump between combinations.",
+      };
+      $("gateNote").textContent = messages[gate];
+    }
+
+    function applyFocus() {
+      document.querySelectorAll("[data-focus]").forEach((el) => el.classList.remove("focus"));
+      document.querySelectorAll(`[data-focus="${steps[step].focus}"]`).forEach((el) => el.classList.add("focus"));
+    }
+
+    function renderSteps() {
+      const active = steps[step];
+      $("stepKicker").textContent = `Lecture Mode · ${step + 1} of ${steps.length}`;
+      $("stepTitle").textContent = active.title;
+      $("stepBody").textContent = active.body;
+      $("progressFill").style.width = `${((step + 1) / steps.length) * 100}%`;
+      $("prevStep").disabled = step === 0;
+      $("nextStep").disabled = step === steps.length - 1;
+      applyFocus();
+    }
+
+    function render() {
+      const winner = best();
+      const g = greedy();
+      const r = relaxation();
+      $("budgetValue").textContent = k(budget);
+      renderPackages(winner, r);
+      renderSolution(winner);
+      renderComparison(winner, g, r);
+      renderSweep();
+      renderInterpretation(winner);
+      renderSteps();
+      const params = new URLSearchParams();
+      params.set("budget", budget);
+      params.set("port", requirePort ? "1" : "0");
+      history.replaceState(null, "", "#" + params.toString());
+    }
+
+    $("budgetSlider").addEventListener("input", (event) => {
+      budget = Number(event.target.value);
+      render();
+    });
+    $("ruleToggle").addEventListener("change", (event) => {
+      requirePort = event.target.checked;
+      render();
+    });
+    document.querySelectorAll("[data-gate]").forEach((btn) => btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-gate]").forEach((other) => other.classList.remove("active"));
+      btn.classList.add("active");
+      if (btn.dataset.gate === "jump") {
+        budget = 2050;
+        $("budgetSlider").value = budget;
+        render();
+      }
+      renderGateMessage(btn.dataset.gate);
+    }));
+    $("prevStep").addEventListener("click", () => {
+      step = Math.max(0, step - 1);
+      render();
+    });
+    $("nextStep").addEventListener("click", () => {
+      step = Math.min(steps.length - 1, step + 1);
+      render();
+    });
+
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ""));
+    if (hash.has("budget")) budget = Number(hash.get("budget"));
+    if (hash.has("port")) requirePort = hash.get("port") !== "0";
+    $("budgetSlider").value = budget;
+    $("ruleToggle").checked = requirePort;
+    render();
+  </script>
+</body>
+</html>
