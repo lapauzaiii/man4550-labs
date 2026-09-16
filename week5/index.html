@@ -25,10 +25,12 @@
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--ink);
       background: #fff;
+      font-size: 18px;
+      line-height: 1.5;
     }
 
     .lab {
-      width: min(1180px, calc(100% - 28px));
+      width: min(1380px, calc(100% - 32px));
       margin: 0 auto;
       padding: 24px 0 34px;
     }
@@ -108,7 +110,7 @@
 
     .shell {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
+      grid-template-columns: minmax(0, 1fr) 360px;
       gap: 18px;
       align-items: start;
     }
@@ -146,13 +148,13 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
       gap: 16px;
     }
 
     .metric-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
       gap: 10px;
       margin-top: 12px;
     }
@@ -173,9 +175,10 @@
     }
 
     .metric-value {
-      font-size: 22px;
+      font-size: 28px;
       font-weight: 850;
       font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
     }
 
     .panel-title {
@@ -399,7 +402,26 @@
       text-align: center;
     }
 
-    @media (max-width: 920px) {
+    .shell > *, .grid > *, .metric { min-width: 0; }
+    h1 { font-size: 32px; line-height: 1.25; }
+    .panel-title, .step-title { font-size: 22px; line-height: 1.35; }
+    .subhead, .body-copy, table { font-size: 18px; }
+    .kicker, .formula, .hint, .bar-col, .footer,
+    .metric-label, th, .badge { font-size: 16px; }
+    .tab, .mode-btn, .scenario-btn, .choice-btn, .nav-btn {
+      font-size: 17px;
+      min-height: 44px;
+      white-space: normal;
+    }
+    .tabs, .mode-toggle { flex-wrap: wrap; max-width: 100%; }
+    table { table-layout: fixed; }
+    th, td { overflow-wrap: anywhere; padding: 12px 8px; }
+    .badge { white-space: normal; text-align: center; }
+    .hint, .footer { color: var(--muted); }
+    .metric { padding: 16px; }
+    .chart-wrap { height: 300px; }
+
+    @media (max-width: 1180px) {
       .shell,
       .grid {
         grid-template-columns: 1fr;
