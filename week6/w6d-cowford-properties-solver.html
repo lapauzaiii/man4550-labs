@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>W6.D Cowford Properties Solver</title>
+  <style>
+    :root{--ink:#172033;--muted:#5d6c82;--line:#dbe3ee;--soft:#f7f9fc;--blue:#1f5fbf;--green:#12815d;--red:#c73535;--amber:#b66a12;--card:#ffffff}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#fff;line-height:1.45}.wrap{width:min(1160px,calc(100% - 28px));margin:0 auto;padding:20px 0 28px}.kicker{margin:0 0 4px;color:var(--blue);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.02em}h1{font-size:24px;line-height:1.15;margin:0 0 8px}.sub{color:var(--muted);font-size:14px;margin:0 0 14px;max-width:850px}.scene{display:none}.scene.active{display:block}.panel{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:16px;margin:12px 0}.callout{border-left:5px solid var(--blue);background:#eef5ff;padding:10px 12px;border-radius:8px;margin:12px 0}.warn{border-left-color:var(--amber);background:#fff7ed}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:16px;align-items:start}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px}.prop{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--soft)}.prop label{display:flex;gap:8px;align-items:flex-start;font-weight:750}.prop .meta{font-size:13px;color:var(--muted);margin-top:4px}.prop.bay{border-color:#bfd3ff;background:#f4f8ff}.out{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;min-height:120px}.status{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.metric{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:9px}.metric strong{display:block;font-size:20px}.good{color:var(--green);font-weight:800}.bad{color:var(--red);font-weight:800}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.btn{border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:10px;padding:10px 12px;font-weight:750;cursor:pointer}.btn.secondary{background:#fff;color:var(--blue)}.btn:focus,.prop input:focus{outline:3px solid #bfdbfe;outline-offset:2px}table{width:100%;border-collapse:collapse;background:#fff;margin:10px 0}th,td{border:1px solid var(--line);padding:8px;text-align:left;font-size:14px}th{background:#eef5ff}.right{text-align:right}.small{font-size:13px;color:var(--muted)}.list{margin:8px 0 0;padding-left:22px}.barrow{display:grid;grid-template-columns:120px minmax(0,1fr) 70px;gap:8px;align-items:center;margin:8px 0}.bar{height:16px;background:#e8eef7;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:var(--blue)}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.controls label{border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 10px}.range{width:220px;max-width:100%}@media(max-width:760px){.grid{grid-template-columns:1fr}.status{grid-template-columns:1fr}.barrow{grid-template-columns:1fr}.right{text-align:left}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="kicker">MAN4550 · Week 6 · Cowford Properties</p>
+    <h1 id="page-title">Cowford Properties Acquisition Solver</h1>
+    <p class="sub">Use this embedded Solver-style panel to explore all-or-nothing acquisition decisions. Values are shown in thousands of dollars ($K).</p>
+
+    <section class="scene" id="scene-portfolio" aria-labelledby="portfolio-title">
+      <h2 id="portfolio-title">Portfolio Builder</h2>
+      <div class="callout warn"><strong>Required exploration:</strong> test at least three portfolios before answering: one feasible portfolio, one infeasible portfolio, and the Solver-recommended portfolio.</div>
+      <div class="grid">
+        <div>
+          <div class="cards" id="portfolio-cards"></div>
+          <div class="actions"><button class="btn" id="eval-btn" type="button">Evaluate selected portfolio</button><button class="btn secondary" id="solve-btn" type="button">Run Solver recommendation</button><button class="btn secondary" id="clear-btn" type="button">Clear</button></div>
+          <table aria-label="Cowford Properties candidate acquisitions"><thead><tr><th>ID</th><th>Property</th><th>Submarket</th><th class="right">Cost</th><th class="right">NPV</th></tr></thead><tbody id="portfolio-table"></tbody></table>
+        </div>
+        <aside class="out" id="portfolio-out" aria-live="polite">Select properties and evaluate. The panel checks budget feasibility, Baymeadows feasibility, total cost, and total NPV.</aside>
+      </div>
+    </section>
+
+    <section class="scene" id="scene-greedy" aria-labelledby="greedy-title">
+      <h2 id="greedy-title">Greedy Shortcut Tester</h2>
+      <p>A Cowford analyst suggests ranking properties by NPV per dollar of cost, then acquiring the best-ranked properties until the budget runs out. Use the buttons to compare that shortcut with the true integer optimum.</p>
+      <div class="callout warn"><strong>Required exploration:</strong> click all three buttons before answering. Record the ranking, greedy portfolio, greedy NPV, and true optimal portfolio.</div>
+      <div class="grid">
+        <div class="panel">
+          <div class="actions"><button class="btn" id="ratio-btn" type="button">Show NPV-per-dollar ranking</button><button class="btn secondary" id="greedy-btn" type="button">Apply greedy selection</button><button class="btn secondary" id="compare-btn" type="button">Compare to true optimum</button></div>
+          <div id="greedy-bars"></div>
+        </div>
+        <aside class="out" id="greedy-out" aria-live="polite">Use the buttons to test whether a reasonable shortcut finds the best portfolio.</aside>
+      </div>
+    </section>
+
+    <section class="scene" id="scene-scenario" aria-labelledby="scenario-title">
+      <h2 id="scenario-title">Relaxation and Scenario Tester</h2>
+      <p>Integer-programming sensitivity is lumpy. Extra budget may change the whole portfolio rather than simply adding one more building.</p>
+      <div class="callout warn"><strong>Required exploration:</strong> review the LP relaxation, solve the base case, set the budget to $3,400K, then test removing the Baymeadows requirement.</div>
+      <div class="grid">
+        <div>
+          <div class="panel">
+            <h3>Scenario controls</h3>
+            <div class="controls"><label>Budget: <input class="range" id="budget-range" type="range" min="1800" max="4200" step="50" value="3200"> <strong>$<span id="budget-label">3,200</span>K</strong></label><label><input id="bay-toggle" type="checkbox" checked> Require at least one Baymeadows property</label><label><input id="p3-toggle" type="checkbox" checked> P3 available</label></div>
+            <div class="actions"><button class="btn" id="scenario-solve" type="button">Solve current scenario</button><button class="btn secondary" id="preset-base" type="button">Base case</button><button class="btn secondary" id="preset-3400" type="button">Budget $3,400K</button><button class="btn secondary" id="preset-no-bay" type="button">Remove Baymeadows rule</button></div>
+          </div>
+          <div class="panel"><h3>LP relaxation reference</h3><p>The relaxed model drops the binary restriction and allows fractional building decisions.</p><ul class="list"><li>P1 = 1</li><li>P3 = 1</li><li>P2 = 0.8077</li><li>P4 = 0 and P5 = 0</li><li>Relaxed objective value = <strong>$1,056.92K</strong></li></ul><p class="small">This is an upper bound, not an executable acquisition plan. Cowford cannot acquire 80.77% of Riverside Lofts.</p></div>
+        </div>
+        <aside class="out" id="scenario-out" aria-live="polite">Adjust the scenario and solve. Watch for portfolio jumps rather than smooth changes.</aside>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const props=[
+        {id:'P1',name:'Harborview Office',market:'Southside',cost:1150,npv:385},
+        {id:'P2',name:'Riverside Lofts',market:'Riverside',cost:780,npv:250},
+        {id:'P3',name:'Baymeadows Medical Plaza',market:'Baymeadows',cost:1420,npv:470},
+        {id:'P4',name:'Northside Service Center',market:'Northside',cost:640,npv:195},
+        {id:'P5',name:'Baymeadows Flex Park',market:'Baymeadows',cost:950,npv:300}
+      ];
+      const fmt=n=>Number(n).toLocaleString('en-US');
+      const money=n=>'$'+fmt(n)+'K';
+      const byId=id=>props.find(p=>p.id===id);
+      function stats(ids){let cost=0,npv=0,bay=false;ids.forEach(id=>{const p=byId(id);cost+=p.cost;npv+=p.npv;if(p.market==='Baymeadows')bay=true;});return{cost,npv,bay};}
+      function bestPortfolio(budget=3200,bayReq=true,available=props.map(p=>p.id)){let best={ids:[],cost:0,npv:-1,bay:false};for(let mask=0;mask<(1<<props.length);mask++){let ids=[];let valid=true;for(let i=0;i<props.length;i++){if(mask&(1<<i)){if(!available.includes(props[i].id)){valid=false;break;}ids.push(props[i].id);}}if(!valid)continue;const st=stats(ids);if(st.cost<=budget&&(!bayReq||st.bay)&&st.npv>best.npv){best={ids,cost:st.cost,npv:st.npv,bay:st.bay};}}return best;}
+      function names(ids){return ids.length?ids.map(id=>id+' '+byId(id).name).join(', '):'none';}
+      function setScene(){const scene=(new URLSearchParams(location.search).get('scene')||'portfolio').toLowerCase();const allowed={portfolio:'scene-portfolio',greedy:'scene-greedy',scenario:'scene-scenario'};const id=allowed[scene]||allowed.portfolio;document.querySelectorAll('.scene').forEach(s=>s.classList.toggle('active',s.id===id));const titles={portfolio:'Cowford Properties Portfolio Builder',greedy:'Cowford Properties Greedy Shortcut Tester',scenario:'Cowford Properties Scenario Tester'};document.getElementById('page-title').textContent=titles[scene]||titles.portfolio;}
+      function renderBase(){const cards=document.getElementById('portfolio-cards');cards.innerHTML=props.map(p=>`<div class="prop ${p.market==='Baymeadows'?'bay':''}"><label><input type="checkbox" value="${p.id}"> ${p.id}: ${p.name}</label><div class="meta">${p.market}<br>Cost ${money(p.cost)} · NPV ${money(p.npv)}</div></div>`).join('');document.getElementById('portfolio-table').innerHTML=props.map(p=>`<tr><td>${p.id}</td><td>${p.name}</td><td>${p.market}</td><td class="right">${fmt(p.cost)}</td><td class="right">${fmt(p.npv)}</td></tr>`).join('');renderGreedyBars();}
+      function selected(){return Array.from(document.querySelectorAll('#portfolio-cards input:checked')).map(x=>x.value);}
+      function printPortfolio(ids,label){const st=stats(ids);const feasible=st.cost<=3200&&st.bay;document.getElementById('portfolio-out').innerHTML=`<strong>${label}</strong><br>Selected: ${names(ids)}<div class="status"><div class="metric">Total cost<strong>${money(st.cost)}</strong></div><div class="metric">Total NPV<strong>${money(st.npv)}</strong></div><div class="metric">Budget status<strong class="${st.cost<=3200?'good':'bad'}">${st.cost<=3200?'within budget':'over budget'}</strong></div><div class="metric">Baymeadows status<strong class="${st.bay?'good':'bad'}">${st.bay?'met':'not met'}</strong></div></div><p><strong>Overall:</strong> <span class="${feasible?'good':'bad'}">${feasible?'feasible':'infeasible'}</span></p>`;}
+      function renderGreedyBars(){const sorted=[...props].sort((a,b)=>(b.npv/b.cost)-(a.npv/a.cost));const max=Math.max(...sorted.map(p=>p.npv/p.cost));document.getElementById('greedy-bars').innerHTML=sorted.map(p=>{const ratio=p.npv/p.cost;return `<div class="barrow"><strong>${p.id}</strong><div class="bar"><span style="width:${(ratio/max*100).toFixed(1)}%"></span></div><span>${ratio.toFixed(4)}</span></div>`;}).join('');}
+      function showRatios(){const sorted=[...props].sort((a,b)=>(b.npv/b.cost)-(a.npv/a.cost));document.getElementById('greedy-out').innerHTML='<strong>NPV-per-dollar ranking</strong><ol class="list">'+sorted.map(p=>`<li>${p.id} ${p.name}: ${(p.npv/p.cost).toFixed(4)}</li>`).join('')+'</ol><p>Highest individual ratio: <strong>P1 Harborview Office</strong>.</p>';}
+      function showGreedy(){document.getElementById('greedy-out').innerHTML='<strong>Greedy selection result</strong><br>Ranking order begins P1, P3, P2, P5, P4. Taking properties until the budget blocks the next purchase selects <strong>P1 + P3</strong>.<div class="status"><div class="metric">Greedy cost<strong>$2,570K</strong></div><div class="metric">Greedy NPV<strong>$855K</strong></div></div><p>This portfolio is feasible, but it is not optimal.</p>';}
+      function compareGreedy(){document.getElementById('greedy-out').innerHTML='<strong>Greedy versus true Solver optimum</strong><br>Greedy portfolio: <strong>P1 + P3</strong>, NPV <strong>$855K</strong>.<br>True optimum: <strong>P2 + P3 + P5</strong>, NPV <strong>$1,020K</strong>.<br>NPV left on the table: <strong>$165K</strong>.<p>The best combination is not always built from the best individual ratios.</p>';}
+      function solveScenario(){const budget=Number(document.getElementById('budget-range').value);const bayReq=document.getElementById('bay-toggle').checked;const available=props.map(p=>p.id).filter(id=>id!=='P3'||document.getElementById('p3-toggle').checked);const b=bestPortfolio(budget,bayReq,available);document.getElementById('scenario-out').innerHTML=`<strong>Scenario result</strong><br>Budget: ${money(budget)}<br>Baymeadows required: ${bayReq?'yes':'no'}<br>P3 available: ${document.getElementById('p3-toggle').checked?'yes':'no'}<div class="status"><div class="metric">Optimal portfolio<strong>${b.ids.join(', ')||'none'}</strong></div><div class="metric">Total NPV<strong>${money(b.npv)}</strong></div><div class="metric">Total cost<strong>${money(b.cost)}</strong></div><div class="metric">Unused budget<strong>${money(budget-b.cost)}</strong></div></div><p class="small">Portfolio names: ${names(b.ids)}</p>`;}
+      function bind(){document.getElementById('eval-btn').addEventListener('click',()=>printPortfolio(selected(),'Your tested portfolio'));document.getElementById('solve-btn').addEventListener('click',()=>{const b=bestPortfolio(3200,true);document.querySelectorAll('#portfolio-cards input').forEach(x=>x.checked=b.ids.includes(x.value));printPortfolio(b.ids,'Solver recommendation');});document.getElementById('clear-btn').addEventListener('click',()=>{document.querySelectorAll('#portfolio-cards input').forEach(x=>x.checked=false);document.getElementById('portfolio-out').textContent='Select properties and evaluate. The panel checks budget feasibility, Baymeadows feasibility, total cost, and total NPV.';});document.getElementById('ratio-btn').addEventListener('click',showRatios);document.getElementById('greedy-btn').addEventListener('click',showGreedy);document.getElementById('compare-btn').addEventListener('click',compareGreedy);document.getElementById('budget-range').addEventListener('input',e=>{document.getElementById('budget-label').textContent=fmt(e.target.value);});document.getElementById('scenario-solve').addEventListener('click',solveScenario);document.getElementById('preset-base').addEventListener('click',()=>{document.getElementById('budget-range').value=3200;document.getElementById('budget-label').textContent='3,200';document.getElementById('bay-toggle').checked=true;document.getElementById('p3-toggle').checked=true;solveScenario();});document.getElementById('preset-3400').addEventListener('click',()=>{document.getElementById('budget-range').value=3400;document.getElementById('budget-label').textContent='3,400';document.getElementById('bay-toggle').checked=true;document.getElementById('p3-toggle').checked=true;solveScenario();});document.getElementById('preset-no-bay').addEventListener('click',()=>{document.getElementById('budget-range').value=3200;document.getElementById('budget-label').textContent='3,200';document.getElementById('bay-toggle').checked=false;document.getElementById('p3-toggle').checked=true;solveScenario();});}
+      renderBase();setScene();bind();
+    })();
+  </script>
+</body>
+</html>
