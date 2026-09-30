@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>W8.E — Cowford Logistics Network Lab</title>
+<style>
+  :root{
+    --paper:#F6F8F7; --ink:#1C2A29; --muted:#5B6B6A; --rule:#D5DDDB;
+    --sign:#0B6E4F; --sign-ink:#FFFFFF; --flow:#D9A300; --flow-ink:#6B5000;
+    --idle:#7A8B99; --bad:#B3261E; --good:#0B6E4F; --panel:#FFFFFF; --hub:#2F5D8A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Avenir Next","Segoe UI","Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.5;font-variant-numeric:tabular-nums}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:1.65rem;line-height:1.2;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+  h2{font-size:1.15rem;margin:0 0 10px;font-weight:700}
+  h3{font-size:1rem;margin:0 0 6px;font-weight:700}
+  p{margin:0 0 10px;max-width:72ch}
+  .lede{color:var(--muted);max-width:70ch}
+  .panel{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;margin-top:18px}
+  .gate{border-left:6px solid var(--sign)}
+  .gate fieldset{border:0;padding:0;margin:0 0 14px}
+  .gate legend{font-weight:600;margin-bottom:6px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opts label{border:1px solid var(--rule);border-radius:4px;padding:6px 12px;cursor:pointer;background:#fff}
+  .opts input{margin-right:6px}
+  button{font:inherit;border-radius:4px;border:1px solid var(--sign);background:var(--sign);color:#fff;
+    padding:8px 16px;cursor:pointer;font-weight:600}
+  button.ghost{background:#fff;color:var(--sign)}
+  button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  :focus-visible{outline:3px solid var(--flow);outline-offset:2px}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .bar .spacer{flex:1}
+  .grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;margin-top:18px}
+  @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  svg{display:block;width:100%;height:auto}
+  .big{font-size:2.1rem;font-weight:700;line-height:1.1}
+  .sub{color:var(--muted);font-size:.9rem}
+  .readout dl{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:12px 0 0}
+  .readout dt{color:var(--muted)} .readout dd{margin:0;text-align:right;font-weight:600}
+  .ok{color:var(--good)} .warn{color:var(--bad)}
+  table{border-collapse:collapse;width:100%;font-size:.95rem}
+  th,td{border-bottom:1px solid var(--rule);padding:6px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-weight:600;color:var(--muted)}
+  td input{width:64px;font:inherit;text-align:right;padding:3px 5px;border:1px solid var(--rule);border-radius:3px}
+  td input:disabled{background:transparent;border-color:transparent;color:var(--ink)}
+  .cost{display:block;font-size:.75rem;color:var(--muted)}
+  .used{background:#FFF7DB}
+  .tablewrap{overflow-x:auto}
+  .slider{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;margin:8px 0}
+  .slider input{width:100%}
+  .mv{font-size:.88rem;color:var(--muted);margin:-4px 0 10px 160px}
+  @media (max-width:560px){.slider{grid-template-columns:1fr 70px}.slider label{grid-column:1/-1}.mv{margin-left:0}}
+  .note{border-left:4px solid var(--flow);padding:8px 12px;background:#FFFBEA;margin-top:12px}
+  .reveal{border-left:4px solid var(--sign);padding:8px 12px;background:#EEF6F2;margin-top:10px}
+  .hidden{display:none}
+  .toggle{display:flex;gap:8px;align-items:center;font-weight:600}
+  .toggle input{width:18px;height:18px}
+  @media (prefers-reduced-motion:no-preference){ .flowline{transition:stroke-width .25s ease} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cowford Logistics network lab</h1>
+  <p class="lede">Three distribution centers, four retail clients, one question: which plan moves every unit of demand at the lowest weekly shipping cost? Units are shipments per week; costs are dollars per unit.</p>
+
+  <!-- Prediction gate 1 -->
+  <section class="panel gate" id="gate1" aria-labelledby="g1h">
+    <h2 id="g1h">Commit to a prediction first</h2>
+    <p>Supply is 1,100 units a week against 980 units of demand, so 120 units of capacity will sit idle somewhere. Answer both before you open the lab.</p>
+    <fieldset>
+      <legend>Which DC ends the week with unused capacity in the lowest-cost plan?</legend>
+      <div class="opts" id="p1opts">
+        <label><input type="radio" name="p1" value="JAX">Jacksonville</label>
+        <label><input type="radio" name="p1" value="ORL">Orlando</label>
+        <label><input type="radio" name="p1" value="TPA">Tampa</label>
+        <label><input type="radio" name="p1" value="SPLIT">It splits across DCs</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>A dispatcher fills the cheapest lane first, then the next cheapest, until demand is met. Will that plan match the lowest-cost plan?</legend>
+      <div class="opts">
+        <label><input type="radio" name="p2" value="Y">Yes, it will match</label>
+        <label><input type="radio" name="p2" value="N">No, it will cost more</label>
+      </div>
+    </fieldset>
+    <button id="g1go" disabled>Lock predictions and open the lab</button>
+  </section>
+
+  <div id="lab" class="hidden">
+    <section class="panel">
+      <div class="bar" role="group" aria-label="Plan shown">
+        <button class="ghost" data-mode="mine" aria-pressed="false">Your plan</button>
+        <button class="ghost" data-mode="greedy" aria-pressed="false" id="btnGreedy">Cheapest lane first</button>
+        <button class="ghost" data-mode="opt" aria-pressed="false">Lowest-cost plan</button>
+        <button class="ghost" id="copyPlan">Edit a copy of this plan</button>
+        <span class="spacer"></span>
+        <label class="toggle"><input type="checkbox" id="hubToggle"> Baymeadows cross-dock</label>
+      </div>
+      <div id="predReveal"></div>
+    </section>
+
+    <!-- Prediction gate 2 (hub) -->
+    <section class="panel gate hidden" id="gate2" aria-labelledby="g2h">
+      <h2 id="g2h">Before the cross-dock opens</h2>
+      <p>Cowford Properties owns flex space in Baymeadows. Logistics can lease it as a cross-dock: Jacksonville trucks it over for $1 a unit, and consolidated loads leave Baymeadows for Clients A, B, and C. The lease allows 150 units of weekly throughput.</p>
+      <fieldset>
+        <legend>What happens to Jacksonville's idle capacity?</legend>
+        <div class="opts">
+          <label><input type="radio" name="p3" value="UP">It grows</label>
+          <label><input type="radio" name="p3" value="DOWN">It shrinks</label>
+          <label><input type="radio" name="p3" value="SAME">No change</label>
+        </div>
+      </fieldset>
+      <button id="g2go" disabled>Lock prediction and open the cross-dock</button>
+    </section>
+
+    <div class="grid">
+      <section class="panel" aria-labelledby="maph">
+        <h2 id="maph">Network</h2>
+        <svg id="map" viewBox="0 0 560 430" role="img" aria-label="Network diagram of shipments"></svg>
+        <p class="sub">Line thickness is units shipped. Hover a line for its unit cost.</p>
+      </section>
+      <section class="panel readout" aria-live="polite" aria-labelledby="roh">
+        <h2 id="roh">Weekly shipping cost</h2>
+        <div class="big" id="roCost">—</div>
+        <div class="sub" id="roGap"></div>
+        <dl id="roList"></dl>
+        <div id="roMsg"></div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="alh">
+      <h2 id="alh">Allocation</h2>
+      <p class="sub" id="alHint">Switch to “Your plan” to type your own allocation. Every client's row total must equal its demand; no DC may exceed its capacity.</p>
+      <div class="tablewrap"><table id="alloc"></table></div>
+    </section>
+
+    <div class="grid">
+      <section class="panel" aria-labelledby="whh">
+        <h2 id="whh">Capacity what-ifs</h2>
+        <p class="sub">Move a slider, then read the lowest-cost plan again. The note under each slider shows what one more unit of that capacity is worth right now.</p>
+        <div id="sliders"></div>
+        <button class="ghost" id="resetCaps">Reset capacities</button>
+      </section>
+      <section class="panel" aria-labelledby="chh" id="chartPanel">
+        <h2 id="chh">Cost versus cross-dock throughput</h2>
+        <svg id="chart" viewBox="0 0 420 260" role="img" aria-label="Lowest weekly cost as cross-dock throughput changes"></svg>
+        <p class="sub" id="chartNote"></p>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="nth">
+      <h2 id="nth">What to notice</h2>
+      <div id="notice"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+// ---------- Data (solver-verified; see W8.A) ----------
+const DC=["JAX","ORL","TPA"], DCN={JAX:"Jacksonville",ORL:"Orlando",TPA:"Tampa"};
+const CL=["A","B","C","D"];
+const DEM=[220,310,270,180];
+const BASECAP=[420,380,300];
+const COST=[[4,8,9,11],[7,5,4,6],[10,8,5,3]];
+const HUB_IN=1;                     // JAX -> Baymeadows
+const HUB_OUT=[4,4,7,null];         // Baymeadows -> A,B,C (no D lane)
+const BASEH=150;
+
+// ---------- State (URL is the only store) ----------
+const S={g1:0,g2:0,p1:"",p2:"",p3:"",mode:"opt",hub:0,H:BASEH,cap:BASECAP.slice(),
+  mine:null};
+function blankMine(){return {x:[[0,0,0,0],[0,0,0,0],[0,0,0,0]],z:[0,0,0]};}
+function readURL(){
+  const q=new URLSearchParams(location.search);
+  S.g1=+(q.get("g1")||0); S.g2=+(q.get("g2")||0);
+  S.p1=q.get("p1")||""; S.p2=q.get("p2")||""; S.p3=q.get("p3")||"";
+  S.mode=q.get("m")||"opt"; S.hub=+(q.get("h")||0);
+  S.H=clampInt(q.get("H"),0,250,BASEH);
+  const c=(q.get("c")||"").split(",").map(Number);
+  S.cap=c.length===3&&c.every(v=>v>=0)?c:BASECAP.slice();
+  S.mine=blankMine();
+  const a=(q.get("a")||"").split(",").map(Number);
+  if(a.length===15&&a.every(v=>v>=0)){
+    for(let i=0;i<3;i++)for(let j=0;j<4;j++)S.mine.x[i][j]=a[i*4+j];
+    S.mine.z=a.slice(12,15);
+  }
+}
+function writeURL(){
+  const q=new URLSearchParams();
+  q.set("g1",S.g1);q.set("g2",S.g2);
+  if(S.p1)q.set("p1",S.p1); if(S.p2)q.set("p2",S.p2); if(S.p3)q.set("p3",S.p3);
+  q.set("m",S.mode);q.set("h",S.hub);q.set("H",S.H);q.set("c",S.cap.join(","));
+  const a=[];S.mine.x.forEach(r=>a.push(...r));a.push(...S.mine.z);
+  if(a.some(v=>v>0))q.set("a",a.join(","));
+  try{history.replaceState(null,"","?"+q.toString());}catch(e){}
+}
+function clampInt(v,lo,hi,d){v=parseInt(v,10);return isNaN(v)?d:Math.max(lo,Math.min(hi,v));}
+
+// ---------- Min-cost flow (successive shortest paths) ----------
+// nodes: 0 s | 1-3 DC | 4 hub | 5-8 clients | 9 t
+function solve(cap,hub,H){
+  const N=10,g=[...Array(N)].map(()=>[]);
+  function add(u,v,c,w,tag){const a={to:v,cap:c,cost:w,flow:0,tag},b={to:u,cap:0,cost:-w,flow:0};a.rev=b;b.rev=a;g[u].push(a);g[v].push(b);return a;}
+  const INF=1e9, arcs={};
+  for(let i=0;i<3;i++)add(0,1+i,cap[i],0);
+  for(let i=0;i<3;i++)for(let j=0;j<4;j++)arcs["x"+i+j]=add(1+i,5+j,INF,COST[i][j]);
+  if(hub){arcs.y=add(1,4,H,HUB_IN);for(let j=0;j<4;j++)if(HUB_OUT[j]!=null)arcs["z"+j]=add(4,5+j,INF,HUB_OUT[j]);}
+  for(let j=0;j<4;j++)add(5+j,9,DEM[j],0);
+  const need=DEM.reduce((a,b)=>a+b,0);let flow=0,cost=0;
+  while(flow<need){
+    const d=Array(N).fill(Infinity),pe=Array(N).fill(null);d[0]=0;
+    for(let k=0;k<N;k++){let ch=false;for(let u=0;u<N;u++){if(d[u]===Infinity)continue;for(const e of g[u])if(e.cap-e.flow>0&&d[u]+e.cost<d[e.to]-1e-9){d[e.to]=d[u]+e.cost;pe[e.to]=e;ch=true;}}if(!ch)break;}
+    if(d[9]===Infinity)break;
+    let f=need-flow,v=9;while(v!==0){const e=pe[v];f=Math.min(f,e.cap-e.flow);v=e.rev.to;}
+    v=9;while(v!==0){const e=pe[v];e.flow+=f;e.rev.flow-=f;v=e.rev.to;}
+    flow+=f;cost+=f*d[9];
+  }
+  if(flow<need)return null;
+  const x=[0,1,2].map(i=>[0,1,2,3].map(j=>arcs["x"+i+j].flow));
+  const z=[0,1,2].map(j=>hub&&arcs["z"+j]?arcs["z"+j].flow:0);
+  return {cost:Math.round(cost),x,z,y:hub?arcs.y.flow:0};
+}
+function greedy(cap){
+  const s=cap.slice(),d=DEM.slice(),x=[[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  const lanes=[];for(let i=0;i<3;i++)for(let j=0;j<4;j++)lanes.push([COST[i][j],i,j]);
+  lanes.sort((a,b)=>a[0]-b[0]||a[1]-b[1]||a[2]-b[2]);
+  for(const [c,i,j] of lanes){const q=Math.min(s[i],d[j]);x[i][j]+=q;s[i]-=q;d[j]-=q;}
+  if(d.some(v=>v>0))return null;
+  let cost=0;for(let i=0;i<3;i++)for(let j=0;j<4;j++)cost+=x[i][j]*COST[i][j];
+  return {cost,x,z:[0,0,0],y:0};
+}
+function planCost(p){let c=0;for(let i=0;i<3;i++)for(let j=0;j<4;j++)c+=p.x[i][j]*COST[i][j];
+  const y=p.z.reduce((a,b)=>a+b,0);c+=y*HUB_IN;for(let j=0;j<3;j++)c+=p.z[j]*HUB_OUT[j];return c;}
+function checks(p){
+  const out=[],y=p.z.reduce((a,b)=>a+b,0);
+  const used=[0,1,2].map(i=>p.x[i].reduce((a,b)=>a+b,0)+(i===0?y:0));
+  const recv=[0,1,2,3].map(j=>p.x[0][j]+p.x[1][j]+p.x[2][j]+(j<3?p.z[j]:0));
+  used.forEach((u,i)=>{if(u>S.cap[i])out.push(DCN[DC[i]]+" ships "+u+", over its "+S.cap[i]+" capacity");});
+  recv.forEach((r,j)=>{if(r!==DEM[j])out.push("Client "+CL[j]+" receives "+r+"; demand is "+DEM[j]);});
+  if(S.hub&&y>S.H)out.push("Baymeadows handles "+y+", over its "+S.H+" throughput");
+  return {ok:out.length===0,out,used,recv,y};
+}
+
+// ---------- Rendering ----------
+const $=id=>document.getElementById(id);
+const fmt=n=>"$"+Math.round(n).toLocaleString("en-US");
+const POS={JAX:[350,50],ORL:[410,285],TPA:[140,320],HUB:[495,62],
+  A:[215,125],B:[495,205],C:[265,250],D:[85,400]};
+function currentPlan(){
+  if(S.mode==="mine")return S.mine;
+  if(S.mode==="greedy"&&!S.hub)return greedy(S.cap);
+  return solve(S.cap,S.hub,S.H);
+}
+function drawMap(p){
+  const svg=$("map");let h="";
+  const max=Math.max(1,...p.x.flat(),...p.z,p.y||0);
+  const w=v=>v>0?2+10*v/max:1;
+  function line(a,b,v,c,label,col){
+    const [x1,y1]=POS[a],[x2,y2]=POS[b];
+    h+=`<line class="flowline" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${v>0?col:"#C9D2D0"}" stroke-width="${w(v)}" stroke-linecap="round"${v>0?"":' stroke-dasharray="3 5"'}><title>${label}: $${c}/unit${v>0?", "+v+" units":", unused"}</title></line>`;
+    if(v>0){const mx=(x1+x2)/2,my=(y1+y2)/2;
+      h+=`<g><rect x="${mx-18}" y="${my-10}" width="36" height="19" rx="3" fill="#fff" stroke="${col}"/><text x="${mx}" y="${my+4}" text-anchor="middle" font-size="12" font-weight="700" fill="${col===CFLOW?"#6B5000":col}">${v}</text></g>`;}
+  }
+  const CFLOW="#D9A300";
+  for(let i=0;i<3;i++)for(let j=0;j<4;j++)line(DC[i],CL[j],p.x[i][j],COST[i][j],DCN[DC[i]]+" to Client "+CL[j],CFLOW);
+  if(S.hub){const y=p.z.reduce((a,b)=>a+b,0);line("JAX","HUB",y,HUB_IN,"Jacksonville to Baymeadows","#2F5D8A");
+    for(let j=0;j<3;j++)line("HUB",CL[j],p.z[j],HUB_OUT[j],"Baymeadows to Client "+CL[j],"#2F5D8A");}
+  const chk=checks(p);
+  DC.forEach((d,i)=>{const [x,y]=POS[d];const idle=S.cap[i]-chk.used[i];
+    h+=`<g><rect x="${x-46}" y="${y-22}" width="92" height="44" rx="7" fill="#0B6E4F" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y-3}" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">${d}</text><text x="${x}" y="${y+14}" text-anchor="middle" fill="#fff" font-size="11">${idle>0?idle+" idle":"at capacity"}</text></g>`;});
+  if(S.hub){const [x,y]=POS.HUB;h+=`<g><rect x="${x-44}" y="${y-20}" width="88" height="40" rx="20" fill="#2F5D8A" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y-2}" text-anchor="middle" fill="#fff" font-weight="700" font-size="12">Baymeadows</text><text x="${x}" y="${y+13}" text-anchor="middle" fill="#fff" font-size="11">${chk.y} of ${S.H}</text></g>`;}
+  CL.forEach((c,j)=>{const [x,y]=POS[c];
+    h+=`<g><circle cx="${x}" cy="${y}" r="22" fill="#fff" stroke="#1C2A29" stroke-width="2"/><text x="${x}" y="${y-1}" text-anchor="middle" font-weight="700" font-size="14">${c}</text><text x="${x}" y="${y+13}" text-anchor="middle" font-size="10" fill="#5B6B6A">${DEM[j]}</text></g>`;});
+  svg.innerHTML=h;
+}
+function drawReadout(p){
+  const chk=checks(p),opt=solve(S.cap,S.hub,S.H);
+  const c=planCost(p);
+  $("roCost").textContent=chk.ok?fmt(c):"Not yet feasible";
+  $("roCost").className="big "+(chk.ok?"":"warn");
+  let gap="";
+  if(opt&&chk.ok){const d=c-opt.cost;gap=d===0?"Matches the lowest-cost plan.":fmt(d)+" a week above the lowest-cost plan ("+(100*d/opt.cost).toFixed(1)+"%).";}
+  if(!opt)gap="Capacity is below total demand of 980. Raise a capacity slider.";
+  $("roGap").textContent=gap;
+  let dl="";DC.forEach((d,i)=>{dl+=`<dt>${DCN[d]} idle</dt><dd>${Math.max(0,S.cap[i]-chk.used[i])}</dd>`;});
+  if(S.hub)dl+=`<dt>Through Baymeadows</dt><dd>${chk.y}</dd>`;
+  if(opt)dl+=`<dt>Lowest possible</dt><dd>${fmt(opt.cost)}</dd>`;
+  $("roList").innerHTML=dl;
+  $("roMsg").innerHTML=chk.ok?"":`<div class="note"><strong>To fix:</strong><br>${chk.out.join("<br>")}</div>`;
+}
+function drawAlloc(p){
+  const edit=S.mode==="mine";
+  let h="<thead><tr><th>From \\ to</th>"+CL.map((c,j)=>`<th>Client ${c}<span class="cost">demand ${DEM[j]}</span></th>`).join("")+(S.hub?"<th>To Baymeadows</th>":"")+"<th>Capacity</th></tr></thead><tbody>";
+  const chk=checks(p);
+  for(let i=0;i<3;i++){
+    h+=`<tr><td>${DCN[DC[i]]}</td>`;
+    for(let j=0;j<4;j++){const v=p.x[i][j];h+=`<td class="${v>0?"used":""}"><input aria-label="${DCN[DC[i]]} to Client ${CL[j]}" data-i="${i}" data-j="${j}" type="number" min="0" step="10" value="${v}" ${edit?"":"disabled"}><span class="cost">$${COST[i][j]}/unit</span></td>`;}
+    if(S.hub)h+=i===0?`<td>${chk.y}<span class="cost">$${HUB_IN}/unit</span></td>`:`<td class="sub">no lane</td>`;
+    h+=`<td>${chk.used[i]} / ${S.cap[i]}</td></tr>`;
+  }
+  if(S.hub){h+="<tr><td>Baymeadows</td>";for(let j=0;j<4;j++){if(HUB_OUT[j]==null){h+='<td class="sub">no lane</td>';continue;}
+    const v=p.z[j];h+=`<td class="${v>0?"used":""}"><input aria-label="Baymeadows to Client ${CL[j]}" data-z="${j}" type="number" min="0" step="10" value="${v}" ${edit?"":"disabled"}><span class="cost">$${HUB_OUT[j]}/unit</span></td>`;}
+    h+=`<td></td><td>${chk.y} / ${S.H}</td></tr>`;}
+  h+="<tr><td><strong>Received</strong></td>"+chk.recv.map((r,j)=>`<td class="${r===DEM[j]?"ok":"warn"}"><strong>${r}</strong></td>`).join("")+(S.hub?"<td></td>":"")+"<td></td></tr></tbody>";
+  $("alloc").innerHTML=h;
+  $("alHint").textContent=edit?"Type units into any lane. Baymeadows inflow is whatever it ships out: flow in equals flow out at a cross-dock.":"Switch to “Your plan” to type your own allocation. Each client must receive exactly its demand; no DC may exceed its capacity.";
+  if(edit)$("alloc").querySelectorAll("input").forEach(inp=>inp.addEventListener("change",e=>{
+    const v=Math.max(0,parseInt(e.target.value,10)||0);
+    if(e.target.dataset.z!==undefined)S.mine.z[+e.target.dataset.z]=v;else S.mine.x[+e.target.dataset.i][+e.target.dataset.j]=v;
+    render();}));
+}
+function marginal(idx){ // idx 0-2 DC, 3 hub
+  const base=solve(S.cap,S.hub,S.H);if(!base)return null;
+  const up=S.cap.slice();let H=S.H;if(idx<3)up[idx]+=1;else H+=1;
+  const r=solve(up,S.hub,H);return r?base.cost-r.cost:null;
+}
+function drawSliders(){
+  const rows=DC.map((d,i)=>({k:i,label:DCN[d]+" capacity",min:200,max:600,val:S.cap[i]}));
+  if(S.hub)rows.push({k:3,label:"Baymeadows throughput",min:0,max:250,val:S.H});
+  let h="";rows.forEach(r=>{
+    const m=marginal(r.k);
+    const txt=m===null?"":(m>0?`One more unit saves ${fmt(m)} a week.`:"One more unit saves nothing at this plan.");
+    h+=`<div class="slider"><label for="s${r.k}">${r.label}</label><input id="s${r.k}" data-k="${r.k}" type="range" min="${r.min}" max="${r.max}" step="10" value="${r.val}"><output>${r.val}</output></div><p class="mv">${txt}</p>`;});
+  $("sliders").innerHTML=h;
+  $("sliders").querySelectorAll("input").forEach(inp=>inp.addEventListener("input",e=>{
+    const k=+e.target.dataset.k,v=+e.target.value;if(k<3)S.cap[k]=v;else S.H=v;render();
+    const el=document.getElementById("s"+k);if(el)el.focus();}));
+}
+function drawChart(){
+  const panel=$("chartPanel");
+  if(!S.hub){panel.querySelector("svg").innerHTML=`<text x="210" y="130" text-anchor="middle" fill="#5B6B6A" font-size="13">Turn on the Baymeadows cross-dock to see this curve.</text>`;$("chartNote").textContent="";return;}
+  const pts=[];for(let H=0;H<=250;H+=5){const r=solve(S.cap,1,H);if(r)pts.push([H,r.cost]);}
+  if(!pts.length)return;
+  const ys=pts.map(p=>p[1]),lo=Math.min(...ys),hi=Math.max(...ys);
+  const X=h=>50+h/250*350;
+  const Yc=c=>hi===lo?115:20+(hi-c)/(hi-lo)*190;
+  let h=`<line x1="50" y1="210" x2="400" y2="210" stroke="#D5DDDB"/><line x1="50" y1="20" x2="50" y2="210" stroke="#D5DDDB"/>`;
+  h+=`<text x="46" y="${Yc(hi)+4}" text-anchor="end" font-size="11" fill="#5B6B6A">${fmt(hi)}</text><text x="46" y="${Yc(lo)+4}" text-anchor="end" font-size="11" fill="#5B6B6A">${fmt(lo)}</text>`;
+  [0,50,100,150,200,250].forEach(t=>{h+=`<text x="${X(t)}" y="226" text-anchor="middle" font-size="11" fill="#5B6B6A">${t}</text>`;});
+  h+=`<text x="225" y="250" text-anchor="middle" font-size="12" fill="#5B6B6A">Weekly throughput leased at Baymeadows (units)</text>`;
+  h+=`<polyline fill="none" stroke="#2F5D8A" stroke-width="3" points="${pts.map(p=>X(p[0])+","+Yc(p[1])).join(" ")}"/>`;
+  const cur=solve(S.cap,1,S.H);
+  if(cur)h+=`<circle cx="${X(S.H)}" cy="${Yc(cur.cost)}" r="6" fill="#D9A300" stroke="#1C2A29"/>`;
+  panel.querySelector("svg").innerHTML=h;
+  const noHub=solve(S.cap,0,0);
+  $("chartNote").textContent=cur&&noHub?`At ${S.H} units the cross-dock saves ${fmt(noHub.cost-cur.cost)} a week versus shipping direct. That is the most Logistics should agree to pay Properties for this space.`:"";
+}
+function drawNotice(){
+  const opt=solve(BASECAP,0,0),gr=greedy(BASECAP),hub=solve(BASECAP,1,BASEH);
+  let h=`<p><strong>Idle capacity is decided by the whole network.</strong> In the lowest-cost plan Jacksonville holds all 120 idle units. Its lanes to Clients C and D cost $9 and $11, so Orlando and Tampa run full and Jacksonville covers only what it serves cheaply: Client A and part of Client B.</p>`;
+  h+=`<p><strong>Cheapest lane first costs ${fmt(gr.cost)}, which is ${fmt(gr.cost-opt.cost)} a week more than ${fmt(opt.cost)}.</strong> It spends all of Orlando's capacity on Client C at $4, which looks cheap. But Orlando is worth more serving Client B, because B's next-best source costs $8. The cost of a lane is only half the story; the other half is what that capacity could have done elsewhere.</p>`;
+  h+=`<p><strong>Capacity has a price, and the price has a range.</strong> One more unit at Orlando saves $3; at Tampa, $2; at Jacksonville, nothing. Push Orlando up by more than 80 units and watch the value drop to $1. The $3 holds only until Orlando has fully displaced Jacksonville's $8 shipments to Client B.</p>`;
+  if(S.g2)h+=`<p><strong>The cross-dock moves the idle capacity.</strong> With 150 units through Baymeadows the weekly cost falls to ${fmt(hub.cost)}, a saving of ${fmt(opt.cost-hub.cost)}. Jacksonville's idle capacity drops from 120 to 50, and Tampa now holds 70. Every unit into Baymeadows equals a unit out; that balance is the constraint that makes this a transshipment model.</p>`;
+  $("notice").innerHTML=h;
+}
+function drawPredReveal(){
+  if(!S.g1){$("predReveal").innerHTML="";return;}
+  const n1={JAX:"Jacksonville",ORL:"Orlando",TPA:"Tampa",SPLIT:"a split across DCs"}[S.p1]||"—";
+  const r1=S.p1==="JAX"?"Correct.":"The model says Jacksonville, all 120 units.";
+  const r2=S.p2==="N"?"Correct: $4,650 against $4,410.":"It doesn't: cheapest lane first costs $4,650 against $4,410.";
+  let h=`<div class="reveal">You predicted ${n1} for the idle capacity. ${r1} You said cheapest lane first would ${S.p2==="Y"?"match":"cost more"}. ${r2}`;
+  if(S.g2){const r3=S.p3==="DOWN"?"Correct: it falls from 120 to 50.":"It shrinks, from 120 to 50, and Tampa picks up 70 idle units.";
+    h+=` For the cross-dock you predicted Jacksonville's idle capacity would ${{UP:"grow",DOWN:"shrink",SAME:"not change"}[S.p3]}. ${r3}`;}
+  $("predReveal").innerHTML=h+"</div>";
+}
+function render(){
+  $("gate1").classList.toggle("hidden",!!S.g1);
+  $("lab").classList.toggle("hidden",!S.g1);
+  $("gate2").classList.toggle("hidden",!(S.hub&&!S.g2));
+  $("hubToggle").checked=!!S.hub;
+  if(S.hub&&S.mode==="greedy")S.mode="opt";
+  $("btnGreedy").disabled=!!S.hub;
+  $("copyPlan").classList.toggle("hidden",S.mode==="mine");
+  document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===S.mode)));
+  if(S.g1&&!(S.hub&&!S.g2)){
+    const p=currentPlan()||{x:[[0,0,0,0],[0,0,0,0],[0,0,0,0]],z:[0,0,0],y:0};
+    drawMap(p);drawReadout(p);drawAlloc(p);drawSliders();drawChart();drawNotice();
+  }
+  drawPredReveal();writeURL();
+}
+
+// ---------- Wiring ----------
+function gateEnable(names,btn){const ok=names.every(n=>document.querySelector(`input[name="${n}"]:checked`));$(btn).disabled=!ok;}
+document.querySelectorAll('input[name="p1"],input[name="p2"]').forEach(r=>r.addEventListener("change",()=>gateEnable(["p1","p2"],"g1go")));
+document.querySelectorAll('input[name="p3"]').forEach(r=>r.addEventListener("change",()=>gateEnable(["p3"],"g2go")));
+$("g1go").addEventListener("click",()=>{S.p1=document.querySelector('input[name="p1"]:checked').value;S.p2=document.querySelector('input[name="p2"]:checked').value;S.g1=1;S.mode="mine";render();});
+$("g2go").addEventListener("click",()=>{S.p3=document.querySelector('input[name="p3"]:checked').value;S.g2=1;S.mode="opt";render();});
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{S.mode=b.dataset.mode;render();}));
+$("hubToggle").addEventListener("change",e=>{S.hub=e.target.checked?1:0;if(!S.hub){S.mine.z=[0,0,0];}render();});
+$("copyPlan").addEventListener("click",()=>{const p=currentPlan();if(!p)return;S.mine={x:p.x.map(r=>r.slice()),z:p.z.slice()};S.mode="mine";render();});
+$("resetCaps").addEventListener("click",()=>{S.cap=BASECAP.slice();S.H=BASEH;render();});
+
+readURL();render();
+})();
+</script>
+</body>
+</html>
