@@ -11,6 +11,10 @@ Interactive lab pages for MAN4550: Introduction to Management Science.
   - Cowford Fleet Ventures practice entity
   - Binary equipment package selection
   - Greedy heuristic and LP relaxation comparison
+- Week 8.E: Cowford Logistics Network Lab (`week8/`)
+  - Transportation and transshipment network optimization
+  - Cheapest-lane heuristic comparison
+  - Capacity value and Baymeadows cross-dock analysis
 
 ## GitHub Pages
 
@@ -30,6 +34,12 @@ The Week 6.E lab should be available at:
 
 ```text
 https://lapauzaiii.github.io/man4550-labs/week6/
+```
+
+The Week 8.E lab should be available at:
+
+```text
+https://lapauzaiii.github.io/man4550-labs/week8/
 ```
 
 ## Canvas Embed Code
@@ -62,6 +72,19 @@ Week 6.E:
 </div>
 ```
 
+Week 8.E:
+
+```html
+<div style="width:100%;overflow:hidden;">
+  <iframe
+    src="https://lapauzaiii.github.io/man4550-labs/week8/?v=w8e1"
+    style="width:100%;min-height:1400px;border:none;"
+    loading="lazy"
+    allowfullscreen>
+  </iframe>
+</div>
+```
+
 ## Repository Structure
 
 ```text
@@ -81,6 +104,8 @@ man4550-labs/
 │   ├── index.html              ← W6.E Interactive Integer Programming Lab
 │   └── assets/
 ├── week7/
+├── week8/
+│   └── index.html              ← W8.E Cowford Logistics Network Lab
 └── shared/
     ├── components.js
     ├── charts.js
