@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>W6.D Cowford Properties Solver</title>
+  <style>
+    :root{--ink:#172033;--muted:#5d6c82;--line:#dbe3ee;--soft:#f7f9fc;--blue:#1f5fbf;--green:#12815d;--red:#c73535;--amber:#9a5b00;--bay:#eef5ff}
+    *{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.35}.app{max-width:640px;margin:0 auto;padding:10px 10px 18px}.kicker{margin:0 0 3px;color:var(--blue);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.02em}h1{font-size:19px;line-height:1.15;margin:0 0 6px}.intro{font-size:13px;color:var(--muted);margin:0 0 10px}.scene{display:none}.scene.active{display:block}.box{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px;margin:8px 0}.task{border-left:4px solid var(--blue);background:#f3f8ff;border-radius:9px;padding:8px 10px;font-size:13px;margin:8px 0}.task strong{color:#102a56}.properties{display:grid;gap:7px}.prop{border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--soft)}.prop.bay{background:var(--bay);border-color:#bdd3ff}.prop label{display:flex;gap:8px;align-items:flex-start;font-weight:750;font-size:14px}.prop input{margin-top:2px}.meta{font-size:12px;color:var(--muted);margin:3px 0 0 26px}.buttons{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}.btn{border:1px solid var(--blue);background:var(--blue);color:#fff;border-radius:9px;padding:9px 10px;font-weight:760;cursor:pointer;font-size:13px}.btn.secondary{background:#fff;color:var(--blue)}.btn:focus,input:focus{outline:3px solid #bfdbfe;outline-offset:2px}.result{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px;margin:8px 0;min-height:74px}.result h2{font-size:15px;margin:0 0 6px}.result p{margin:5px 0;font-size:13px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.metric{background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:7px}.metric span{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:16px}.good{color:var(--green);font-weight:800}.bad{color:var(--red);font-weight:800}.mini{font-size:12px;color:var(--muted)}.rank{display:grid;gap:6px;margin:8px 0}.rankrow{display:grid;grid-template-columns:36px 1fr 58px;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:7px;background:#fff}.rankrow strong{font-size:13px}.rankrow span{font-size:12px;color:var(--muted)}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 7px;background:#fff;font-size:12px;margin:2px}.controls{display:grid;gap:8px}.control{border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px;font-size:13px}.control input[type=range]{width:100%;margin-top:6px}.lp{font-size:13px}.lp ul{margin:6px 0 0;padding-left:19px}.scene-note{font-size:12px;color:var(--muted);margin:8px 0 0}@media(max-width:420px){.app{padding:8px}.metrics{grid-template-columns:1fr}.rankrow{grid-template-columns:32px 1fr}.rankrow .ratio{grid-column:2}.buttons{display:grid}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <p class="kicker">Cowford Properties · Interactive Solver</p>
+    <h1 id="title">Acquisition Portfolio</h1>
+    <p class="intro" id="intro">Use the panel output to answer the quiz questions. Values are in $K.</p>
+
+    <section id="portfolio" class="scene" aria-labelledby="portfolio-h">
+      <h1 id="portfolio-h">Portfolio Builder</h1>
+      <div class="task"><strong>Do this:</strong> select properties, test at least one infeasible mix, then click <strong>Run Solver recommendation</strong>.</div>
+      <div class="properties" id="prop-list"></div>
+      <div class="buttons"><button class="btn" id="eval">Evaluate selection</button><button class="btn secondary" id="optimize">Run Solver recommendation</button><button class="btn secondary" id="clear">Clear</button></div>
+      <div class="result" id="portfolio-result" aria-live="polite"><h2>Output</h2><p>Select properties to see cost, NPV, budget status, and Baymeadows status.</p></div>
+      <p class="scene-note">Budget: $3,200K. Rule: at least one Baymeadows property, P3 or P5, must be selected.</p>
+    </section>
+
+    <section id="greedy" class="scene" aria-labelledby="greedy-h">
+      <h1 id="greedy-h">Greedy Shortcut Tester</h1>
+      <div class="task"><strong>Do this:</strong> check the ratio ranking, apply the shortcut, then compare it with the Solver optimum.</div>
+      <div class="buttons"><button class="btn" id="show-ranking">Show ratio ranking</button><button class="btn secondary" id="apply-greedy">Apply greedy shortcut</button><button class="btn secondary" id="compare">Compare with optimum</button></div>
+      <div class="rank" id="ranking"></div>
+      <div class="result" id="greedy-result" aria-live="polite"><h2>Output</h2><p>Use the buttons above to see why the shortcut fails.</p></div>
+    </section>
+
+    <section id="scenario" class="scene" aria-labelledby="scenario-h">
+      <h1 id="scenario-h">Relaxation and Scenario Tester</h1>
+      <div class="task"><strong>Do this:</strong> review the LP relaxation, solve the base case, test $3,400K, then remove the Baymeadows rule.</div>
+      <div class="box lp"><strong>LP relaxation output</strong><ul><li>P1 = 1</li><li>P3 = 1</li><li>P2 = 0.8077</li><li>Objective value = $1,056.92K</li></ul><p class="mini">Interpretation: useful upper bound, not an executable plan.</p></div>
+      <div class="controls"><label class="control">Budget: <strong>$<span id="budget-value">3,200</span>K</strong><input id="budget" type="range" min="1800" max="4200" step="50" value="3200"></label><label class="control"><input id="bay" type="checkbox" checked> Require at least one Baymeadows property</label><label class="control"><input id="p3" type="checkbox" checked> Baymeadows Medical Plaza (P3) is available</label></div>
+      <div class="buttons"><button class="btn" id="solve-scenario">Solve scenario</button><button class="btn secondary" id="base">Base case</button><button class="btn secondary" id="b3400">Budget $3,400K</button><button class="btn secondary" id="no-bay">No Baymeadows rule</button></div>
+      <div class="result" id="scenario-result" aria-live="polite"><h2>Output</h2><p>Choose a scenario and solve to see the optimal portfolio.</p></div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const props=[
+        {id:'P1',name:'Harborview Office',market:'Southside',cost:1150,npv:385},
+        {id:'P2',name:'Riverside Lofts',market:'Riverside',cost:780,npv:250},
+        {id:'P3',name:'Baymeadows Medical Plaza',market:'Baymeadows',cost:1420,npv:470},
+        {id:'P4',name:'Northside Service Center',market:'Northside',cost:640,npv:195},
+        {id:'P5',name:'Baymeadows Flex Park',market:'Baymeadows',cost:950,npv:300}
+      ];
+      const fmt=n=>Number(n).toLocaleString('en-US');
+      const money=n=>'$'+fmt(n)+'K';
+      const byId=id=>props.find(p=>p.id===id);
+      const names=ids=>ids.map(id=>id+' '+byId(id).name).join(', ') || 'none';
+      function stats(ids){let cost=0,npv=0,bay=false;ids.forEach(id=>{const p=byId(id);cost+=p.cost;npv+=p.npv;if(p.market==='Baymeadows')bay=true;});return{cost,npv,bay};}
+      function best(budget=3200,bayReq=true,available=props.map(p=>p.id)){let ans={ids:[],cost:0,npv:-1,bay:false};for(let mask=0;mask<(1<<props.length);mask++){const ids=[];let ok=true;for(let i=0;i<props.length;i++){if(mask&(1<<i)){if(!available.includes(props[i].id)){ok=false;break;}ids.push(props[i].id);}}if(!ok)continue;const s=stats(ids);if(s.cost<=budget&&(!bayReq||s.bay)&&s.npv>ans.npv){ans={ids,cost:s.cost,npv:s.npv,bay:s.bay};}}return ans;}
+      function output(el,title,ids,budget=3200,bayReq=true){const s=stats(ids);const feasible=s.cost<=budget&&(!bayReq||s.bay);el.innerHTML='<h2>'+title+'</h2><p><strong>Portfolio:</strong> '+names(ids)+'</p><div class="metrics"><div class="metric"><span>Total cost</span><strong>'+money(s.cost)+'</strong></div><div class="metric"><span>Total NPV</span><strong>'+money(s.npv)+'</strong></div><div class="metric"><span>Budget</span><strong class="'+(s.cost<=budget?'good':'bad')+'">'+(s.cost<=budget?'OK':'Over')+'</strong></div><div class="metric"><span>Baymeadows</span><strong class="'+((!bayReq||s.bay)?'good':'bad')+'">'+((!bayReq||s.bay)?'OK':'Missing')+'</strong></div></div><p><strong>Overall:</strong> <span class="'+(feasible?'good':'bad')+'">'+(feasible?'feasible':'infeasible')+'</span></p>';}
+      function renderProps(){document.getElementById('prop-list').innerHTML=props.map(p=>'<div class="prop '+(p.market==='Baymeadows'?'bay':'')+'"><label><input type="checkbox" value="'+p.id+'"> '+p.id+': '+p.name+'</label><div class="meta">'+p.market+' · Cost '+money(p.cost)+' · NPV '+money(p.npv)+'</div></div>').join('');}
+      function selected(){return Array.from(document.querySelectorAll('#prop-list input:checked')).map(x=>x.value);}
+      function showRank(){const sorted=[...props].sort((a,b)=>(b.npv/b.cost)-(a.npv/a.cost));document.getElementById('ranking').innerHTML=sorted.map((p,i)=>'<div class="rankrow"><strong>#'+(i+1)+'</strong><div><strong>'+p.id+' '+p.name+'</strong><br><span>'+p.market+' · Cost '+money(p.cost)+' · NPV '+money(p.npv)+'</span></div><span class="ratio">'+(p.npv/p.cost).toFixed(4)+'</span></div>').join('');document.getElementById('greedy-result').innerHTML='<h2>Ratio ranking shown</h2><p>Highest individual ratio: <strong>P1 Harborview Office</strong>.</p>';}
+      function showGreedy(){document.getElementById('greedy-result').innerHTML='<h2>Greedy shortcut output</h2><p><strong>Selected:</strong> P1 Harborview Office and P3 Baymeadows Medical Plaza.</p><div class="metrics"><div class="metric"><span>Cost</span><strong>$2,570K</strong></div><div class="metric"><span>NPV</span><strong>$855K</strong></div></div><p>The shortcut is feasible but not optimal.</p>';}
+      function showCompare(){document.getElementById('greedy-result').innerHTML='<h2>Shortcut versus Solver</h2><p><span class="pill">Greedy: P1 + P3 = $855K</span> <span class="pill">Optimal: P2 + P3 + P5 = $1,020K</span></p><p><strong>NPV left on the table:</strong> $165K.</p><p class="mini">Lesson: the best individual ratios do not necessarily create the best combined portfolio.</p>';}
+      function solveScenario(){const budget=Number(document.getElementById('budget').value);const bayReq=document.getElementById('bay').checked;const available=props.map(p=>p.id).filter(id=>id!=='P3'||document.getElementById('p3').checked);const ans=best(budget,bayReq,available);document.getElementById('scenario-result').innerHTML='<h2>Scenario optimum</h2><p><strong>Portfolio:</strong> '+names(ans.ids)+'</p><div class="metrics"><div class="metric"><span>Budget</span><strong>'+money(budget)+'</strong></div><div class="metric"><span>Total NPV</span><strong>'+money(ans.npv)+'</strong></div><div class="metric"><span>Total cost</span><strong>'+money(ans.cost)+'</strong></div><div class="metric"><span>Unused</span><strong>'+money(budget-ans.cost)+'</strong></div></div>';}
+      function scene(){const s=(new URLSearchParams(location.search).get('scene')||'portfolio').toLowerCase();const allowed=['portfolio','greedy','scenario'];const active=allowed.includes(s)?s:'portfolio';document.querySelectorAll('.scene').forEach(x=>x.classList.toggle('active',x.id===active));const titles={portfolio:'Portfolio Builder',greedy:'Greedy Shortcut Tester',scenario:'Relaxation and Scenario Tester'};document.getElementById('title').textContent=titles[active];}
+      renderProps();scene();
+      document.getElementById('eval').addEventListener('click',()=>output(document.getElementById('portfolio-result'),'Tested selection',selected()));
+      document.getElementById('optimize').addEventListener('click',()=>{const ans=best(3200,true);document.querySelectorAll('#prop-list input').forEach(i=>i.checked=ans.ids.includes(i.value));output(document.getElementById('portfolio-result'),'Solver recommendation',ans.ids);});
+      document.getElementById('clear').addEventListener('click',()=>{document.querySelectorAll('#prop-list input').forEach(i=>i.checked=false);document.getElementById('portfolio-result').innerHTML='<h2>Output</h2><p>Select properties to see cost, NPV, budget status, and Baymeadows status.</p>';});
+      document.getElementById('show-ranking').addEventListener('click',showRank);document.getElementById('apply-greedy').addEventListener('click',showGreedy);document.getElementById('compare').addEventListener('click',showCompare);
+      document.getElementById('budget').addEventListener('input',e=>{document.getElementById('budget-value').textContent=fmt(e.target.value);});
+      document.getElementById('solve-scenario').addEventListener('click',solveScenario);
+      document.getElementById('base').addEventListener('click',()=>{document.getElementById('budget').value=3200;document.getElementById('budget-value').textContent='3,200';document.getElementById('bay').checked=true;document.getElementById('p3').checked=true;solveScenario();});
+      document.getElementById('b3400').addEventListener('click',()=>{document.getElementById('budget').value=3400;document.getElementById('budget-value').textContent='3,400';document.getElementById('bay').checked=true;document.getElementById('p3').checked=true;solveScenario();});
+      document.getElementById('no-bay').addEventListener('click',()=>{document.getElementById('budget').value=3200;document.getElementById('budget-value').textContent='3,200';document.getElementById('bay').checked=false;document.getElementById('p3').checked=true;solveScenario();});
+    })();
+  </script>
+</body>
+</html>
