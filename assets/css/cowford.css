@@ -1,0 +1,356 @@
+:root {
+  --cf-ink: #202c2c;
+  --cf-green: #0b6e4f;
+  --cf-blue: #28629b;
+  --cf-gold: #ab7618;
+  --cf-line: #d3dedb;
+  --cf-muted: #526666;
+  --cf-red: #ad3029;
+}
+:root {
+  --ink: var(--cf-ink);
+  --muted: var(--cf-muted);
+  --line: var(--cf-line);
+  --blue: var(--cf-blue);
+  --green: var(--cf-green);
+  --accent: var(--cf-green);
+  --accent-dark: #075139;
+  --sign: var(--cf-green);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: var(--cf-ink);
+  background: #fff;
+  font-family: "Avenir Next", "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+h1,
+h2,
+h3,
+p {
+  letter-spacing: 0 !important;
+}
+a {
+  color: var(--cf-green);
+}
+.cf-nav {
+  border-bottom: 1px solid var(--cf-line);
+  background: #f3f7f5;
+  padding: 12px max(16px, calc((100% - 1120px) / 2));
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+}
+.cf-wordmark {
+  font-weight: 800;
+  color: var(--cf-ink);
+  text-decoration: none;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cf-wordmark img {
+  width: 40px;
+  height: 40px;
+}
+.cf-nav a[aria-current="page"] {
+  font-weight: 800;
+  border-bottom: 2px solid var(--cf-green);
+}
+.cf-nav select {
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid var(--cf-line);
+  background: white;
+  color: var(--cf-ink);
+  font: inherit;
+}
+.cf-main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 28px 20px 52px;
+}
+.cf-head {
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--cf-green);
+}
+.cf-kicker {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--cf-green);
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+.cf-head h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+.cf-head p {
+  max-width: 80ch;
+}
+.cf-section {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--cf-line);
+}
+.cf-section h2 {
+  font-size: 21px;
+  line-height: 1.3;
+  margin: 0 0 12px;
+}
+.cf-section h3 {
+  font-size: 17px;
+}
+.cf-muted {
+  color: var(--cf-muted);
+}
+.cf-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.cf-control {
+  display: grid;
+  grid-template-columns: 1fr 70px;
+  gap: 6px 12px;
+  align-items: center;
+}
+.cf-control label {
+  grid-column: 1/-1;
+  font-weight: 600;
+}
+.cf-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--cf-green);
+}
+.cf-control output {
+  text-align: right;
+}
+.cf-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+.cf-metric {
+  border-top: 3px solid var(--cf-blue);
+  padding-top: 10px;
+}
+.cf-metric:nth-child(2) {
+  border-color: var(--cf-green);
+}
+.cf-metric:nth-child(3) {
+  border-color: var(--cf-gold);
+}
+.cf-metric strong {
+  font-size: 25px;
+  display: block;
+  line-height: 1.3;
+}
+.cf-metric span {
+  font-size: 13px;
+  color: var(--cf-muted);
+}
+.cf-main button {
+  font: inherit;
+  padding: 8px 14px;
+  border: 1px solid var(--cf-green);
+  border-radius: 4px;
+  background: var(--cf-green);
+  color: white;
+  cursor: pointer;
+}
+.cf-main button.secondary {
+  background: white;
+  color: var(--cf-green);
+}
+.cf-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.cf-main input[type="number"],
+.cf-main input[type="text"],
+.cf-main select,
+.cf-main textarea {
+  font: inherit;
+  padding: 6px;
+  border: 1px solid #a6b7b2;
+  border-radius: 3px;
+  max-width: 100%;
+  background: white;
+  color: var(--cf-ink);
+}
+.cf-main textarea {
+  width: 100%;
+  min-height: 180px;
+}
+.cf-main input[type="checkbox"],
+.cf-main input[type="radio"] {
+  accent-color: var(--cf-green);
+}
+.cf-tablewrap {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+.cf-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.cf-table th,
+.cf-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--cf-line);
+  text-align: right;
+  white-space: nowrap;
+}
+.cf-table th:first-child,
+.cf-table td:first-child {
+  text-align: left;
+}
+.cf-table th {
+  background: #f3f7f5;
+  color: var(--cf-muted);
+}
+.cf-table input {
+  width: 74px;
+}
+.cf-table .wide {
+  width: 130px;
+}
+.cf-critical {
+  background: #edf7f1;
+}
+.cf-infeasible {
+  color: #777;
+}
+.cf-note {
+  border-left: 3px solid var(--cf-gold);
+  padding: 10px 14px;
+  background: #fbf8ef;
+  margin: 16px 0;
+}
+.cf-error {
+  color: var(--cf-red);
+  font-weight: 600;
+  min-height: 1.5em;
+}
+.cf-chart {
+  display: block;
+  width: 100%;
+  height: 290px;
+  border-bottom: 1px solid var(--cf-line);
+  margin: 14px 0;
+}
+.cf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.cf-questions fieldset {
+  border: 0;
+  padding: 12px 0;
+  margin: 0;
+}
+.cf-questions legend {
+  font-weight: 600;
+}
+.cf-questions label {
+  display: block;
+  padding: 5px 0;
+}
+.cf-questions p {
+  min-height: 1.5em;
+}
+.cf-main details {
+  padding: 12px 0;
+}
+.cf-main summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.cf-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 24px;
+  font-size: 14px;
+}
+.cf-tree {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.cf-tree ul {
+  padding-left: 22px;
+  border-left: 3px solid var(--cf-blue);
+}
+.cf-tree li {
+  padding: 5px 0;
+}
+:focus-visible {
+  outline: 3px solid #bc851f;
+  outline-offset: 3px;
+}
+button,
+input,
+select {
+  min-height: 36px;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  min-height: auto;
+}
+body .kicker,
+body .course,
+body .week {
+  color: var(--cf-green);
+}
+body .button {
+  background: var(--cf-green);
+}
+.cf-network {
+  display: block;
+  min-width: 720px;
+  width: 100%;
+  height: 240px;
+}
+#gantt {
+  min-height: 290px;
+}
+@media (max-width: 640px) {
+  .cf-main {
+    padding: 22px 16px 40px;
+  }
+  .cf-head h1 {
+    font-size: 24px;
+  }
+  .cf-grid {
+    grid-template-columns: 1fr;
+  }
+  .cf-nav {
+    gap: 8px;
+  }
+  .cf-wordmark {
+    width: 100%;
+  }
+  .cf-chart {
+    height: 240px;
+  }
+  .cf-metric strong {
+    font-size: 22px;
+  }
+}

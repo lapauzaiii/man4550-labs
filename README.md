@@ -2,6 +2,70 @@
 
 Interactive lab pages for MAN4550: Introduction to Management Science.
 
+## Cowford Lab Sequence
+
+Student-facing, buildless HTML tools hosted from `main` on GitHub Pages. The
+Notion planner holds the corresponding lab specifications and instructor talk
+tracks. AI assignments and transcript submissions are retired.
+
+| Week | Stable Route | Experience |
+| --- | --- | --- |
+| 5 | `week5/` | Sensitivity: Logistics introduction and PS staffing |
+| 6 | `week6/` | Integer programming; existing W6.D solver remains available |
+| 7 | `week7/` | Midterm practice; redirects to the preserved `midterm-prep/` route |
+| 8 | `week8/` | Transportation and transshipment |
+| 9 | `week9/` | Properties renovation: editable activity network and schedule |
+| 10 | `week10/` | Verified Logistics PERT network and beta-PERT simulation |
+| 11 | `week11/` | Simple regression: guided forecast and editable classroom sample |
+| 12 | `week12/` | Multiple regression: guided forecast, editable data and diagnostics |
+| 13 | `week13/` | Canonical warehouse payoff table, EMV, EVPI, regret and tree rollback |
+| 14 | `week14/` | Exhaustive binary capital allocation and schedule-risk sensitivity |
+
+Every hosted lab includes shared Cowford navigation. Earlier URLs, including
+version query strings and `week6/w6d-cowford-properties-solver.html`, remain valid.
+Weeks 1-4 have no hosted lab routes in this repository; navigation lists the
+available hosted sequence rather than creating empty destinations.
+
+### Numerical Contracts
+
+- PERT baseline: expected duration `56/3` weeks, critical path A-B-C-G-H-I,
+  variance `1.5`, SD `sqrt(1.5)`, P(T <= 20) `0.8618485413` (rounded `.862`).
+- Week 9 relabels the same numeric network for a Properties renovation.
+- Week 10 simulation uses independent bounded beta-PERT distributions with
+  shape weight 4 and recomputes paths each trial. These activity variances can
+  differ from textbook PERT approximations. Fixed seeds reproduce samples.
+- Week 11 supplied equation: `8.40 + 22.50X`, X in thousands of square feet,
+  Y in thousands of annual dollars. Week 12: `14.20 + .018X1 + 2.85X2 - .31X3`,
+  raw square feet, location score, age; Y is annual dollars per square foot.
+- Editable regression data are explicitly synthetic, separate from the
+  supplied case equations and the unavailable original 35-lease dataset.
+- Week 13 EMVs: `354.5`, `361.5`, `178.5` ($K); EVPI `192` ($K).
+- Week 14 canonical p is the rounded `.862`; LOG NPV `289.24`, LOG+PRP
+  `644.24`, PRP+PS `595`, crossover p `1 - 190/1020`. LOG+PRP remains preferred.
+- The late-project loss is treated as incremental and excluded from base
+  payoffs. Week 14 treats it as NPV-equivalent for instructional consistency;
+  real cash flows require discounting and checks against double counting.
+
+### Maintenance and Verification
+
+Shared identity is in `assets/css/cowford.css` and `assets/js/cowford-nav.js`.
+Weeks 9-14 share `assets/js/models.js` and `assets/js/labs.js`; week pages only
+declare their topic and week. Vendored jStat 1.9.6 supplies QR least squares,
+distribution functions, and inferential statistics; its MIT license is included
+in `assets/vendor/jstat-LICENSE`. All runtime assets are local to the repository.
+
+Run numerical contracts with `node tests/models.test.js`. Run browser checks
+with `node tests/browser.cjs` in an environment with Playwright and Chromium;
+optional `PLAYWRIGHT_MODULE` and `CHROMIUM_PATH` select installed runtimes.
+Browser checks use an ephemeral local server and verify interactions, routes,
+chart pixels, and desktop/mobile overflow. They save QA screenshots to the
+system temporary directory, not the published site.
+
+The Canvas iframe pattern below also applies to Weeks 9-14: replace the week
+route and provide a descriptive `title`. Allow vertical scrolling for the
+longer editable regression labs. Do not copy faculty-only answer keys or talk
+tracks into a student-facing module.
+
 ## Current Labs
 
 - Week 5.E: Interactive Sensitivity Lab (`week5/`)
