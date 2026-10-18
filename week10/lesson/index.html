@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>W10 Lesson - Will the Warehouse Be Ready?</title>
+<meta name="description" content="MAN 4550 Week 10 self-paced lesson: PERT variance, deadline probability, commitment dates, and communicating schedule risk on the Cowford warehouse network.">
+<style>
+/* Layout: one reading column like a site binder; worked steps sit in drafting-table panels; numbers in mono. */
+:root {
+  --paper: #f4f6f7;
+  --panel: #ffffff;
+  --tint: #e6edf2;
+  --ink: #16212a;
+  --muted: #55636e;
+  --line: #d3dbe1;
+  --blue: #1d5c87;
+  --blue-soft: rgba(29, 92, 135, 0.22);
+  --amber: #b86a06;
+  --amber-soft: rgba(199, 119, 10, 0.18);
+  --good: #2c7a4b;
+  --bad: #ad3d2a;
+  --font-display: "Avenir Next Condensed", "Avenir Next", "Segoe UI", "Roboto Condensed", Arial, sans-serif;
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f161b; --panel: #162028; --tint: #1b2933; --ink: #e5ecf0; --muted: #9babb6;
+    --line: #2a3742; --blue: #74b3de; --blue-soft: rgba(116, 179, 222, 0.24); --amber: #f0a43c;
+    --amber-soft: rgba(240, 164, 60, 0.2); --good: #6cc392; --bad: #f08b75; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f161b; --panel: #162028; --tint: #1b2933; --ink: #e5ecf0; --muted: #9babb6;
+  --line: #2a3742; --blue: #74b3de; --blue-soft: rgba(116, 179, 222, 0.24); --amber: #f0a43c;
+  --amber-soft: rgba(240, 164, 60, 0.2); --good: #6cc392; --bad: #f08b75; color-scheme: dark;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 4rem;
+}
+.wrap { max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; gap: 3.25rem; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.08; text-wrap: balance; margin: 0; letter-spacing: 0.005em; }
+h1 { font-size: clamp(2.6rem, 8vw, 3.8rem); }
+h2 { font-size: clamp(1.75rem, 5vw, 2.2rem); }
+h3 { font-size: 1.3rem; }
+p { margin: 0; }
+a { color: var(--blue); text-underline-offset: 0.18em; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+header { padding-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 2rem; }
+.lede { font-size: 1.2rem; color: var(--ink); max-width: 38rem; }
+.notice { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+.notice span { white-space: nowrap; }
+.toc { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.35rem 1.5rem; font-size: 0.95rem; }
+.toc a { text-decoration: none; color: var(--ink); display: flex; gap: 0.6rem; align-items: baseline; }
+.toc a:hover { color: var(--blue); }
+.toc .n { font-family: var(--font-mono); color: var(--amber); font-size: 0.82rem; min-width: 1.4rem; }
+
+/* Sections */
+section { display: flex; flex-direction: column; gap: 1.1rem; scroll-margin-top: 1rem; }
+.sec-head { display: flex; flex-direction: column; gap: 0.35rem; }
+.step { font-family: var(--font-mono); font-size: 0.8rem; color: var(--amber); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* Panels */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.panel h3 { font-size: 1.15rem; }
+.callout { border-left: 3px solid var(--blue); background: var(--tint); padding: 0.9rem 1rem; border-radius: 0 4px 4px 0; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.98rem; }
+.callout.warn { border-left-color: var(--amber); }
+.callout strong { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.02em; }
+.formula { font-family: var(--font-mono); font-size: 0.98rem; background: var(--tint); border-radius: 4px; padding: 0.7rem 0.9rem; overflow-wrap: anywhere; }
+
+/* Choices and inputs */
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+legend { font-weight: 600; margin-bottom: 0.4rem; padding: 0; }
+.opt { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; background: var(--panel); }
+.opt:hover { border-color: var(--blue); }
+.opt input { margin-top: 0.35rem; accent-color: var(--blue); flex: none; }
+.opt.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 10%, var(--panel)); }
+.opt.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 8%, var(--panel)); }
+.fb { font-size: 0.97rem; padding: 0.7rem 0.9rem; border-radius: 4px; background: var(--tint); }
+.fb.ok { border-left: 3px solid var(--good); }
+.fb.no { border-left: 3px solid var(--bad); }
+button { font: 600 0.95rem var(--font-body); color: var(--paper); background: var(--blue); border: 0; border-radius: 4px; padding: 0.55rem 1rem; cursor: pointer; }
+button.ghost { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+button.chip { background: var(--tint); color: var(--ink); border: 1px solid var(--line); font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; padding: 0.35rem 0.7rem; }
+button.chip[aria-pressed="true"] { background: var(--blue); color: var(--paper); border-color: var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.entry { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.entry label { font-weight: 600; }
+.entry input[type="number"] { font: 500 1rem var(--font-mono); width: 7rem; padding: 0.45rem 0.55rem; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+.slider { display: flex; flex-direction: column; gap: 0.3rem; }
+.slider label { display: flex; justify-content: space-between; gap: 1rem; font-weight: 600; }
+.slider label .num { font-weight: 500; color: var(--blue); }
+
+/* Readouts */
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 0.6rem; }
+.ro { background: var(--tint); border-radius: 4px; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.ro .k { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ro .v { font-family: var(--font-mono); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.ro.hi .v { color: var(--blue); }
+
+/* Tables and figures */
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; min-width: 34rem; }
+th, td { text-align: left; padding: 0.42rem 0.55rem; border-bottom: 1px solid var(--line); }
+th { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.num, th.num { text-align: right; }
+tr.crit td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
+tr.crit td { background: var(--amber-soft); }
+.tag { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.1rem 0.4rem; border-radius: 3px; background: var(--amber); color: var(--panel); }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: var(--font-mono); fill: var(--ink); }
+svg .lbl { fill: var(--muted); font-size: 11px; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.sw { display: inline-block; width: 0.9rem; height: 0.5rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: middle; }
+
+/* Variance stack */
+.stack { display: flex; height: 2.2rem; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+.stack div { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--panel); background: var(--amber); border-right: 1px solid var(--panel); min-width: 0; transition: flex-grow 0.5s ease; }
+.stack div:last-child { border-right: 0; }
+.stack div:nth-child(even) { background: color-mix(in srgb, var(--amber) 72%, var(--ink)); }
+
+/* Comparison */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.75rem; }
+.promise { border: 1px solid var(--line); border-radius: 5px; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.promise .big { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; }
+.promise.safe .big { color: var(--good); }
+.promise.risky .big { color: var(--bad); }
+.meter { height: 0.5rem; background: var(--tint); border-radius: 999px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--muted); border-radius: 999px; }
+.promise.safe .meter i { background: var(--good); }
+.promise.risky .meter i { background: var(--bad); }
+
+/* Checklist */
+.week { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.week li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.75rem; align-items: baseline; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+.week .kind { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.week .kind.g { color: var(--amber); }
+.week .kind.p { color: var(--muted); }
+.ref { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.6rem; }
+.ref div { background: var(--tint); border-radius: 4px; padding: 0.7rem 0.85rem; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.ref .k { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.ref .f { font-family: var(--font-mono); font-size: 0.92rem; overflow-x: auto; white-space: nowrap; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 1.2rem; }
+
+
+/* Shared Cowford navigation (assets/js/cowford-nav.js), themed with this page's tokens */
+.cf-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); font: 0.85rem var(--font-display); max-width: 44rem; margin: 0 auto; }
+.cf-nav a { color: var(--ink); }
+.cf-wordmark { font-weight: 700; text-decoration: none; margin-right: auto; display: flex; align-items: center; gap: 0.5rem; }
+.cf-wordmark img { width: 28px; height: auto; }
+.cf-muted { color: var(--muted); }
+.cf-nav select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0.25rem 0.4rem; max-width: 100%; }
+.cf-footer { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; font-family: var(--font-display); }
+
+@media (max-width: 30rem) {
+  .week li { grid-template-columns: 1fr; gap: 0.2rem; }
+  body { font-size: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+<script defer src="../../assets/js/cowford-nav.js"></script>
+</head>
+<body data-week="10">
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">MAN 4550 · Week 10 · Project Scheduling with Uncertainty</span>
+  <h1>Will the Warehouse Be Ready?</h1>
+  <p class="lede">Last week you found the critical path for Cowford Logistics' warehouse expansion: 18.67 weeks. This week you'll find out how much that number can be trusted, and how to make a promise you can keep.</p>
+  <div class="notice"><span>Replaces this week's class session</span><span>About 45 minutes</span><span>Practice only · nothing here is graded</span></div>
+  <ol class="toc" aria-label="Lesson sections">
+    <li><a href="#s1"><span class="n">1</span>An expected date is not a promise</a></li>
+    <li><a href="#s2"><span class="n">2</span>Where the uncertainty lives</a></li>
+    <li><a href="#s3"><span class="n">3</span>Add variances, then take the root</a></li>
+    <li><a href="#s4"><span class="n">4</span>Turn a deadline into a probability</a></li>
+    <li><a href="#s5"><span class="n">5</span>Choose a date you can stand behind</a></li>
+    <li><a href="#s6"><span class="n">6</span>What actually changes the odds</a></li>
+    <li><a href="#s7"><span class="n">7</span>Tell the board</a></li>
+    <li><a href="#s8"><span class="n">8</span>Check yourself, then your week</a></li>
+  </ol>
+</header>
+
+<!-- 1 -->
+<section id="s1" aria-labelledby="h1s">
+  <div class="sec-head"><span class="step">Part 1</span><h2 id="h1s">An expected date is not a promise</h2></div>
+  <p>Your GPS says you'll arrive in 20 minutes. That's the critical path method: one number, as if nothing will go wrong. Google Maps at rush hour says 20 to 35 minutes depending on traffic. That's PERT. Same trip, a more honest picture of it.</p>
+  <p>Big projects show why the honest picture matters. Brightline began planning its Miami–Orlando rail line in 2012 and started construction in 2015. Trains to Orlando began running in September 2023. Each piece was planned with a duration; the uncertainty in those durations added up to years.</p>
+  <div class="panel">
+    <fieldset id="predict">
+      <legend>Make a prediction. The warehouse's expected duration is 18.67 weeks. Leadership wants to promise the client completion in 19 weeks. How likely is Cowford to keep that promise?</legend>
+      <label class="opt"><input type="radio" name="pred" value="95"> About 95%. It's a third of a week of cushion.</label>
+      <label class="opt"><input type="radio" name="pred" value="75"> About 75%.</label>
+      <label class="opt"><input type="radio" name="pred" value="61"> About 61%.</label>
+      <label class="opt"><input type="radio" name="pred" value="50"> About 50%.</label>
+    </fieldset>
+    <div class="row"><button type="button" id="predBtn">Lock in my prediction</button></div>
+    <p class="fb" id="predFb" hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2" aria-labelledby="h2s">
+  <div class="sec-head"><span class="step">Part 2</span><h2 id="h2s">Where the uncertainty lives</h2></div>
+  <p>PERT asks for three estimates of each activity: optimistic (<span class="mono">a</span>), most likely (<span class="mono">m</span>), and pessimistic (<span class="mono">b</span>). From them you get an expected time and a variance. The variance measures how wide the range is: how unsure we are about that activity.</p>
+  <div class="formula">Expected time = (a + 4m + b) ÷ 6 &nbsp;&nbsp;·&nbsp;&nbsp; Variance = ((b − a) ÷ 6)²</div>
+  <div class="panel">
+    <h3>The Week 9 network</h3>
+    <div class="scroll"><svg id="net" viewBox="0 0 680 250" role="img" aria-label="Project network. Critical path A, B, C, G, H, I is highlighted. D, E, and F are off the critical path."></svg></div>
+    <div class="legend"><span><i class="sw" style="background:var(--amber)"></i>Critical path, 18.67 weeks</span><span><i class="sw" style="background:var(--line)"></i>Has float</span><span>Number under each activity = expected weeks</span></div>
+    <div class="scroll">
+      <table aria-label="Activity estimates">
+        <thead><tr><th>Act.</th><th>Description</th><th class="num">a</th><th class="num">m</th><th class="num">b</th><th class="num">Expected</th><th class="num">Variance</th></tr></thead>
+        <tbody id="actRows"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="entry">
+      <label for="teG">Try one. What is Activity G's expected time (a = 3, m = 4, b = 8)?</label>
+      <input id="teG" type="number" step="0.01" inputmode="decimal" placeholder="weeks">
+      <button type="button" id="teGBtn" class="ghost">Check</button>
+    </div>
+    <p class="fb" id="teGFb" hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="s3" aria-labelledby="h3s">
+  <div class="sec-head"><span class="step">Part 3 · Calculate</span><h2 id="h3s">Add variances, then take the square root</h2></div>
+  <p>The finish date depends on the critical path, so the project's uncertainty comes from the activities on it. Add their variances to get the project variance. Then take the square root to get the project's standard deviation, which is back in weeks.</p>
+  <div class="panel">
+    <h3>Critical-path variances</h3>
+    <div class="stack" id="stack" aria-hidden="true"></div>
+    <div class="readouts">
+      <div class="ro"><span class="k">Project variance</span><span class="v" id="varSum">0.111 + 0.111 + 0.444 + 0.694 + 0.111 + 0.028</span></div>
+    </div>
+    <div class="entry">
+      <label for="sdIn">The variances sum to 1.50. What is the project standard deviation?</label>
+      <input id="sdIn" type="number" step="0.01" inputmode="decimal" placeholder="weeks">
+      <button type="button" id="sdBtn" class="ghost">Check</button>
+    </div>
+    <p class="fb" id="sdFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="callout warn">
+    <strong>Two mistakes that inflate the risk</strong>
+    <p><b>Adding standard deviations.</b> The six critical activities' standard deviations add to 2.67 weeks, more than double the correct 1.22. Variances of independent activities add; standard deviations don't.</p>
+    <p><b>Including every activity.</b> Adding D, E, and F's variances too gives 2.11 and a standard deviation of 1.45 weeks. Those activities have float, so they don't set the finish date.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4" aria-labelledby="h4s">
+  <div class="sec-head"><span class="step">Part 4 · Calculate</span><h2 id="h4s">Turn a deadline into a probability</h2></div>
+  <p>PERT treats the finish date as roughly normal, centered on 18.67 weeks with a standard deviation of 1.22. The Z-score says how many standard deviations the deadline sits past the expected finish. The normal table (or Excel) turns Z into the probability of finishing by the deadline.</p>
+  <div class="formula">Z = (deadline − 18.67) ÷ 1.22 &nbsp;&nbsp;·&nbsp;&nbsp; Excel: =NORM.S.DIST(Z, TRUE)</div>
+  <div class="panel">
+    <h3>Move the deadline</h3>
+    <div class="scroll"><svg id="curve" viewBox="0 0 640 230" role="img" aria-label="Normal curve of possible finish dates with the area before the deadline shaded."></svg></div>
+    <div class="legend"><span><i class="sw" style="background:var(--blue-soft);border:1px solid var(--blue)"></i>Finishes by the deadline</span><span><i class="sw" style="background:var(--amber-soft);border:1px solid var(--amber)"></i>Runs late</span></div>
+    <div class="slider">
+      <label for="dl">Deadline <span class="num" id="dlOut">20.0 weeks</span></label>
+      <input id="dl" type="range" min="16" max="22" step="0.1" value="20">
+    </div>
+    <div class="row" role="group" aria-label="Preset deadlines">
+      <button type="button" class="chip" data-dl="18">18 wk</button>
+      <button type="button" class="chip" data-dl="19">19 wk</button>
+      <button type="button" class="chip" data-dl="20">20 wk · Nov 15</button>
+      <button type="button" class="chip" data-dl="21">21 wk</button>
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro"><span class="k">Z</span><span class="v" id="zOut">1.09</span></div>
+      <div class="ro hi"><span class="k">P(on time)</span><span class="v" id="pOut">86.2%</span></div>
+      <div class="ro"><span class="k">P(late)</span><span class="v" id="lOut">13.8%</span></div>
+    </div>
+    <p id="dlNote" class="fb"></p>
+  </div>
+  <p>The client's contract requires completion by <b>November 15, which is 20 weeks after the project starts</b>. That gives Z = 1.09 and about an 86% chance of finishing on time. Now set the slider to 19 weeks and check your prediction from Part 1.</p>
+</section>
+
+<!-- 5 -->
+<section id="s5" aria-labelledby="h5s">
+  <div class="sec-head"><span class="step">Part 5 · Decide</span><h2 id="h5s">Choose a date you can stand behind</h2></div>
+  <p>Part 4 started with a date and found the probability. Managers often need the reverse: start with how confident they need to be, and find the date. Look up the z for that confidence level and add that many standard deviations to the expected finish.</p>
+  <div class="formula">Commitment date = 18.67 + z × 1.22 &nbsp;&nbsp;·&nbsp;&nbsp; 80%: z = 0.84 · 90%: z = 1.28 · 95%: z = 1.645</div>
+  <div class="panel">
+    <div class="slider">
+      <label for="conf">Confidence leadership needs <span class="num" id="confOut">90%</span></label>
+      <input id="conf" type="range" min="50" max="99" step="1" value="90">
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro"><span class="k">z</span><span class="v" id="czOut">1.28</span></div>
+      <div class="ro hi"><span class="k">Commit to</span><span class="v" id="cdOut">20.2 wk</span></div>
+      <div class="ro"><span class="k">Buffer</span><span class="v" id="cbOut">+1.6 wk</span></div>
+    </div>
+  </div>
+  <div class="compare">
+    <div class="promise risky"><span class="eyebrow">Promise 19 weeks</span><span class="big num">61%</span><div class="meter"><i style="width:61%"></i></div><p>Kept about 6 times in 10.</p></div>
+    <div class="promise safe"><span class="eyebrow">Promise 20.2 weeks</span><span class="big num">90%</span><div class="meter"><i style="width:90%"></i></div><p>Kept about 9 times in 10.</p></div>
+  </div>
+  <div class="callout">
+    <strong>A later promise buys reliability, not speed</strong>
+    <p>Nothing about the project changed between those two cards. Same activities, same expected finish. The only thing that moved is the promise. A promise set at the expected duration is kept only half the time, which is why commitments are set at a higher percentile.</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="s6" aria-labelledby="h6s">
+  <div class="sec-head"><span class="step">Part 6 · Interpret</span><h2 id="h6s">What actually changes the odds</h2></div>
+  <p>Moving the deadline changes the promise. To change the project itself, a manager has two levers on the critical path: make it shorter, or make it more predictable. Activity G, the HVAC install, is the obvious place to start. It is on the critical path and carries the largest variance, 0.69 of the 1.50 total.</p>
+  <div class="panel">
+    <h3>Try both levers against the November 15 deadline</h3>
+    <div class="row" role="group" aria-label="Project changes">
+      <button type="button" class="chip" id="lvExp" aria-pressed="false">Expedite G by 1 week</button>
+      <button type="button" class="chip" id="lvNar" aria-pressed="false">Narrow G's estimate</button>
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro"><span class="k">Expected finish</span><span class="v" id="lvMu">18.67 wk</span></div>
+      <div class="ro"><span class="k">Std. deviation</span><span class="v" id="lvSd">1.22 wk</span></div>
+      <div class="ro hi"><span class="k">P(by Nov 15)</span><span class="v" id="lvP">86.2%</span></div>
+    </div>
+    <p class="fb" id="lvNote">Start with the baseline: an 86% chance of finishing by November 15.</p>
+  </div>
+  <div class="callout warn">
+    <strong>What this calculation assumes</strong>
+    <p>That activity times are independent, so one delay doesn't cause another. That the total is roughly normal. And that the critical path stays the critical path. When a near-critical path like D's runs long, it can take over, and the real risk is higher than PERT says. The Week 10 lab shows this by simulating the project thousands of times.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="s7" aria-labelledby="h7s">
+  <div class="sec-head"><span class="step">Part 7 · Communicate</span><h2 id="h7s">Tell the board</h2></div>
+  <p>The schedule isn't only Logistics' problem. Cowford Professional Services has a three-year client contract, $340,000 a year, that is voided if the warehouse misses November 15. So an 86% chance of finishing on time is also a 14% chance that another division loses a client.</p>
+  <div class="panel">
+    <fieldset id="msg">
+      <legend>The Professional Services division head asks: "Will the warehouse be ready by November 15?" Which answer would you give?</legend>
+      <label class="opt"><input type="radio" name="msg" value="a"> "Yes. The schedule shows completion in about 18.7 weeks, so we have room to spare."</label>
+      <label class="opt"><input type="radio" name="msg" value="b"> "Probably. We have about an 86% chance of finishing by November 15, which leaves about a 1-in-7 chance of missing it. We can improve those odds by managing the HVAC install more closely, and I'll tell you right away if it starts to slip."</label>
+      <label class="opt"><input type="radio" name="msg" value="c"> "There's real uncertainty, so I can't commit to anything until the project is further along."</label>
+    </fieldset>
+    <p class="fb" id="msgFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="callout">
+    <strong>A different question, for Week 13</strong>
+    <p>Whether the expansion is worth its $950,000 cost is a separate decision. Answering it properly needs the contract's profit margin rather than its revenue, the timing of the cash flows, and the other options on the table. Week 13's decision analysis takes it up, with this week's probability as one of the inputs.</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section id="s8" aria-labelledby="h8s">
+  <div class="sec-head"><span class="step">Part 8</span><h2 id="h8s">Check yourself, then your week</h2></div>
+  <div class="panel" id="quiz"></div>
+  <div class="panel">
+    <h3>Key formulas</h3>
+    <div class="ref">
+      <div><span class="k">Expected time</span><span class="f">(a + 4m + b) ÷ 6</span></div>
+      <div><span class="k">Activity variance</span><span class="f">((b − a) ÷ 6)²</span></div>
+      <div><span class="k">Project std. deviation</span><span class="f">√(sum of critical-path variances)</span></div>
+      <div><span class="k">Z for a deadline</span><span class="f">(deadline − expected) ÷ SD</span></div>
+      <div><span class="k">Commitment date</span><span class="f">expected + z × SD</span></div>
+      <div><span class="k">Warehouse numbers</span><span class="f">18.67 wk · SD 1.22 · 86% by 20 wk</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>This week in Canvas</h3>
+    <ul class="week">
+      <li><span class="kind p">Practice</span><span><b>W10.C Concept Check.</b> Unlimited attempts, with feedback after each one.</span></li>
+      <li><span class="kind p">Practice</span><span><b>W10.E Warehouse Schedule Risk lab.</b> Run the simulator and compare it with what you calculated here. <a href="../">Open the lab</a></span></li>
+      <li><span class="kind g">Graded</span><span><b>Case Study 10 (W10.D).</b> 100 points, 30 minutes, one attempt. Uses the same warehouse network.</span></li>
+      <li><span class="kind g">Graded</span><span><b>Quiz 3, Weeks 8–10.</b> 100 points, 45 minutes, one attempt.</span></li>
+    </ul>
+    <p>Due dates are in Canvas.</p>
+  </div>
+</section>
+
+<footer>MAN 4550 Introduction to Management Science · Cowford Holdings case · Reading: Taylor, Introduction to Management Science, Ch. 8 (probabilistic activity times).</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var MU = 18 + 2 / 3, VAR = 1.5, SD = Math.sqrt(VAR);
+  var $ = function (id) { return document.getElementById(id); };
+
+  // Normal distribution helpers
+  function erf(x) {
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var t = 1 / (1 + 0.3275911 * x);
+    var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return s * y;
+  }
+  function phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  function invPhi(p) {
+    var a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239];
+    var b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+    var c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+    var d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+    var pl = 0.02425, q, r;
+    if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    if (p > 1 - pl) { q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+    q = p - 0.5; r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+  }
+  function pct(p) { return (p * 100).toFixed(1) + "%"; }
+  function f2(x) { return (Math.round(x * 100) / 100).toFixed(2); }
+
+  // Part 1 prediction
+  var prediction = null;
+  $("predBtn").addEventListener("click", function () {
+    var c = document.querySelector('input[name="pred"]:checked');
+    var fb = $("predFb");
+    fb.hidden = false;
+    if (!c) { fb.className = "fb no"; fb.textContent = "Pick one of the four options first."; return; }
+    prediction = c.value;
+    fb.className = "fb";
+    fb.textContent = "Locked in: about " + prediction + "%. You'll calculate the real answer in Part 4.";
+  });
+
+  // Part 2 network and table
+  var acts = [
+    ["A", "Site prep and permitting", 2, 3, 4, true, 50, 125],
+    ["B", "Structural engineering review", 1, 2, 3, true, 165, 70],
+    ["E", "Racking procurement", 2, 3, 5, false, 165, 190],
+    ["C", "Foundation and structural work", 3, 5, 7, true, 285, 55],
+    ["D", "Electrical and utility rough-in", 4, 4, 6, false, 285, 150],
+    ["F", "Racking installation", 1, 2, 4, false, 405, 190],
+    ["G", "HVAC and climate control", 3, 4, 8, true, 405, 90],
+    ["H", "Final inspections", 2, 3, 4, true, 520, 125],
+    ["I", "Handover and staff training", 1, 1, 2, true, 630, 125]
+  ];
+  var byId = {};
+  acts.forEach(function (r) { byId[r[0]] = r; });
+  var rows = "";
+  ["A", "B", "C", "D", "E", "F", "G", "H", "I"].forEach(function (k) {
+    var r = byId[k], te = (r[2] + 4 * r[3] + r[4]) / 6, v = Math.pow((r[4] - r[2]) / 6, 2);
+    rows += '<tr class="' + (r[5] ? "crit" : "") + '"><td class="mono">' + k + (r[5] ? ' <span class="tag">CP</span>' : "") + "</td><td>" + r[1] + '</td><td class="num">' + r[2] + '</td><td class="num">' + r[3] + '</td><td class="num">' + r[4] + '</td><td class="num">' + te.toFixed(2) + '</td><td class="num">' + v.toFixed(3) + "</td></tr>";
+  });
+  $("actRows").innerHTML = rows;
+
+  var edges = [["A", "B", 1], ["A", "E", 0], ["B", "C", 1], ["B", "D", 0], ["C", "F", 0], ["E", "F", 0], ["C", "G", 1], ["D", "G", 0], ["F", "H", 0], ["G", "H", 1], ["H", "I", 1]];
+  var ns = "http://www.w3.org/2000/svg", net = $("net");
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(ns, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    (parent || net).appendChild(e);
+    return e;
+  }
+  edges.forEach(function (e) {
+    var p = byId[e[0]], q = byId[e[1]];
+    var dx = q[6] - p[6], dy = q[7] - p[7], len = Math.sqrt(dx * dx + dy * dy), ux = dx / len, uy = dy / len;
+    el("line", { x1: p[6] + ux * 24, y1: p[7] + uy * 24, x2: q[6] - ux * 27, y2: q[7] - uy * 27, stroke: e[2] ? "var(--amber)" : "var(--line)", "stroke-width": e[2] ? 3.5 : 2, "marker-end": e[2] ? "url(#ahc)" : "url(#ah)" });
+  });
+  var defs = el("defs", {});
+  [["ah", "var(--line)"], ["ahc", "var(--amber)"]].forEach(function (m) {
+    var mk = el("marker", { id: m[0], viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto-start-reverse" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: m[1] }, mk);
+  });
+  acts.forEach(function (r) {
+    var te = (r[2] + 4 * r[3] + r[4]) / 6;
+    el("circle", { cx: r[6], cy: r[7], r: 22, fill: "var(--panel)", stroke: r[5] ? "var(--amber)" : "var(--muted)", "stroke-width": r[5] ? 3.5 : 1.5 });
+    var t = el("text", { x: r[6], y: r[7] + 6, "text-anchor": "middle", "font-size": 17, "font-weight": 500 }); t.textContent = r[0];
+    var s = el("text", { x: r[6], y: r[7] + 40, "text-anchor": "middle", class: "lbl" }); s.textContent = te.toFixed(2);
+  });
+
+  function check(inputId, btnId, fbId, target, tol, okMsg, hint) {
+    $(btnId).addEventListener("click", function () {
+      var v = parseFloat($(inputId).value), fb = $(fbId);
+      fb.hidden = false;
+      if (isNaN(v)) { fb.className = "fb no"; fb.textContent = "Enter a number first."; return; }
+      if (Math.abs(v - target) <= tol) { fb.className = "fb ok"; fb.textContent = okMsg; }
+      else { fb.className = "fb no"; fb.textContent = hint(v); }
+    });
+  }
+  check("teG", "teGBtn", "teGFb", 4.5, 0.02, "Right: (3 + 4×4 + 8) ÷ 6 = 27 ÷ 6 = 4.5 weeks.", function (v) {
+    if (Math.abs(v - 5) < 0.02) return "That's the simple average of 3, 4, and 8. PERT weights the most likely estimate four times: (3 + 16 + 8) ÷ 6.";
+    return "Not quite. Multiply the most likely time by 4, add a and b, and divide by 6.";
+  });
+  check("sdIn", "sdBtn", "sdFb", 1.22, 0.015, "Right: √1.50 = 1.22 weeks. That's the number every probability this week is built on.", function (v) {
+    if (Math.abs(v - 1.5) < 0.02) return "1.50 is the variance. Take its square root to get back to weeks.";
+    if (Math.abs(v - 2.25) < 0.02) return "That squares 1.50. You want the square root instead.";
+    return "Not quite. Take the square root of 1.50.";
+  });
+
+  // Part 3 variance stack
+  var cp = ["A", "B", "C", "G", "H", "I"], stack = $("stack");
+  cp.forEach(function (k) {
+    var r = byId[k], v = Math.pow((r[4] - r[2]) / 6, 2), d = document.createElement("div");
+    d.style.flexGrow = v; d.style.flexBasis = "0"; d.textContent = v > 0.08 ? k : ""; d.title = k + ": " + v.toFixed(3);
+    stack.appendChild(d);
+  });
+  $("varSum").textContent = "1.50";
+
+  // Part 4 normal curve
+  var curve = $("curve"), X0 = 14.5, X1 = 23, W = 640, H = 230, L = 30, R = 20, T = 14, B = 34;
+  function sx(x) { return L + (x - X0) / (X1 - X0) * (W - L - R); }
+  var pdfMax = 1 / (SD * Math.sqrt(2 * Math.PI));
+  function sy(y) { return H - B - y / pdfMax * (H - T - B); }
+  function pdf(x) { return Math.exp(-0.5 * Math.pow((x - MU) / SD, 2)) / (SD * Math.sqrt(2 * Math.PI)); }
+  function cel(tag, attrs) { var e = document.createElementNS(ns, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); curve.appendChild(e); return e; }
+  var lateArea = cel("path", { fill: "var(--amber-soft)", stroke: "none" });
+  var onArea = cel("path", { fill: "var(--blue-soft)", stroke: "none" });
+  var line = "";
+  for (var x = X0; x <= X1 + 1e-9; x += 0.05) line += (line ? "L" : "M") + sx(x).toFixed(1) + "," + sy(pdf(x)).toFixed(1);
+  cel("path", { d: line, fill: "none", stroke: "var(--ink)", "stroke-width": 2 });
+  cel("line", { x1: L, y1: H - B, x2: W - R, y2: H - B, stroke: "var(--muted)", "stroke-width": 1 });
+  for (var w = 15; w <= 23; w++) {
+    cel("line", { x1: sx(w), y1: H - B, x2: sx(w), y2: H - B + 5, stroke: "var(--muted)" });
+    var tl = cel("text", { x: sx(w), y: H - B + 19, "text-anchor": "middle", class: "lbl" }); tl.textContent = w;
+  }
+  var wl = cel("text", { x: W - R, y: H - 3, "text-anchor": "end", class: "lbl" }); wl.textContent = "weeks after start";
+  cel("line", { x1: sx(MU), y1: T, x2: sx(MU), y2: H - B, stroke: "var(--muted)", "stroke-dasharray": "4 4" });
+  var ml = cel("text", { x: sx(MU) - 6, y: T + 10, "text-anchor": "end", class: "lbl" }); ml.textContent = "expected 18.67";
+  var dLine = cel("line", { y1: T, y2: H - B, stroke: "var(--blue)", "stroke-width": 2.5 });
+  var dLab = cel("text", { y: T + 10, "font-size": 12, "font-weight": 500 });
+
+  function area(a, b) {
+    var p = "M" + sx(a).toFixed(1) + "," + sy(0).toFixed(1);
+    for (var x = a; x <= b + 1e-9; x += 0.05) p += "L" + sx(Math.min(x, b)).toFixed(1) + "," + sy(pdf(Math.min(x, b))).toFixed(1);
+    return p + "L" + sx(b).toFixed(1) + "," + sy(0).toFixed(1) + "Z";
+  }
+  function setDeadline(d) {
+    d = Math.round(d * 10) / 10;
+    $("dl").value = d;
+    var z = (d - MU) / SD, p = phi(z);
+    onArea.setAttribute("d", area(X0, d));
+    lateArea.setAttribute("d", area(d, X1));
+    dLine.setAttribute("x1", sx(d)); dLine.setAttribute("x2", sx(d));
+    var right = d < 21.5;
+    dLab.setAttribute("x", sx(d) + (right ? 6 : -6)); dLab.setAttribute("text-anchor", right ? "start" : "end");
+    dLab.textContent = "deadline " + d.toFixed(1);
+    $("dlOut").textContent = d.toFixed(1) + " weeks";
+    $("zOut").textContent = f2(z);
+    $("pOut").textContent = pct(p);
+    $("lOut").textContent = pct(1 - p);
+    document.querySelectorAll("[data-dl]").forEach(function (b) { b.setAttribute("aria-pressed", String(Number(b.getAttribute("data-dl")) === d)); });
+    var note = $("dlNote");
+    if (Math.abs(d - 19) < 0.05) {
+      note.textContent = "19 weeks: about a 61% chance. " + (prediction ? (prediction === "61" ? "Your prediction was right." : "You predicted about " + prediction + "%. A third of a week past the expected finish buys very little.") : "A third of a week past the expected finish buys very little.");
+    } else if (Math.abs(d - 20) < 0.05) {
+      note.textContent = "November 15: about an 86% chance of finishing on time, and about a 1-in-7 chance of running late.";
+    } else if (Math.abs(d - MU) < 0.06) {
+      note.textContent = "At the expected finish, Z is 0 and the chance is 50%. A coin flip.";
+    } else if (d < MU) {
+      note.textContent = "A deadline before the expected finish gives a negative Z and less than a 50% chance.";
+    } else {
+      note.textContent = "Each extra week of deadline adds less probability than the one before. The curve flattens in the tail.";
+    }
+  }
+  $("dl").addEventListener("input", function () { setDeadline(parseFloat(this.value)); });
+  document.querySelectorAll("[data-dl]").forEach(function (b) { b.addEventListener("click", function () { setDeadline(Number(b.getAttribute("data-dl"))); }); });
+  setDeadline(20);
+
+  // Part 5 commitment
+  function setConf(c) {
+    var z = invPhi(c / 100), d = MU + z * SD;
+    $("confOut").textContent = c + "%";
+    $("czOut").textContent = f2(z);
+    $("cdOut").textContent = d.toFixed(1) + " wk";
+    $("cbOut").textContent = "+" + (d - MU).toFixed(1) + " wk";
+  }
+  $("conf").addEventListener("input", function () { setConf(parseInt(this.value, 10)); });
+  setConf(90);
+
+  // Part 6 levers
+  var lv = { exp: false, nar: false };
+  function setLevers() {
+    var mu = MU - (lv.exp ? 1 : 0);
+    var vG = lv.nar ? Math.pow((6 - 4) / 6, 2) : Math.pow((8 - 3) / 6, 2);
+    var v = VAR - Math.pow(5 / 6, 2) + vG, sd = Math.sqrt(v), p = phi((20 - mu) / sd);
+    $("lvMu").textContent = mu.toFixed(2) + " wk";
+    $("lvSd").textContent = sd.toFixed(2) + " wk";
+    $("lvP").textContent = pct(p);
+    $("lvExp").setAttribute("aria-pressed", String(lv.exp));
+    $("lvNar").setAttribute("aria-pressed", String(lv.nar));
+    var n = $("lvNote");
+    if (lv.exp && lv.nar) n.textContent = "Both levers: about a 99% chance. Shorter and more predictable. Both cost money, so a manager weighs them against what missing the deadline would cost.";
+    else if (lv.exp) n.textContent = "Expediting G moves the whole curve a week earlier. The spread is the same, but the deadline is now further out on it: about a 97% chance. G stays on the critical path, so the week counts.";
+    else if (lv.nar) n.textContent = "Narrowing G's estimate (say, by locking in the HVAC contractor's dates) cuts its variance from 0.69 to 0.11. The expected finish doesn't move, but the curve gets narrower: about a 92% chance.";
+    else n.textContent = "Start with the baseline: an 86% chance of finishing by November 15.";
+  }
+  $("lvExp").addEventListener("click", function () { lv.exp = !lv.exp; setLevers(); });
+  $("lvNar").addEventListener("click", function () { lv.nar = !lv.nar; setLevers(); });
+  setLevers();
+
+  // Part 7 message
+  var msgFb = {
+    a: ["no", "This gives the expected duration as if it were a promise. The division head hears \"ready\" and plans around it, but there's about a 14% chance it won't be."],
+    b: ["ok", "This is the strongest answer. It gives the probability, the downside in plain terms, an action that improves the odds, and a commitment to keep the division head informed. It doesn't overpromise or alarm."],
+    c: ["no", "This avoids the question. The analysis already supports a clear statement: about 86%. Refusing to give it leaves the division head unable to plan."]
+  };
+  document.querySelectorAll('input[name="msg"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      var m = msgFb[r.value], fb = $("msgFb");
+      fb.hidden = false; fb.className = "fb " + m[0]; fb.textContent = m[1];
+      document.querySelectorAll('#msg .opt').forEach(function (o) { o.classList.remove("right", "wrong"); });
+      r.closest(".opt").classList.add(m[0] === "ok" ? "right" : "wrong");
+    });
+  });
+
+  // Part 8 self-check
+  var qs = [
+    { q: "A different project's critical-path variances are 0.25, 0.36, and 0.39. What is the project standard deviation?",
+      o: ["1.00 week", "1.50 weeks", "0.33 week", "1.70 weeks"], k: 0,
+      e: "The variances sum to 1.00, and √1.00 = 1.00 week. Adding the three standard deviations (0.5 + 0.6 + 0.62) would give 1.72, which overstates the risk." },
+    { q: "A deadline sits exactly 2 standard deviations after the expected finish. About how likely is on-time completion?",
+      o: ["About 98%", "About 84%", "About 68%", "100%"], k: 0,
+      e: "Z = 2, and the normal table gives about 0.977. Very likely, but never certain." },
+    { q: "A manager promises the client the expected duration. How often will that promise be kept?",
+      o: ["About half the time", "Almost always", "About 86% of the time", "It depends on the number of activities"], k: 0,
+      e: "At the expected duration Z = 0, which is 50%." },
+    { q: "Which change shortens the warehouse project?",
+      o: ["Expediting Activity G, which is on the critical path", "Expediting Activity E, which has 6.17 weeks of float", "Moving the deadline to 21 weeks", "Adding Activity F's variance to the project variance"], k: 0,
+      e: "Only critical-path activities set the finish date. Shortening E uses up float without moving the finish, and moving the deadline changes the promise, not the project." }
+  ];
+  var order = [[1, 0, 2, 3], [2, 1, 0, 3], [0, 2, 3, 1], [3, 0, 1, 2]];
+  var quiz = $("quiz"), html = "<h3>Quick check</h3>";
+  qs.forEach(function (it, i) {
+    html += '<fieldset data-q="' + i + '"><legend>' + (i + 1) + ". " + it.q + "</legend>";
+    order[i].forEach(function (j) { html += '<label class="opt"><input type="radio" name="q' + i + '" value="' + j + '"> ' + it.o[j] + "</label>"; });
+    html += '<p class="fb" hidden aria-live="polite"></p></fieldset>';
+  });
+  quiz.innerHTML = html;
+  quiz.querySelectorAll("fieldset").forEach(function (fs) {
+    var i = Number(fs.getAttribute("data-q")), it = qs[i], fb = fs.querySelector(".fb");
+    fs.querySelectorAll("input").forEach(function (r) {
+      r.addEventListener("change", function () {
+        var ok = Number(r.value) === it.k;
+        fs.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("right", "wrong"); });
+        r.closest(".opt").classList.add(ok ? "right" : "wrong");
+        fb.hidden = false; fb.className = "fb " + (ok ? "ok" : "no");
+        fb.textContent = (ok ? "Right. " : "Not quite. ") + it.e;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
