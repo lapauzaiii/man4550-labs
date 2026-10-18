@@ -16,6 +16,7 @@ tracks. AI assignments and transcript submissions are retired.
 | 8 | `week8/` | Transportation and transshipment |
 | 9 | `week9/` | Properties renovation: editable activity network and schedule |
 | 10 | `week10/` | Verified Logistics PERT network and beta-PERT simulation |
+| 10 | `week10/lesson/` | Self-paced lesson replacing the class session: variance, deadline probability, commitment dates, board message |
 | 11 | `week11/` | Simple regression: guided forecast and editable classroom sample |
 | 12 | `week12/` | Multiple regression: guided forecast, editable data and diagnostics |
 | 13 | `week13/` | Canonical warehouse payoff table, EMV, EVPI, regret and tree rollback |

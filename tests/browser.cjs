@@ -95,6 +95,17 @@ const http = require("node:http");
         ).filter((v, i) => i % 4 === 3 && v > 0).length,
     );
   assert.ok(pixels > 1000);
+  await go("10/lesson");
+  assert.match(await text("pOut"), /86\.2%/);
+  await page.locator('[data-dl="19"]').click();
+  assert.match(await text("pOut"), /60\.7%/);
+  await setRange("conf", 95);
+  assert.match(await text("cdOut"), /20\.7/);
+  await page.locator("#lvExp").click();
+  assert.match(await text("lvP"), /97\.2%/);
+  await page.locator("#sdIn").fill("1.22");
+  await page.locator("#sdBtn").click();
+  assert.match(await text("sdFb"), /Right/);
   for (const w of [11, 12]) {
     await go(w);
     assert.equal(await text("error"), "");
@@ -142,7 +153,7 @@ const http = require("node:http");
   assert.match(await text("feedback0"), /Correct/);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const w of [5, 6, 7, 8, 9, 10, 11, 12, 13, 14]) {
+    for (const w of [5, 6, 7, 8, 9, 10, "10/lesson", 11, 12, 13, 14]) {
       await go(w);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth + 1,
@@ -165,11 +176,11 @@ const http = require("node:http");
           `Week ${w} overflows at ${width}px: ${offenders.join(", ")}`,
         );
       }
-      if (w >= 9)
+      if (typeof w === "string" || w >= 9)
         await page.screenshot({
           path: path.join(
             require("node:os").tmpdir(),
-            "cowford-week" + w + "-" + width + ".png",
+            "cowford-week" + String(w).replace("/", "-") + "-" + width + ".png",
           ),
           fullPage: true,
         });
