@@ -106,6 +106,34 @@ const http = require("node:http");
   await page.locator("#sdIn").fill("1.22");
   await page.locator("#sdBtn").click();
   assert.match(await text("sdFb"), /Right/);
+  await go("11/lesson");
+  assert.equal(await text("fitA"), "8.40");
+  assert.equal(await text("fitB"), "22.50");
+  await page.locator("#spLine").click();
+  assert.equal(await text("r2"), "0.78");
+  await page.locator("#pick").selectOption("3");
+  assert.equal(await text("pkR"), "+15.18");
+  await page.locator('[data-x="6"]').click();
+  assert.equal(await text("candS"), "Extrapolation");
+  assert.match(await text("candY"), /\$143\.40K/);
+  await setRange("cand", 2.2);
+  assert.equal(await text("candS"), "In range");
+  assert.match(await text("candY"), /\$57\.90K/);
+  await page.locator("#p15").fill("1500");
+  await page.locator("#p15Btn").click();
+  assert.match(await text("p15Fb"), /Not quite/);
+  await page.locator("#p15").fill("33758.4");
+  await page.locator("#p15Btn").click();
+  assert.match(await text("p15Fb"), /thousands of square feet/);
+  await page.locator("#p15").fill("42.15");
+  await page.locator("#p15Btn").click();
+  assert.match(await text("p15Fb"), /Right/);
+  await page.locator("#unex").fill("22");
+  await page.locator("#unexBtn").click();
+  assert.match(await text("unexFb"), /Right/);
+  await page.locator('input[name="msg"][value="b"]').check();
+  assert.match(await text("msgFb"), /strongest/);
+  assert.equal(await page.locator("#quiz fieldset").count(), 4);
   for (const w of [11, 12]) {
     await go(w);
     assert.equal(await text("error"), "");
@@ -153,7 +181,7 @@ const http = require("node:http");
   assert.match(await text("feedback0"), /Correct/);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const w of [5, 6, 7, 8, 9, 10, "10/lesson", 11, 12, 13, 14]) {
+    for (const w of [5, 6, 7, 8, 9, 10, "10/lesson", 11, "11/lesson", 12, 13, 14]) {
       await go(w);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth + 1,

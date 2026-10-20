@@ -18,6 +18,7 @@ tracks. AI assignments and transcript submissions are retired.
 | 10 | `week10/` | Verified Logistics PERT network and beta-PERT simulation |
 | 10 | `week10/lesson/` | Self-paced lesson replacing the class session: variance, deadline probability, commitment dates, board message |
 | 11 | `week11/` | Simple regression: guided forecast and editable classroom sample |
+| 11 | `week11/lesson/` | Self-paced lesson replacing the class session: slope and intercept in units, R², p-value, extrapolation, forecast message |
 | 12 | `week12/` | Multiple regression: guided forecast, editable data and diagnostics |
 | 13 | `week13/` | Canonical warehouse payoff table, EMV, EVPI, regret and tree rollback |
 | 14 | `week14/` | Exhaustive binary capital allocation and schedule-risk sensitivity |
@@ -40,6 +41,10 @@ available hosted sequence rather than creating empty destinations.
   raw square feet, location score, age; Y is annual dollars per square foot.
 - Editable regression data are explicitly synthetic, separate from the
   supplied case equations and the unavailable original 35-lease dataset.
+- Week 11 lesson embeds an illustrative 20-lease sample (X = 0.8 to 3.0) built so
+  least squares returns exactly `a = 8.40`, `b = 22.50`, R² `0.7799` (rounded `.78`),
+  t `7.99` on 18 df. The observed range 800-3,000 sq ft defines extrapolation in
+  the lesson, W11.C, and W11.D.
 - Week 13 EMVs: `354.5`, `361.5`, `178.5` ($K); EVPI `192` ($K).
 - Week 14 canonical p is the rounded `.862`; LOG NPV `289.24`, LOG+PRP
   `644.24`, PRP+PS `595`, crossover p `1 - 190/1020`. LOG+PRP remains preferred.
