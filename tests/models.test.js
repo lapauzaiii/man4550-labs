@@ -72,6 +72,24 @@ assert.throws(
     ),
   /constant|correlated/,
 );
+const lessonHtml = require("node:fs").readFileSync(
+  require("node:path").join(__dirname, "../week11/lesson/index.html"),
+  "utf8",
+);
+const arr = (name) =>
+  JSON.parse(lessonHtml.match(new RegExp("var " + name + " = (\\[[^\\]]+\\])"))[1]);
+const lx = arr("X"),
+  ly = arr("Y");
+assert.equal(lx.length, 20);
+assert.equal(Math.min(...lx), 0.8);
+assert.equal(Math.max(...lx), 3);
+const lessonFit = M.regress(
+  lx.map((x, i) => [x, ly[i]]),
+  [0],
+);
+close(lessonFit.coef[0], 8.4, 1e-9);
+close(lessonFit.coef[1], 22.5, 1e-9);
+assert.equal(lessonFit.R2.toFixed(2), "0.78");
 console.log(
-  "Verified PERT, path switching, invalid networks, reproducible simulation, EMV/EVPI, portfolios, regression and prediction intervals.",
+  "Verified PERT, path switching, invalid networks, reproducible simulation, EMV/EVPI, portfolios, regression, prediction intervals and the Week 11 lesson sample.",
 );

@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>W11 Lesson - How Far Can a Straight Line Take You?</title>
+<meta name="description" content="MAN 4550 Week 11 self-paced lesson: reading a simple regression line in its units, R-squared, p-values, extrapolation, and communicating a forecast on the Cowford Properties lease model.">
+<style>
+/* Same reading column and tokens as the Week 10 lesson; charts are hand-drawn SVG themed by these tokens. */
+:root {
+  --paper: #f4f6f7;
+  --panel: #ffffff;
+  --tint: #e6edf2;
+  --ink: #16212a;
+  --muted: #55636e;
+  --line: #d3dbe1;
+  --blue: #1d5c87;
+  --blue-soft: rgba(29, 92, 135, 0.22);
+  --amber: #b86a06;
+  --amber-soft: rgba(199, 119, 10, 0.18);
+  --good: #2c7a4b;
+  --bad: #ad3d2a;
+  --font-display: "Avenir Next Condensed", "Avenir Next", "Segoe UI", "Roboto Condensed", Arial, sans-serif;
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f161b; --panel: #162028; --tint: #1b2933; --ink: #e5ecf0; --muted: #9babb6;
+    --line: #2a3742; --blue: #74b3de; --blue-soft: rgba(116, 179, 222, 0.24); --amber: #f0a43c;
+    --amber-soft: rgba(240, 164, 60, 0.2); --good: #6cc392; --bad: #f08b75; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f161b; --panel: #162028; --tint: #1b2933; --ink: #e5ecf0; --muted: #9babb6;
+  --line: #2a3742; --blue: #74b3de; --blue-soft: rgba(116, 179, 222, 0.24); --amber: #f0a43c;
+  --amber-soft: rgba(240, 164, 60, 0.2); --good: #6cc392; --bad: #f08b75; color-scheme: dark;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 4rem;
+}
+.wrap { max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; gap: 3.25rem; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.08; text-wrap: balance; margin: 0; letter-spacing: 0.005em; }
+h1 { font-size: clamp(2.6rem, 8vw, 3.8rem); }
+h2 { font-size: clamp(1.75rem, 5vw, 2.2rem); }
+h3 { font-size: 1.3rem; }
+p { margin: 0; }
+a { color: var(--blue); text-underline-offset: 0.18em; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+header { padding-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 2rem; }
+.lede { font-size: 1.2rem; color: var(--ink); max-width: 38rem; }
+.notice { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+.notice span { white-space: nowrap; }
+.toc { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.35rem 1.5rem; font-size: 0.95rem; }
+.toc a { text-decoration: none; color: var(--ink); display: flex; gap: 0.6rem; align-items: baseline; }
+.toc a:hover { color: var(--blue); }
+.toc .n { font-family: var(--font-mono); color: var(--amber); font-size: 0.82rem; min-width: 1.4rem; }
+
+/* Sections */
+section { display: flex; flex-direction: column; gap: 1.1rem; scroll-margin-top: 1rem; }
+.sec-head { display: flex; flex-direction: column; gap: 0.35rem; }
+.step { font-family: var(--font-mono); font-size: 0.8rem; color: var(--amber); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* Panels */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.panel h3 { font-size: 1.15rem; }
+.callout { border-left: 3px solid var(--blue); background: var(--tint); padding: 0.9rem 1rem; border-radius: 0 4px 4px 0; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.98rem; }
+.callout.warn { border-left-color: var(--amber); }
+.callout strong { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.02em; }
+.formula { font-family: var(--font-mono); font-size: 0.98rem; background: var(--tint); border-radius: 4px; padding: 0.7rem 0.9rem; overflow-wrap: anywhere; }
+
+/* Choices and inputs */
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+legend { font-weight: 600; margin-bottom: 0.4rem; padding: 0; }
+.opt { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; background: var(--panel); }
+.opt:hover { border-color: var(--blue); }
+.opt input { margin-top: 0.35rem; accent-color: var(--blue); flex: none; }
+.opt.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 10%, var(--panel)); }
+.opt.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 8%, var(--panel)); }
+.fb { font-size: 0.97rem; padding: 0.7rem 0.9rem; border-radius: 4px; background: var(--tint); }
+.fb.ok { border-left: 3px solid var(--good); }
+.fb.no { border-left: 3px solid var(--bad); }
+button { font: 600 0.95rem var(--font-body); color: var(--paper); background: var(--blue); border: 0; border-radius: 4px; padding: 0.55rem 1rem; cursor: pointer; }
+button.ghost { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+button.chip { background: var(--tint); color: var(--ink); border: 1px solid var(--line); font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; padding: 0.35rem 0.7rem; }
+button.chip[aria-pressed="true"] { background: var(--blue); color: var(--paper); border-color: var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.entry { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.entry label { font-weight: 600; }
+.entry input[type="number"] { font: 500 1rem var(--font-mono); width: 7rem; padding: 0.45rem 0.55rem; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+.slider { display: flex; flex-direction: column; gap: 0.3rem; }
+.slider label { display: flex; justify-content: space-between; gap: 1rem; font-weight: 600; }
+.slider label .num { font-weight: 500; color: var(--blue); }
+
+/* Readouts */
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 0.6rem; }
+.ro { background: var(--tint); border-radius: 4px; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.ro .k { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ro .v { font-family: var(--font-mono); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.ro.hi .v { color: var(--blue); }
+
+/* Tables and figures */
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; min-width: 34rem; }
+th, td { text-align: left; padding: 0.42rem 0.55rem; border-bottom: 1px solid var(--line); }
+th { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.num, th.num { text-align: right; }
+tr.crit td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
+tr.crit td { background: var(--amber-soft); }
+.tag { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.1rem 0.4rem; border-radius: 3px; background: var(--amber); color: var(--panel); }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: var(--font-mono); fill: var(--ink); }
+svg .lbl { fill: var(--muted); font-size: 11px; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.sw { display: inline-block; width: 0.9rem; height: 0.5rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: middle; }
+
+/* Variance stack */
+.stack { display: flex; height: 2.2rem; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+.stack div { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--panel); background: var(--amber); border-right: 1px solid var(--panel); min-width: 0; transition: flex-grow 0.5s ease; }
+.stack div:last-child { border-right: 0; }
+.stack div:nth-child(even) { background: color-mix(in srgb, var(--amber) 72%, var(--ink)); }
+
+/* Comparison */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.75rem; }
+.promise { border: 1px solid var(--line); border-radius: 5px; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.promise .big { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; }
+.promise.safe .big { color: var(--good); }
+.promise.risky .big { color: var(--bad); }
+.meter { height: 0.5rem; background: var(--tint); border-radius: 999px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--muted); border-radius: 999px; }
+.promise.safe .meter i { background: var(--good); }
+.promise.risky .meter i { background: var(--bad); }
+
+/* Checklist */
+.week { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.week li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.75rem; align-items: baseline; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+.week .kind { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.week .kind.g { color: var(--amber); }
+.week .kind.p { color: var(--muted); }
+.ref { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.6rem; }
+.ref div { background: var(--tint); border-radius: 4px; padding: 0.7rem 0.85rem; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.ref .k { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.ref .f { font-family: var(--font-mono); font-size: 0.92rem; overflow-x: auto; white-space: nowrap; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 1.2rem; }
+
+
+/* Shared Cowford navigation (assets/js/cowford-nav.js), themed with this page's tokens */
+.cf-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); font: 0.85rem var(--font-display); max-width: 44rem; margin: 0 auto; }
+.cf-nav a { color: var(--ink); }
+.cf-wordmark { font-weight: 700; text-decoration: none; margin-right: auto; display: flex; align-items: center; gap: 0.5rem; }
+.cf-wordmark img { width: 28px; height: auto; }
+.cf-muted { color: var(--muted); }
+.cf-nav select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0.25rem 0.4rem; max-width: 100%; }
+.cf-footer { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; font-family: var(--font-display); }
+
+@media (max-width: 30rem) {
+  .week li { grid-template-columns: 1fr; gap: 0.2rem; }
+  body { font-size: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Week 11 additions */
+.entry select { font: 500 0.95rem var(--font-mono); padding: 0.4rem 0.5rem; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); max-width: 100%; }
+#scatter circle:focus { outline: none; }
+.ro .v.sm { font-size: 1.05rem; padding-top: 0.25rem; }
+.ref .f { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 30rem) { #scatter .lbl, #reach .lbl { font-size: 19px; } }
+</style>
+
+<script defer src="../../assets/js/cowford-nav.js"></script>
+</head>
+<body data-week="11">
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">MAN 4550 · Week 11 · Regression &amp; Forecasting Foundations</span>
+  <h1>How Far Can a Straight Line Take You?</h1>
+  <p class="lede">Cowford Properties prices commercial leases partly by size. This week you'll read the line it uses, test how well that line fits, and learn where a manager should stop trusting it.</p>
+  <div class="notice"><span>Replaces this week's class session</span><span>About 45 minutes</span><span>Practice only · nothing here is graded</span></div>
+  <ol class="toc" aria-label="Lesson sections">
+    <li><a href="#s1"><span class="n">1</span>A line is a claim</a></li>
+    <li><a href="#s2"><span class="n">2</span>Meet the leases</a></li>
+    <li><a href="#s3"><span class="n">3</span>Read the line in its units</a></li>
+    <li><a href="#s4"><span class="n">4</span>How well does it fit?</a></li>
+    <li><a href="#s5"><span class="n">5</span>Where to stop trusting it</a></li>
+    <li><a href="#s6"><span class="n">6</span>What the line can't tell you</a></li>
+    <li><a href="#s7"><span class="n">7</span>Tell leadership</a></li>
+    <li><a href="#s8"><span class="n">8</span>Check yourself, then your week</a></li>
+  </ol>
+</header>
+
+<!-- 1 -->
+<section id="s1" aria-labelledby="h1s">
+  <div class="sec-head"><span class="step">Part 1</span><h2 id="h1s">A line is a claim</h2></div>
+  <p>Every LP model in Weeks 1–6 took its numbers as given: margins, capacities, NPVs. Somebody had to estimate those numbers. Regression is one of the main ways they get estimated: it turns past observations into a straight-line rule for predicting a new case.</p>
+  <p>A rule like that is useful, and it is also a claim. The question for this week is how far the claim holds.</p>
+  <div class="panel">
+    <fieldset id="predict">
+      <legend>Make a prediction. Cowford Properties fit a line to 20 of its leases. Leadership now wants to use that line to quote rent on a 6,000 sq ft flagship space, and the line gives $143,400 a year. How much should they trust that number?</legend>
+      <label class="opt"><input type="radio" name="pred" value="a"> A lot. The line fits the data well.</label>
+      <label class="opt"><input type="radio" name="pred" value="b"> About as much as a quote for a typical lease.</label>
+      <label class="opt"><input type="radio" name="pred" value="c"> Not much. It depends on how big the leases behind the line were.</label>
+      <label class="opt"><input type="radio" name="pred" value="d"> Not at all. A regression can't price leases.</label>
+    </fieldset>
+    <div class="row"><button type="button" id="predBtn">Lock in my prediction</button></div>
+    <p class="fb" id="predFb" hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="s2" aria-labelledby="h2s">
+  <div class="sec-head"><span class="step">Part 2</span><h2 id="h2s">Meet the leases</h2></div>
+  <p>Each dot is one lease. Lease area goes on the horizontal axis because it's the variable we use to predict (X). Annual rent goes on the vertical axis because it's what we want to predict (Y).</p>
+  <div class="callout">
+    <strong>Units, before anything else</strong>
+    <p><b>X = lease area in thousands of square feet.</b> A 1,500 sq ft lease is X = 1.5.</p>
+    <p><b>Y = annual rent in thousands of dollars.</b> Y = 42.15 means $42,150 a year.</p>
+  </div>
+  <div class="panel">
+    <h3>20 Cowford Properties leases, 800 to 3,000 sq ft</h3>
+    <div class="scroll"><svg id="scatter" viewBox="0 0 640 380" role="img" aria-label="Scatterplot of annual rent against lease area for 20 leases, with the fitted regression line."></svg></div>
+    <div class="legend"><span><i class="sw" style="background:var(--blue)"></i>Lease</span><span><i class="sw" style="background:var(--amber)"></i>Fitted line, Ŷ = 8.40 + 22.50X</span><span id="segLegend" hidden><i class="sw" style="background:var(--bad)"></i>Distance being measured</span></div>
+    <div class="entry">
+      <label for="pick">Inspect a lease</label>
+      <select id="pick"></select>
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro"><span class="k">Area (X)</span><span class="v" id="pkX">–</span></div>
+      <div class="ro"><span class="k">Actual rent</span><span class="v" id="pkY">–</span></div>
+      <div class="ro"><span class="k">Line predicts</span><span class="v" id="pkP">–</span></div>
+      <div class="ro hi"><span class="k">Residual</span><span class="v" id="pkR">–</span></div>
+    </div>
+    <p class="fb" id="pkNote">Pick a lease. The residual is actual rent minus what the line predicts: positive above the line, negative below it.</p>
+  </div>
+  <p class="eyebrow">About this data: an illustrative 20-lease sample built to reproduce Cowford's supplied regression output exactly. It is not the company's original lease file.</p>
+</section>
+
+<!-- 3 -->
+<section id="s3" aria-labelledby="h3s">
+  <div class="sec-head"><span class="step">Part 3 · Calculate</span><h2 id="h3s">Read the line in its units</h2></div>
+  <p>Excel or any statistics tool finds the line that keeps the dots as close to it as possible (least squares). For these 20 leases it is:</p>
+  <div class="formula">Predicted annual rent ($K) = <span id="fitA">8.40</span> + <span id="fitB">22.50</span> × area (thousands of sq ft)</div>
+  <div class="readouts">
+    <div class="ro"><span class="k">Intercept (a)</span><span class="v">8.40</span></div>
+    <div class="ro"><span class="k">Slope (b)</span><span class="v">22.50</span></div>
+    <div class="ro"><span class="k">Leases (n)</span><span class="v">20</span></div>
+  </div>
+  <div class="panel">
+    <fieldset id="slopeQ">
+      <legend>What does the slope, 22.50, say?</legend>
+      <label class="opt"><input type="radio" name="slope" value="a"> Each additional square foot goes with $22,500 more annual rent.</label>
+      <label class="opt"><input type="radio" name="slope" value="b"> Each additional 1,000 sq ft goes with $22,500 more predicted annual rent.</label>
+      <label class="opt"><input type="radio" name="slope" value="c"> Each additional 1,000 sq ft goes with $22.50 more annual rent.</label>
+    </fieldset>
+    <p class="fb" id="slopeFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="panel">
+    <div class="entry">
+      <label for="p15">Try one. What annual rent does the line predict for a 1,500 sq ft lease, in $K?</label>
+      <input id="p15" type="number" step="0.01" inputmode="decimal" placeholder="$K">
+      <button type="button" id="p15Btn" class="ghost">Check</button>
+    </div>
+    <p class="fb" id="p15Fb" hidden aria-live="polite"></p>
+  </div>
+  <div class="callout warn">
+    <strong>The intercept is not a rent</strong>
+    <p>8.40 is the predicted rent for a lease of zero square feet: $8,400 a year for nothing. No such lease exists, and X = 0 is far below the smallest lease in the data. The intercept positions the line; it doesn't describe a real lease.</p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4" aria-labelledby="h4s">
+  <div class="sec-head"><span class="step">Part 4 · Interpret</span><h2 id="h4s">How well does it fit?</h2></div>
+  <p>R² compares two kinds of spread. First, how far rents sit from their average if you ignore area entirely. Second, how far they sit from the line once you use area. The share of the first spread that the line removes is R².</p>
+  <div class="panel">
+    <h3>Measure the spread on the chart above</h3>
+    <div class="row" role="group" aria-label="Spread to show">
+      <button type="button" class="chip" id="spMean" aria-pressed="false">From the average rent</button>
+      <button type="button" class="chip" id="spLine" aria-pressed="false">From the fitted line</button>
+      <button type="button" class="chip" id="spOff" aria-pressed="true">Hide</button>
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro"><span class="k">Spread around average</span><span class="v" id="sst">–</span></div>
+      <div class="ro"><span class="k">Left around line</span><span class="v" id="sse">–</span></div>
+      <div class="ro hi"><span class="k">R²</span><span class="v" id="r2">–</span></div>
+    </div>
+    <div class="formula">R² = 1 − (left around line ÷ spread around average) = 1 − <span id="r2calc">…</span></div>
+    <p class="fb" id="spNote">Show the spread from the average first, then from the line. Watch the red segments shrink.</p>
+  </div>
+  <p>So R² = 0.78: about 78% of the variation in annual rent across these 20 leases goes with differences in lease area. It is a statement about this sample. It is not an accuracy rate, and it doesn't say a forecast will be within any particular distance of the truth.</p>
+  <div class="panel">
+    <div class="entry">
+      <label for="unex">What percentage of the variation in rent is <em>not</em> associated with area?</label>
+      <input id="unex" type="number" step="1" inputmode="decimal" placeholder="%">
+      <button type="button" id="unexBtn" class="ghost">Check</button>
+    </div>
+    <p class="fb" id="unexFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="callout">
+    <strong>And the p-value?</strong>
+    <p>The slope's p-value is below 0.001 (t = <span id="tStat">7.99</span> with 18 degrees of freedom). Read it this way: <em>if</em> area had no linear relationship with rent, a slope this far from zero would almost never show up in a sample of 20 leases. So the association is real evidence, not noise.</p>
+    <p>It is <b>not</b> "a 0.1% chance the relationship is due to chance," and it says nothing about how large or useful the effect is, or whether area causes rent.</p>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="s5" aria-labelledby="h5s">
+  <div class="sec-head"><span class="step">Part 5 · Evaluate</span><h2 id="h5s">Where to stop trusting it</h2></div>
+  <p>The line was fit on leases from 800 to 3,000 sq ft. Inside that range, the data show the straight-line pattern holds reasonably well. Outside it, the data show nothing at all, and the line just keeps going. Predicting outside the observed range is <b>extrapolation</b>.</p>
+  <div class="panel">
+    <h3>Move the candidate lease</h3>
+    <div class="scroll"><svg id="reach" viewBox="0 0 640 300" role="img" aria-label="Fitted line drawn solid over the observed range and dashed beyond it, with a marker at the candidate lease."></svg></div>
+    <div class="legend"><span><i class="sw" style="background:var(--blue-soft);border:1px solid var(--blue)"></i>Observed range, 800–3,000 sq ft</span><span><i class="sw" style="background:var(--amber)"></i>Line where data exist</span></div>
+    <div class="slider">
+      <label for="cand">Candidate lease <span class="num" id="candOut">1,500 sq ft</span></label>
+      <input id="cand" type="range" min="0" max="8" step="0.1" value="1.5">
+    </div>
+    <div class="row" role="group" aria-label="Preset lease sizes">
+      <button type="button" class="chip" data-x="1.5">1,500</button>
+      <button type="button" class="chip" data-x="2.8">2,800</button>
+      <button type="button" class="chip" data-x="4">4,000</button>
+      <button type="button" class="chip" data-x="6">6,000 · flagship</button>
+    </div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro"><span class="k">X</span><span class="v" id="candX">1.5</span></div>
+      <div class="ro hi"><span class="k">Line predicts</span><span class="v" id="candY">$42.15K</span></div>
+      <div class="ro"><span class="k">Status</span><span class="v sm" id="candS">In range</span></div>
+    </div>
+    <p class="fb ok" id="candNote">Inside the data. The line is a reasonable starting estimate here.</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="s6" aria-labelledby="h6s">
+  <div class="sec-head"><span class="step">Part 6 · Interpret</span><h2 id="h6s">What the line can't tell you</h2></div>
+  <p>Go back to the scatterplot and inspect the 1,100 sq ft lease. It rents for $48.33K, and the line predicts $33.15K: a residual of +15.18.</p>
+  <div class="panel">
+    <fieldset id="resQ">
+      <legend>A leasing manager says: "That tenant is overpaying by $15K. Cut their rent at renewal or we'll lose them." What does the regression actually support?</legend>
+      <label class="opt"><input type="radio" name="res" value="a"> The manager is right: the line shows the fair rent is $33.15K.</label>
+      <label class="opt"><input type="radio" name="res" value="b"> The lease rents well above what its size alone predicts. Why is a separate question: location, building quality, or lease terms could explain it.</label>
+      <label class="opt"><input type="radio" name="res" value="c"> The lease is an error and should be removed from the data.</label>
+    </fieldset>
+    <p class="fb" id="resFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="callout warn">
+    <strong>What this line assumes</strong>
+    <p><b>The pattern is a straight line</b> across the range. If the residuals curved, bending up or down at the big leases, a line would mislead.</p>
+    <p><b>Each lease is a separate observation.</b> Ten suites in one building, all on the same terms, would count as ten votes for what is really one decision.</p>
+    <p><b>Association, not cause.</b> Bigger leases may also be in better locations or newer buildings. The slope compares leases that already exist; it doesn't say what adding space to a building would do.</p>
+    <p><b>One predictor only.</b> 22% of the variation is left over. Week 12 adds location and building age to see how much of that they explain.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="s7" aria-labelledby="h7s">
+  <div class="sec-head"><span class="step">Part 7 · Communicate</span><h2 id="h7s">Tell leadership</h2></div>
+  <p>Damar Okoye, Cowford's CFO, has one rule for analysis: if the board can't follow it, it isn't finished. A good forecast message gives the number, says where it holds, and says what else to check.</p>
+  <div class="panel">
+    <fieldset id="msg">
+      <legend>The Properties leasing director asks: "Can I use the model to set renewal rent on our 2,200 sq ft Southside suite?" Which answer would you give?</legend>
+      <label class="opt"><input type="radio" name="msg" value="a"> "Yes. Set it at exactly $57.90K. With R² = 0.78 and p &lt; 0.001, the model is reliable."</label>
+      <label class="opt"><input type="radio" name="msg" value="b"> "Use about $58K as a starting benchmark. 2,200 sq ft is inside the range the model was built on, but size explains only about 78% of rent differences, so check the suite's location, condition, and recent comparable leases before setting the number."</label>
+      <label class="opt"><input type="radio" name="msg" value="c"> "No. A regression can't be used to set prices."</label>
+    </fieldset>
+    <p class="fb" id="msgFb" hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section id="s8" aria-labelledby="h8s">
+  <div class="sec-head"><span class="step">Part 8</span><h2 id="h8s">Check yourself, then your week</h2></div>
+  <div class="panel" id="quiz"></div>
+  <div class="panel">
+    <h3>Key formulas</h3>
+    <div class="ref">
+      <div><span class="k">Regression line</span><span class="f">Ŷ = a + bX</span></div>
+      <div><span class="k">Cowford Properties</span><span class="f">Ŷ = 8.40 + 22.50X</span></div>
+      <div><span class="k">Units</span><span class="f">X = 1,000 sq ft · Y = $K / year</span></div>
+      <div><span class="k">Residual</span><span class="f">actual Y − predicted Y</span></div>
+      <div><span class="k">R²</span><span class="f">1 − (spread around line ÷ spread around average)</span></div>
+      <div><span class="k">Trust the forecast for</span><span class="f">800 to 3,000 sq ft (X = 0.8 to 3.0)</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>This week in Canvas</h3>
+    <ul class="week">
+      <li><span class="kind p">Practice</span><span><b>W11.C Concept Check.</b> Unlimited attempts, with feedback on every question.</span></li>
+      <li><span class="kind p">Practice</span><span><b>W11.E Simple Regression lab.</b> Optional: edit a classroom sample and watch the line refit. <a href="../">Open the lab</a></span></li>
+      <li><span class="kind g">Graded</span><span><b>Case Study 11 (W11.D).</b> 100 points, 30 minutes, one attempt. Uses the same Properties model with different leases.</span></li>
+    </ul>
+    <p>Due dates are in Canvas. Quiz 4 (Weeks 11–14) comes in Week 14, not this week.</p>
+  </div>
+</section>
+
+<footer>MAN 4550 Introduction to Management Science · Cowford Holdings case · Reading: Taylor, Introduction to Management Science, Ch. 15 (regression methods).</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  // Illustrative 20-lease sample. X = area (1,000 sq ft), Y = annual rent ($K).
+  // Built so least squares returns exactly a = 8.40, b = 22.50, R² = 0.78 (0.7799).
+  var X = [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.4, 2.5, 2.6, 2.8, 3.0];
+  var Y = [27.17, 14.7, 28.19, 48.33, 46.01, 32.79, 42.07, 50.38, 39.62, 42.63, 38.61, 60.54, 52.0, 50.8, 51.54, 70.25, 60.41, 61.21, 81.41, 74.84];
+  var LO = 0.8, HI = 3.0, n = X.length;
+  var $ = function (id) { return document.getElementById(id); };
+  var ns = "http://www.w3.org/2000/svg";
+
+  // Least squares, computed from the data on the page
+  var mx = 0, my = 0, i;
+  for (i = 0; i < n; i++) { mx += X[i]; my += Y[i]; }
+  mx /= n; my /= n;
+  var sxx = 0, sxy = 0, sst = 0;
+  for (i = 0; i < n; i++) { sxx += (X[i] - mx) * (X[i] - mx); sxy += (X[i] - mx) * (Y[i] - my); sst += (Y[i] - my) * (Y[i] - my); }
+  var b = sxy / sxx, a = my - b * mx, sse = 0;
+  for (i = 0; i < n; i++) { var e = Y[i] - (a + b * X[i]); sse += e * e; }
+  var R2 = 1 - sse / sst, se = Math.sqrt(sse / (n - 2) / sxx), t = b / se;
+  var fit = function (x) { return a + b * x; };
+  var f2 = function (v) { return (Math.round(v * 100) / 100).toFixed(2); };
+  var money = function (v) { return "$" + f2(v) + "K"; };
+  var sqft = function (x) { return Math.round(x * 1000).toLocaleString("en-US") + " sq ft"; };
+  $("fitA").textContent = f2(a); $("fitB").textContent = f2(b); $("tStat").textContent = t.toFixed(2);
+
+  function el(svg, tag, attrs) {
+    var e = document.createElementNS(ns, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    svg.appendChild(e); return e;
+  }
+  function axes(svg, W, H, L, R, T, B, x0, x1, y0, y1, xt, yt, xlab, ylab) {
+    var sx = function (x) { return L + (x - x0) / (x1 - x0) * (W - L - R); };
+    var sy = function (y) { return H - B - (y - y0) / (y1 - y0) * (H - T - B); };
+    yt.forEach(function (v) {
+      el(svg, "line", { x1: L, x2: W - R, y1: sy(v), y2: sy(v), stroke: "var(--line)", "stroke-width": 1 });
+      el(svg, "text", { x: L - 6, y: sy(v) + 4, "text-anchor": "end", class: "lbl" }).textContent = v;
+    });
+    xt.forEach(function (v) {
+      el(svg, "line", { x1: sx(v), x2: sx(v), y1: H - B, y2: H - B + 5, stroke: "var(--muted)" });
+      el(svg, "text", { x: sx(v), y: H - B + 19, "text-anchor": "middle", class: "lbl" }).textContent = v;
+    });
+    el(svg, "line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: "var(--muted)" });
+    el(svg, "text", { x: W - R, y: H - 4, "text-anchor": "end", class: "lbl" }).textContent = xlab;
+    el(svg, "text", { x: L, y: T - 4, class: "lbl" }).textContent = ylab;
+    return { sx: sx, sy: sy };
+  }
+
+  // Part 2 scatterplot
+  var sc = $("scatter");
+  var S = axes(sc, 640, 380, 48, 16, 22, 40, 0.6, 3.2, 0, 90, [0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3.2], [0, 15, 30, 45, 60, 75, 90], "area (thousands of sq ft)", "annual rent ($K)");
+  var segs = document.createElementNS(ns, "g"); sc.appendChild(segs);
+  var meanLine = el(sc, "line", { x1: S.sx(0.6), x2: S.sx(3.2), y1: S.sy(my), y2: S.sy(my), stroke: "var(--muted)", "stroke-dasharray": "5 5", "stroke-width": 1.5, visibility: "hidden" });
+  var meanLab = el(sc, "text", { x: S.sx(0.6) + 4, y: S.sy(my) - 8, "text-anchor": "start", class: "lbl", visibility: "hidden" });
+  meanLab.textContent = "average rent " + f2(my);
+  el(sc, "line", { x1: S.sx(0.6), y1: S.sy(fit(0.6)), x2: S.sx(3.2), y2: S.sy(fit(3.2)), stroke: "var(--amber)", "stroke-width": 3 });
+  var dots = X.map(function (x, k) {
+    return el(sc, "circle", { cx: S.sx(x), cy: S.sy(Y[k]), r: 6, fill: "var(--blue)", stroke: "var(--panel)", "stroke-width": 1.5 });
+  });
+  var ring = el(sc, "circle", { r: 11, fill: "none", stroke: "var(--ink)", "stroke-width": 2, visibility: "hidden" });
+
+  var pick = $("pick");
+  pick.innerHTML = '<option value="">Choose a lease…</option>' + X.map(function (x, k) {
+    return '<option value="' + k + '">Lease ' + (k + 1) + ": " + sqft(x) + "</option>";
+  }).join("");
+  function inspect(k) {
+    if (k === "" || k == null) { ring.setAttribute("visibility", "hidden"); return; }
+    k = Number(k);
+    var p = fit(X[k]), r = Y[k] - p;
+    ring.setAttribute("cx", S.sx(X[k])); ring.setAttribute("cy", S.sy(Y[k])); ring.setAttribute("visibility", "visible");
+    $("pkX").textContent = X[k].toFixed(1);
+    $("pkY").textContent = money(Y[k]);
+    $("pkP").textContent = money(p);
+    $("pkR").textContent = (r >= 0 ? "+" : "−") + f2(Math.abs(r));
+    $("pkNote").textContent = sqft(X[k]) + ": the line predicts " + money(p) + ", and the lease rents for " + money(Y[k]) + ". It sits " + money(Math.abs(r)) + (r >= 0 ? " above" : " below") + " the line.";
+  }
+  pick.addEventListener("change", function () { inspect(pick.value); });
+  dots.forEach(function (d, k) { d.addEventListener("click", function () { pick.value = String(k); inspect(k); }); d.style.cursor = "pointer"; });
+
+  // Part 1 prediction
+  var prediction = null;
+  $("predBtn").addEventListener("click", function () {
+    var c = document.querySelector('input[name="pred"]:checked'), fb = $("predFb");
+    fb.hidden = false;
+    if (!c) { fb.className = "fb no"; fb.textContent = "Pick one of the four options first."; return; }
+    prediction = c.value; fb.className = "fb";
+    fb.textContent = "Locked in. You'll test it in Part 5, after you've seen the leases behind the line.";
+  });
+
+  // Choice helper
+  function choice(name, map) {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function (r) {
+      r.addEventListener("change", function () {
+        var m = map[r.value], fb = $(name + "Fb");
+        fb.hidden = false; fb.className = "fb " + (m[0] ? "ok" : "no"); fb.textContent = m[1];
+        r.closest("fieldset").querySelectorAll(".opt").forEach(function (o) { o.classList.remove("right", "wrong"); });
+        r.closest(".opt").classList.add(m[0] ? "right" : "wrong");
+      });
+    });
+  }
+  choice("slope", {
+    a: [false, "Check the X units. One unit of X is 1,000 square feet, not one square foot. $22,500 per square foot would put a 1,500 sq ft lease at over $33 million a year."],
+    b: [true, "Right. One more unit of X (1,000 sq ft) goes with 22.50 more units of Y ($22,500). That's $22.50 per additional square foot per year."],
+    c: [false, "Check the Y units. Y is in thousands of dollars, so 22.50 means $22,500, not $22.50."]
+  });
+  choice("res", {
+    a: [false, "The line is an average relationship between size and rent, not a fair-price ruling. Area explains about 78% of rent variation, so a single lease can sit well off the line for good reasons."],
+    b: [true, "Right. A residual says how far a lease sits from what size alone predicts. It flags a question; it doesn't answer it. Location, quality, and lease terms are the usual suspects."],
+    c: [false, "Nothing suggests the lease is a recording error. Dropping real leases because they don't fit the line would make the model look better than it is."]
+  });
+  choice("msg", {
+    a: [false, "This treats a benchmark as a price and R² as a guarantee. Area leaves about 22% of rent variation unexplained, and the slope's p-value says nothing about how close one forecast will be."],
+    b: [true, "This is the strongest answer. It gives the number, says why it applies (2,200 sq ft is inside the data), states its limit in plain terms, and says what to check next."],
+    c: [false, "Too strong. Inside 800–3,000 sq ft the line is a reasonable starting point. The job is to say how much weight it deserves, not to throw it out."]
+  });
+
+  function check(inputId, btnId, fbId, test) {
+    $(btnId).addEventListener("click", function () {
+      var v = parseFloat($(inputId).value), fb = $(fbId), r;
+      fb.hidden = false;
+      if (isNaN(v)) { fb.className = "fb no"; fb.textContent = "Enter a number first."; return; }
+      r = test(v); fb.className = "fb " + (r[0] ? "ok" : "no"); fb.textContent = r[1];
+    });
+  }
+  check("p15", "p15Btn", "p15Fb", function (v) {
+    if (Math.abs(v - 42.15) <= 0.05) return [true, "Right: 8.40 + 22.50 × 1.5 = 8.40 + 33.75 = 42.15, so about $42,150 a year."];
+    if (Math.abs(v - 42150) <= 50) return [false, "That's the right amount in dollars. The line works in thousands, so enter 42.15."];
+    if (Math.abs(v - 33.75) <= 0.05) return [false, "That's 22.50 × 1.5 only. Add the intercept, 8.40."];
+    if (Math.abs(v - 33758.4) <= 1) return [false, "You used 1,500 for X. X is in thousands of square feet, so 1,500 sq ft is X = 1.5."];
+    return [false, "Not quite. Put X = 1.5 into 8.40 + 22.50X."];
+  });
+  check("unex", "unexBtn", "unexFb", function (v) {
+    if (Math.abs(v - 22) <= 0.5 || Math.abs(v - 0.22) <= 0.005) return [true, "Right: 1 − 0.78 = 0.22, or 22%. That share goes with something other than area: location, age, terms, and noise."];
+    if (Math.abs(v - 78) <= 0.5) return [false, "78% is the share the line does explain. Subtract it from 100%."];
+    return [false, "Not quite. Start from 100% and take away the 78% the line explains."];
+  });
+
+  // Part 4 spread toggle
+  var spMode = "off";
+  function setSpread(mode) {
+    spMode = mode;
+    while (segs.firstChild) segs.removeChild(segs.firstChild);
+    ["spMean", "spLine", "spOff"].forEach(function (id) { $(id).setAttribute("aria-pressed", "false"); });
+    $({ mean: "spMean", line: "spLine", off: "spOff" }[mode]).setAttribute("aria-pressed", "true");
+    meanLine.setAttribute("visibility", mode === "mean" ? "visible" : "hidden");
+    meanLab.setAttribute("visibility", mode === "mean" ? "visible" : "hidden");
+    $("segLegend").hidden = mode === "off";
+    if (mode !== "off") {
+      X.forEach(function (x, k) {
+        var to = mode === "mean" ? my : fit(x);
+        el(segs, "line", { x1: S.sx(x), x2: S.sx(x), y1: S.sy(Y[k]), y2: S.sy(to), stroke: "var(--bad)", "stroke-width": 2.5, opacity: 0.85 });
+      });
+    }
+    $("sst").textContent = mode === "off" ? "–" : sst.toFixed(0);
+    $("sse").textContent = mode === "line" ? sse.toFixed(0) : "–";
+    $("r2").textContent = mode === "line" ? R2.toFixed(2) : "–";
+    $("r2calc").textContent = mode === "line" ? sse.toFixed(0) + " ÷ " + sst.toFixed(0) + " = " + R2.toFixed(2) : "…";
+    $("spNote").textContent = mode === "mean"
+      ? "Each red segment runs from a lease to the average rent, " + money(my) + ". Squared and added up, that's " + sst.toFixed(0) + ": all the variation there is to explain."
+      : mode === "line"
+      ? "Now each segment runs to the line: these are the residuals. Squared and added up, " + sse.toFixed(0) + " is left. The line removed " + (R2 * 100).toFixed(0) + "% of the spread, so R² = " + R2.toFixed(2) + "."
+      : "Show the spread from the average first, then from the line. Watch the red segments shrink.";
+  }
+  $("spMean").addEventListener("click", function () { setSpread("mean"); });
+  $("spLine").addEventListener("click", function () { setSpread("line"); });
+  $("spOff").addEventListener("click", function () { setSpread("off"); });
+  setSpread("off");
+
+  // Part 5 reach chart
+  var rc = $("reach");
+  var Rr = axes(rc, 640, 300, 48, 16, 22, 40, 0, 8, 0, 200, [0, 1, 2, 3, 4, 5, 6, 7, 8], [0, 50, 100, 150, 200], "area (thousands of sq ft)", "annual rent ($K)");
+  el(rc, "rect", { x: Rr.sx(LO), y: 22, width: Rr.sx(HI) - Rr.sx(LO), height: 300 - 40 - 22, fill: "var(--blue-soft)" });
+  el(rc, "line", { x1: Rr.sx(0), y1: Rr.sy(fit(0)), x2: Rr.sx(LO), y2: Rr.sy(fit(LO)), stroke: "var(--muted)", "stroke-width": 2, "stroke-dasharray": "6 5" });
+  el(rc, "line", { x1: Rr.sx(LO), y1: Rr.sy(fit(LO)), x2: Rr.sx(HI), y2: Rr.sy(fit(HI)), stroke: "var(--amber)", "stroke-width": 3.5 });
+  el(rc, "line", { x1: Rr.sx(HI), y1: Rr.sy(fit(HI)), x2: Rr.sx(8), y2: Rr.sy(fit(8)), stroke: "var(--muted)", "stroke-width": 2, "stroke-dasharray": "6 5" });
+  X.forEach(function (x, k) { el(rc, "circle", { cx: Rr.sx(x), cy: Rr.sy(Y[k]), r: 3, fill: "var(--blue)" }); });
+  el(rc, "text", { x: Rr.sx(5.5), y: Rr.sy(fit(5.5)) - 30, "text-anchor": "middle", class: "lbl" }).textContent = "no leases here";
+  var cMark = el(rc, "circle", { r: 7, fill: "var(--panel)", "stroke-width": 3 });
+  var cDrop = el(rc, "line", { y2: 300 - 40, "stroke-dasharray": "3 3", "stroke-width": 1.5 });
+
+  function setCand(x) {
+    x = Math.round(x * 10) / 10;
+    $("cand").value = x;
+    var y = fit(x), inside = x >= LO - 1e-9 && x <= HI + 1e-9;
+    var col = inside ? "var(--good)" : "var(--bad)";
+    cMark.setAttribute("cx", Rr.sx(x)); cMark.setAttribute("cy", Rr.sy(y)); cMark.setAttribute("stroke", col);
+    cDrop.setAttribute("x1", Rr.sx(x)); cDrop.setAttribute("x2", Rr.sx(x)); cDrop.setAttribute("y1", Rr.sy(y)); cDrop.setAttribute("stroke", col);
+    $("candOut").textContent = sqft(x);
+    $("candX").textContent = x.toFixed(1);
+    $("candY").textContent = money(y);
+    $("candS").textContent = inside ? "In range" : "Extrapolation";
+    document.querySelectorAll("[data-x]").forEach(function (bt) { bt.setAttribute("aria-pressed", String(Number(bt.getAttribute("data-x")) === x)); });
+    var note = $("candNote");
+    if (inside) { note.className = "fb ok"; note.textContent = "Inside the data (800–3,000 sq ft). The line is a reasonable starting estimate here."; return; }
+    note.className = "fb no";
+    if (x < LO) {
+      note.textContent = "Extrapolation warning: " + sqft(x) + " is below the smallest lease in the data. " + (x === 0 ? "This is the intercept: a zero-area lease, which doesn't exist." : "Small spaces may be priced differently, and the data can't show it.");
+    } else {
+      note.textContent = "Extrapolation warning: " + sqft(x) + " is beyond the largest lease in the data (3,000 sq ft). The line gives " + money(y) + ", but nothing in these 20 leases shows the pattern continues this far.";
+      if (x >= 6 && prediction) {
+        note.textContent += prediction === "c" ? " Your Part 1 prediction was right: the leases behind the line stop at half this size."
+          : " In Part 1 you chose a different answer. R² describes fit where the data are; it can't vouch for sizes the data never covered.";
+      }
+    }
+  }
+  $("cand").addEventListener("input", function () { setCand(parseFloat(this.value)); });
+  document.querySelectorAll("[data-x]").forEach(function (bt) { bt.addEventListener("click", function () { setCand(Number(bt.getAttribute("data-x"))); }); });
+  setCand(1.5);
+
+  // Part 8 self-check
+  var qs = [
+    { q: "Two leases in the data differ by 400 sq ft. How much do their predicted annual rents differ?",
+      o: ["$9.0K", "$22.5K", "$9,000K", "$17.4K"], k: 0,
+      e: "400 sq ft is X = 0.4, and 0.4 × 22.50 = 9.00 ($K), or $9,000 a year. The intercept cancels when you compare two predictions." },
+    { q: "Which finding would most weaken trust in the line's forecast for a 2,500 sq ft lease?",
+      o: ["The residuals bend upward for the largest leases", "The slope's p-value is below 0.001", "R² is 0.78", "The intercept is 8.40"], k: 0,
+      e: "A curve in the residuals means a straight line misses the pattern, and the miss is largest near the top of the range. The other three are what the model already reports." },
+    { q: "Another Cowford model reports a slope p-value of 0.30. What does that mean?",
+      o: ["The data give weak evidence of any linear relationship", "There is a 30% chance the relationship is real", "The model is 70% accurate", "X causes 30% of Y"], k: 0,
+      e: "A slope this size would be fairly common even if the true slope were zero. That is weak evidence, not a probability that the relationship exists." },
+    { q: "Adding 15 more leases raises R² from 0.78 to 0.85. What can a manager conclude?",
+      o: ["Area accounts for more of the rent variation in the larger sample", "Area now causes 85% of rent", "Forecasts will now be within 15% of actual rent", "The model can now be used for any lease size"], k: 0,
+      e: "R² describes how much variation the line accounts for in that sample. It still says nothing about cause, forecast error on a single lease, or sizes outside the data." }
+  ];
+  var order = [[1, 0, 2, 3], [2, 3, 0, 1], [0, 2, 1, 3], [3, 0, 2, 1]];
+  var quiz = $("quiz"), html = "<h3>Quick check</h3>";
+  qs.forEach(function (it, j) {
+    html += '<fieldset data-q="' + j + '"><legend>' + (j + 1) + ". " + it.q + "</legend>";
+    order[j].forEach(function (m) { html += '<label class="opt"><input type="radio" name="q' + j + '" value="' + m + '"> ' + it.o[m] + "</label>"; });
+    html += '<p class="fb" hidden aria-live="polite"></p></fieldset>';
+  });
+  quiz.innerHTML = html;
+  quiz.querySelectorAll("fieldset").forEach(function (fs) {
+    var it = qs[Number(fs.getAttribute("data-q"))], fb = fs.querySelector(".fb");
+    fs.querySelectorAll("input").forEach(function (r) {
+      r.addEventListener("change", function () {
+        var ok = Number(r.value) === it.k;
+        fs.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("right", "wrong"); });
+        r.closest(".opt").classList.add(ok ? "right" : "wrong");
+        fb.hidden = false; fb.className = "fb " + (ok ? "ok" : "no");
+        fb.textContent = (ok ? "Right. " : "Not quite. ") + it.e;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
