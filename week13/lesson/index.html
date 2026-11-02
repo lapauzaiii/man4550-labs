@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>W13 Lesson - Which Warehouse Plan Should the Board Choose?</title>
+<meta name="description" content="MAN 4550 Week 13 self-paced lesson: payoff tables, maximax, maximin, expected monetary value, the value of perfect information, and a decision tree with schedule risk.">
+<style>
+/* Layout: one reading column like a site binder; worked steps sit in drafting-table panels; numbers in mono. */
+:root {
+  --paper: #f4f6f7;
+  --panel: #ffffff;
+  --tint: #e6edf2;
+  --ink: #16212a;
+  --muted: #55636e;
+  --line: #d3dbe1;
+  --blue: #1d5c87;
+  --blue-soft: rgba(29, 92, 135, 0.22);
+  --amber: #b86a06;
+  --amber-soft: rgba(199, 119, 10, 0.18);
+  --good: #2c7a4b;
+  --bad: #ad3d2a;
+  --font-display: "Avenir Next Condensed", "Avenir Next", "Segoe UI", "Roboto Condensed", Arial, sans-serif;
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f161b; --panel: #162028; --tint: #1b2933; --ink: #e5ecf0; --muted: #9babb6;
+    --line: #2a3742; --blue: #74b3de; --blue-soft: rgba(116, 179, 222, 0.24); --amber: #f0a43c;
+    --amber-soft: rgba(240, 164, 60, 0.2); --good: #6cc392; --bad: #f08b75; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f161b; --panel: #162028; --tint: #1b2933; --ink: #e5ecf0; --muted: #9babb6;
+  --line: #2a3742; --blue: #74b3de; --blue-soft: rgba(116, 179, 222, 0.24); --amber: #f0a43c;
+  --amber-soft: rgba(240, 164, 60, 0.2); --good: #6cc392; --bad: #f08b75; color-scheme: dark;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 4rem;
+}
+.wrap { max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; gap: 3.25rem; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.08; text-wrap: balance; margin: 0; letter-spacing: 0.005em; }
+h1 { font-size: clamp(2.6rem, 8vw, 3.8rem); }
+h2 { font-size: clamp(1.75rem, 5vw, 2.2rem); }
+h3 { font-size: 1.3rem; }
+p { margin: 0; }
+a { color: var(--blue); text-underline-offset: 0.18em; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+header { padding-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 2rem; }
+.lede { font-size: 1.2rem; color: var(--ink); max-width: 38rem; }
+.notice { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+.notice span { white-space: nowrap; }
+.toc { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.35rem 1.5rem; font-size: 0.95rem; }
+.toc a { text-decoration: none; color: var(--ink); display: flex; gap: 0.6rem; align-items: baseline; }
+.toc a:hover { color: var(--blue); }
+.toc .n { font-family: var(--font-mono); color: var(--amber); font-size: 0.82rem; min-width: 1.4rem; }
+
+/* Sections */
+section { display: flex; flex-direction: column; gap: 1.1rem; scroll-margin-top: 1rem; }
+.sec-head { display: flex; flex-direction: column; gap: 0.35rem; }
+.step { font-family: var(--font-mono); font-size: 0.8rem; color: var(--amber); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* Panels */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.panel h3 { font-size: 1.15rem; }
+.callout { border-left: 3px solid var(--blue); background: var(--tint); padding: 0.9rem 1rem; border-radius: 0 4px 4px 0; display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.98rem; }
+.callout.warn { border-left-color: var(--amber); }
+.callout strong { font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.02em; }
+.formula { font-family: var(--font-mono); font-size: 0.98rem; background: var(--tint); border-radius: 4px; padding: 0.7rem 0.9rem; overflow-wrap: anywhere; }
+
+/* Choices and inputs */
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+legend { font-weight: 600; margin-bottom: 0.4rem; padding: 0; }
+.opt { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.6rem 0.75rem; border: 1px solid var(--line); border-radius: 5px; cursor: pointer; background: var(--panel); }
+.opt:hover { border-color: var(--blue); }
+.opt input { margin-top: 0.35rem; accent-color: var(--blue); flex: none; }
+.opt.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 10%, var(--panel)); }
+.opt.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 8%, var(--panel)); }
+.fb { font-size: 0.97rem; padding: 0.7rem 0.9rem; border-radius: 4px; background: var(--tint); }
+.fb.ok { border-left: 3px solid var(--good); }
+.fb.no { border-left: 3px solid var(--bad); }
+button { font: 600 0.95rem var(--font-body); color: var(--paper); background: var(--blue); border: 0; border-radius: 4px; padding: 0.55rem 1rem; cursor: pointer; }
+button.ghost { background: transparent; color: var(--blue); border: 1px solid var(--blue); }
+button.chip { background: var(--tint); color: var(--ink); border: 1px solid var(--line); font-family: var(--font-mono); font-weight: 500; font-size: 0.85rem; padding: 0.35rem 0.7rem; }
+button.chip[aria-pressed="true"] { background: var(--blue); color: var(--paper); border-color: var(--blue); }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.entry { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.entry label { font-weight: 600; }
+.entry input[type="number"] { font: 500 1rem var(--font-mono); width: 7rem; padding: 0.45rem 0.55rem; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); }
+input[type="range"] { width: 100%; accent-color: var(--blue); }
+.slider { display: flex; flex-direction: column; gap: 0.3rem; }
+.slider label { display: flex; justify-content: space-between; gap: 1rem; font-weight: 600; }
+.slider label .num { font-weight: 500; color: var(--blue); }
+
+/* Readouts */
+.readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 0.6rem; }
+.ro { background: var(--tint); border-radius: 4px; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.ro .k { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.ro .v { font-family: var(--font-mono); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+.ro.hi .v { color: var(--blue); }
+
+/* Tables and figures */
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; min-width: 34rem; }
+th, td { text-align: left; padding: 0.42rem 0.55rem; border-bottom: 1px solid var(--line); }
+th { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.num, th.num { text-align: right; }
+tr.crit td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
+tr.crit td { background: var(--amber-soft); }
+.tag { font-family: var(--font-mono); font-size: 0.72rem; padding: 0.1rem 0.4rem; border-radius: 3px; background: var(--amber); color: var(--panel); }
+svg { display: block; width: 100%; height: auto; }
+svg text { font-family: var(--font-mono); fill: var(--ink); }
+svg .lbl { fill: var(--muted); font-size: 11px; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.sw { display: inline-block; width: 0.9rem; height: 0.5rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: middle; }
+
+/* Variance stack */
+.stack { display: flex; height: 2.2rem; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+.stack div { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.78rem; color: var(--panel); background: var(--amber); border-right: 1px solid var(--panel); min-width: 0; transition: flex-grow 0.5s ease; }
+.stack div:last-child { border-right: 0; }
+.stack div:nth-child(even) { background: color-mix(in srgb, var(--amber) 72%, var(--ink)); }
+
+/* Comparison */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.75rem; }
+.promise { border: 1px solid var(--line); border-radius: 5px; padding: 0.9rem; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.promise .big { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; }
+.promise.safe .big { color: var(--good); }
+.promise.risky .big { color: var(--bad); }
+.meter { height: 0.5rem; background: var(--tint); border-radius: 999px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--muted); border-radius: 999px; }
+.promise.safe .meter i { background: var(--good); }
+.promise.risky .meter i { background: var(--bad); }
+
+/* Checklist */
+.week { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.week li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.75rem; align-items: baseline; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+.week .kind { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.week .kind.g { color: var(--amber); }
+.week .kind.p { color: var(--muted); }
+.ref { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 0.6rem; }
+.ref div { background: var(--tint); border-radius: 4px; padding: 0.7rem 0.85rem; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.ref .k { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.ref .f { font-family: var(--font-mono); font-size: 0.92rem; overflow-x: auto; white-space: nowrap; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 1.2rem; }
+
+
+/* Shared Cowford navigation (assets/js/cowford-nav.js), themed with this page's tokens */
+.cf-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); font: 0.85rem var(--font-display); max-width: 44rem; margin: 0 auto; }
+.cf-nav a { color: var(--ink); }
+.cf-wordmark { font-weight: 700; text-decoration: none; margin-right: auto; display: flex; align-items: center; gap: 0.5rem; }
+.cf-wordmark img { width: 28px; height: auto; }
+.cf-muted { color: var(--muted); }
+.cf-nav select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0.25rem 0.4rem; max-width: 100%; }
+.cf-footer { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1rem; font-family: var(--font-display); }
+
+@media (max-width: 30rem) {
+  .week li { grid-template-columns: 1fr; gap: 0.2rem; }
+  body { font-size: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+/* Lola, the lesson guide */
+.lola { display: grid; grid-template-columns: 3rem 1fr; gap: 0.8rem; align-items: start; background: var(--panel); border: 1px dashed var(--amber); border-radius: 8px; padding: 0.8rem 1rem; font-size: 0.98rem; }
+.lola svg { width: 3rem; height: 3rem; }
+.lola b.who { font-family: var(--font-display); color: var(--amber); display: block; letter-spacing: 0.02em; }
+td.best { font-weight: 700; color: var(--blue); }
+</style>
+<script defer src="../../assets/js/cowford-nav.js"></script>
+</head>
+<body data-week="13">
+<div class="wrap">
+<header>
+  <span class="eyebrow">MAN 4550 · Week 13 · Decision Analysis</span>
+  <h1>Which Warehouse Plan Should the Board Choose?</h1>
+  <p class="lede">You've scheduled the warehouse (Week 9) and measured its schedule risk (Week 10). Now the board has to decide whether to build it, and how big. This week you'll learn how to choose between options when you don't know what the future holds.</p>
+  <div class="notice"><span>No class Nov 11</span><span>Replaces the class session</span><span>About 45 minutes</span><span>Practice only · nothing here is graded</span></div>
+  <div class="lola" data-lola><div><b class="who">Lola says</b>Hi, I'm Lola, Dr. Pauza's dog, and I'll be your guide this week. Every section has one small thing to try. Do it before you scroll on; guessing first is how this sticks. Bring a basic calculator, nothing fancy.</div></div>
+  <ol class="toc" aria-label="Lesson sections">
+    <li><a href="#s1"><span class="n">1</span>One decision, three options</a></li>
+    <li><a href="#s2"><span class="n">2</span>Read the payoff table</a></li>
+    <li><a href="#s3"><span class="n">3</span>The optimist and the pessimist</a></li>
+    <li><a href="#s4"><span class="n">4</span>The realist: expected value</a></li>
+    <li><a href="#s5"><span class="n">5</span>What is a crystal ball worth?</a></li>
+    <li><a href="#s6"><span class="n">6</span>Add the schedule risk</a></li>
+    <li><a href="#s7"><span class="n">7</span>Tell the board</a></li>
+    <li><a href="#s8"><span class="n">8</span>Check yourself, then your week</a></li>
+  </ol>
+</header>
+
+<section id="s1" aria-labelledby="h1s">
+  <div class="sec-head"><span class="step">Part 1</span><h2 id="h1s">One decision, three options</h2></div>
+  <p>Cowford Holdings needs more warehouse space in Jacksonville. The board can do one of three things: build the <b>full expansion</b> ($950K), build a <b>phased expansion</b> ($520K now, more later if demand shows up), or <b>defer</b> and lease overflow space. Nobody knows whether demand will be high, moderate, or low over the next three years.</p>
+  <p>Every business decision you'll face looks like this: a few options you control, a future you don't, and money riding on how they combine.</p>
+  <div class="panel">
+    <fieldset id="predict">
+      <legend>Gut check before any math. Which would you recommend to the board?</legend>
+      <label class="opt"><input type="radio" name="pred" value="Full expansion"> Full expansion. Go big while demand is growing.</label>
+      <label class="opt"><input type="radio" name="pred" value="Phased expansion"> Phased expansion. Build some now, keep options open.</label>
+      <label class="opt"><input type="radio" name="pred" value="Defer"> Defer. Don't commit capital until demand is clear.</label>
+    </fieldset>
+    <div class="row"><button type="button" id="predBtn">Lock in my pick</button></div>
+    <p class="fb" id="predFb" hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="s2" aria-labelledby="h2s">
+  <div class="sec-head"><span class="step">Part 2</span><h2 id="h2s">Read the payoff table</h2></div>
+  <p>A payoff table lays the decision out in one grid. <b>Rows</b> are the alternatives you choose among. <b>Columns</b> are the <b>states of nature</b>: possible futures you don't control. Each cell is what you'd end up with if you chose that row and that column happened. Here the cells are three-year net results in thousands of dollars ($K), assuming the project finishes on time.</p>
+  <div class="panel">
+    <div class="scroll"><table aria-label="Warehouse payoff table">
+      <thead><tr><th>Alternative</th><th class="num">High demand</th><th class="num">Moderate</th><th class="num">Low demand</th></tr></thead>
+      <tbody id="payRows"></tbody>
+      <tfoot><tr><td><i>Probability</i></td><td class="num mono">0.30</td><td class="num mono">0.45</td><td class="num mono">0.25</td></tr></tfoot>
+    </table></div>
+  </div>
+  <div class="lola" data-lola><div><b class="who">Lola says</b>A minus sign is a loss. If the board builds the full expansion and demand comes in low, Cowford loses $610K. Find that cell before you go on.</div></div>
+  <div class="callout"><strong>Risk or uncertainty?</strong><p>If you can attach believable probabilities to the columns, you're deciding <b>under risk</b>, and you can use expected value (Part 4). If you can't, you're deciding <b>under uncertainty</b>, and you fall back on rules like the ones in Part 3. Here, Cowford's demand forecast supplies the probabilities in the bottom row.</p></div>
+</section>
+
+<section id="s3" aria-labelledby="h3s">
+  <div class="sec-head"><span class="step">Part 3 · Decide without probabilities</span><h2 id="h3s">The optimist and the pessimist</h2></div>
+  <p>Suppose nobody trusted the forecast. Two simple rules still give an answer, and each one reflects a personality.</p>
+  <div class="compare">
+    <div class="promise"><span class="eyebrow">The optimist · maximax</span><p>Look at each row's <b>best</b> payoff. Pick the row whose best is highest.</p></div>
+    <div class="promise"><span class="eyebrow">The pessimist · maximin</span><p>Look at each row's <b>worst</b> payoff. Pick the row whose worst is least bad.</p></div>
+  </div>
+  <div class="panel">
+    <fieldset id="mm1"><legend>Which alternative does the optimist (maximax) pick?</legend>
+      <label class="opt"><input type="radio" name="mm1" value="0"> Full expansion</label>
+      <label class="opt"><input type="radio" name="mm1" value="1"> Phased expansion</label>
+      <label class="opt"><input type="radio" name="mm1" value="2"> Defer</label>
+      <p class="fb" hidden aria-live="polite"></p></fieldset>
+    <fieldset id="mm2"><legend>Which alternative does the pessimist (maximin) pick?</legend>
+      <label class="opt"><input type="radio" name="mm2" value="0"> Full expansion</label>
+      <label class="opt"><input type="radio" name="mm2" value="1"> Phased expansion</label>
+      <label class="opt"><input type="radio" name="mm2" value="2"> Defer</label>
+      <p class="fb" hidden aria-live="polite"></p></fieldset>
+  </div>
+  <p>Notice the problem: the two rules give opposite answers, and each one ignores half the table. The optimist never looks at the losses. The pessimist never looks at the upside. We need a rule that uses everything.</p>
+</section>
+
+<section id="s4" aria-labelledby="h4s">
+  <div class="sec-head"><span class="step">Part 4 · Calculate</span><h2 id="h4s">The realist: expected value</h2></div>
+  <p><b>Expected monetary value (EMV)</b> weights each payoff by its probability and adds them up. It's the average result you'd get if you could make this same decision many times.</p>
+  <div class="formula">EMV = (P(high) × high payoff) + (P(moderate) × moderate payoff) + (P(low) × low payoff)</div>
+  <div class="panel">
+    <div class="entry">
+      <label for="emvIn">Try one. What is the EMV of the full expansion, in $K?</label>
+      <input id="emvIn" type="number" step="0.1" inputmode="decimal" placeholder="$K">
+      <button type="button" id="emvBtn" class="ghost">Check</button>
+    </div>
+    <p class="fb" id="emvFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="panel">
+    <h3>All three EMVs (move the forecast to see what changes)</h3>
+    <div class="slider"><label for="pH">P(high demand) <span class="num" id="pHOut">30%</span></label><input id="pH" type="range" min="0" max="1" step="0.05" value="0.30"></div>
+    <div class="slider"><label for="pL">P(low demand) <span class="num" id="pLOut">25%</span></label><input id="pL" type="range" min="0" max="1" step="0.05" value="0.25"></div>
+    <p class="mono">P(moderate) = whatever is left: <span id="pMOut">45%</span></p>
+    <div class="readouts" aria-live="polite">
+      <div class="ro" id="ro0"><span class="k">Full</span><span class="v" id="e0">354.5</span></div>
+      <div class="ro" id="ro1"><span class="k">Phased</span><span class="v" id="e1">361.5</span></div>
+      <div class="ro" id="ro2"><span class="k">Defer</span><span class="v" id="e2">178.5</span></div>
+    </div>
+    <p class="fb" id="emvNote"></p>
+    <div class="row"><button type="button" class="ghost" id="resetP">Reset to the forecast (30 / 45 / 25)</button></div>
+  </div>
+  <div class="callout warn">
+    <strong>EMV is an input, not the decision</strong>
+    <p>At the forecast, full and phased are only $7K apart on EMV. But full expansion's worst case is a $610K loss, and phased's is $180K. That's a $430K difference in how badly things could go. A firm that can't absorb a $610K hit shouldn't let a $7K edge make the call. EMV tells you the average; the worst case tells you whether you can survive the bad draw.</p>
+  </div>
+  <div class="lola" data-lola><div><b class="who">Lola says</b>Slide P(high demand) up a little at a time. At some point full expansion takes the lead. The ranking depends on the forecast, which is why Case Study 13 hands you an updated one.</div></div>
+</section>
+
+<section id="s5" aria-labelledby="h5s">
+  <div class="sec-head"><span class="step">Part 5 · Calculate</span><h2 id="h5s">What is a crystal ball worth?</h2></div>
+  <p>Imagine a consultant who could tell the board, for certain, which demand state will happen. With that crystal ball, the board would pick the best plan for each state: full expansion if demand is high (1,180), phased if moderate (410), defer if low (60). Weight those by the probabilities and you get the <b>expected value with perfect information</b>.</p>
+  <div class="formula">EVwPI = 0.30 × 1,180 + 0.45 × 410 + 0.25 × 60 = 354 + 184.5 + 15 = 553.5 &nbsp;·&nbsp; EVPI = EVwPI − best EMV</div>
+  <div class="panel">
+    <div class="entry">
+      <label for="evpiIn">The best EMV without the crystal ball is 361.5. What is EVPI, in $K?</label>
+      <input id="evpiIn" type="number" step="0.1" inputmode="decimal" placeholder="$K">
+      <button type="button" id="evpiBtn" class="ghost">Check</button>
+    </div>
+    <p class="fb" id="evpiFb" hidden aria-live="polite"></p>
+  </div>
+  <div class="callout"><strong>EVPI is a ceiling</strong><p>It's the most perfect information could be worth. Real market studies are never perfect, so they're worth <i>less</i> than EVPI. If someone quotes the board $250K for a study, the answer is no before you even read the proposal.</p></div>
+</section>
+
+<section id="s6" aria-labelledby="h6s">
+  <div class="sec-head"><span class="step">Part 6 · Interpret</span><h2 id="h6s">Add the schedule risk</h2></div>
+  <p>The payoff table assumed on-time completion. But you know from Week 10 there's only an <b>86.2%</b> chance the full expansion finishes by November 15. If it's late, the Professional Services contract is voided, a $1,020K loss (three years at $340K, as the board has agreed to count it). Phased and defer don't carry that risk.</p>
+  <p>A <b>decision tree</b> shows this. Squares are decisions you make; circles are chance events. You solve it from right to left: at each circle, take the probability-weighted average.</p>
+  <div class="panel">
+    <div class="formula">Full expansion, with schedule risk = 354.5 − (1 − p) × 1,020</div>
+    <div class="slider"><label for="pOn">P(on time) <span class="num" id="pOnOut">86.2%</span></label><input id="pOn" type="range" min="0.6" max="1" step="0.001" value="0.862"></div>
+    <div class="readouts" aria-live="polite">
+      <div class="ro hi"><span class="k">Full, risk-adjusted</span><span class="v" id="gFull">213.7</span></div>
+      <div class="ro"><span class="k">Phased</span><span class="v">361.5</span></div>
+      <div class="ro"><span class="k">Defer</span><span class="v">178.5</span></div>
+    </div>
+    <p class="fb" id="gNote"></p>
+  </div>
+  <div class="lola" data-lola><div><b class="who">Lola says</b>That 86.2% is the same number you calculated in Week 10. The course has been building to this: one week's answer becomes the next week's input. Week 14 does it again with the whole $2.4M budget.</div></div>
+  <details class="panel">
+    <summary><b>Go further (optional): minimax regret and breakeven probabilities</b></summary>
+    <p><b>Regret</b> is how much you'd kick yourself: for each state, the best payoff available minus what you got. Full expansion's regrets are 0 (high), 70 (moderate), and 670 (low). Phased: 440, 0, 240. Defer: 920, 220, 0. <b>Minimax regret</b> picks the plan whose largest regret is smallest: phased (440).</p>
+    <p><b>Breakeven:</b> how reliable would the schedule need to be for full expansion to match defer? Set 354.5 − (1 − p) × 1,020 = 178.5 and you get p ≈ 0.83. To match phased you'd need p above 1.0, which is impossible: at this forecast, full expansion can't catch phased however good the schedule gets.</p>
+    <p>None of this is on the graded case study. It's here if you're curious.</p>
+  </details>
+</section>
+
+<section id="s7" aria-labelledby="h7s">
+  <div class="sec-head"><span class="step">Part 7 · Communicate</span><h2 id="h7s">Tell the board</h2></div>
+  <p>CFO Damar Okoye's rule: if the board can't act on it, it isn't an answer.</p>
+  <div class="panel">
+    <fieldset id="msg">
+      <legend>Which message would you send the board?</legend>
+      <label class="opt"><input type="radio" name="msg" value="a"> "Full expansion has the best upside, $1.18 million if demand is high. We should go big."</label>
+      <label class="opt"><input type="radio" name="msg" value="b"> "We recommend the phased expansion. It has the highest expected value, about $362K, and its worst case is a $180K loss. Full expansion is close on average but could lose $610K, and once we count the 14% chance of missing November 15 it falls to about $214K."</label>
+      <label class="opt"><input type="radio" name="msg" value="c"> "The EMVs are 354.5, 361.5, and 178.5, so phased wins by 7.0."</label>
+    </fieldset>
+    <p class="fb" id="msgFb" hidden aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="s8" aria-labelledby="h8s">
+  <div class="sec-head"><span class="step">Part 8</span><h2 id="h8s">Check yourself, then your week</h2></div>
+  <div class="panel" id="quiz"></div>
+  <div class="panel">
+    <h3>Key ideas</h3>
+    <div class="ref">
+      <div><span class="k">Maximax (optimist)</span><span class="f">best of the best cases</span></div>
+      <div><span class="k">Maximin (pessimist)</span><span class="f">best of the worst cases</span></div>
+      <div><span class="k">EMV (realist)</span><span class="f">Σ probability × payoff</span></div>
+      <div><span class="k">EVwPI</span><span class="f">Σ probability × best payoff in that state</span></div>
+      <div><span class="k">EVPI</span><span class="f">EVwPI − best EMV</span></div>
+      <div><span class="k">Schedule branch</span><span class="f">EMV − (1 − p) × loss if late</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>This week in Canvas</h3>
+    <ul class="week">
+      <li><span class="kind p">Practice</span><span><b>W13.C Concept Check.</b> Unlimited attempts, with feedback after each one.</span></li>
+      <li><span class="kind p">Practice</span><span><b>W13.E Decisions Under Risk lab.</b> Same warehouse, more sliders. <a href="../">Open the lab</a></span></li>
+      <li><span class="kind g">Graded</span><span><b>Case Study 13 (W13.D).</b> 100 points, 30 minutes, one attempt, basic calculator. Same three plans with an <b>updated demand forecast</b>, so the numbers differ from this lesson. Same steps.</span></li>
+    </ul>
+    <p>Due dates are in Canvas.</p>
+  </div>
+  <div class="lola" data-lola><div><b class="who">Lola says</b>Next week (Nov 18) is the last class: the $2.4M board meeting and the final exam review. Come in person if you can. Three of the problems we work in class will be on the final, word for word.</div></div>
+</section>
+<footer>MAN 4550 Introduction to Management Science · Cowford Holdings case · Reading: Taylor, Introduction to Management Science, Ch. 12 (decision analysis).</footer>
+</div>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var NAMES = ["Full expansion", "Phased expansion", "Defer / lease overflow"];
+  var PAY = [[1180, 340, -610], [740, 410, -180], [260, 190, 60]];
+  var LOSS = 1020;
+  function k(x) { return (Math.round(x * 10) / 10).toFixed(1); }
+  function money(v) { return v < 0 ? "(" + Math.abs(v).toLocaleString() + ")" : v.toLocaleString(); }
+
+  // Lola avatar (original drawing)
+  var LOLA = '<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="11" cy="17" rx="7" ry="12" fill="var(--amber)" transform="rotate(-18 11 17)"/><ellipse cx="37" cy="17" rx="7" ry="12" fill="var(--amber)" transform="rotate(18 37 17)"/><circle cx="24" cy="26" r="15" fill="var(--tint)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="18.5" cy="23" r="2" fill="var(--ink)"/><circle cx="29.5" cy="23" r="2" fill="var(--ink)"/><ellipse cx="24" cy="31" rx="4" ry="3" fill="var(--ink)"/><path d="M20 35 q4 4 8 0" fill="none" stroke="var(--ink)" stroke-width="1.5"/></svg>';
+  document.querySelectorAll("[data-lola]").forEach(function (n) { n.insertAdjacentHTML("afterbegin", LOLA); });
+
+  // Payoff rows
+  $("payRows").innerHTML = PAY.map(function (r, i) {
+    return "<tr><td>" + NAMES[i] + "</td>" + r.map(function (v) { return '<td class="num mono">' + money(v) + "</td>"; }).join("") + "</tr>";
+  }).join("");
+
+  // Part 1
+  var pick = null;
+  $("predBtn").addEventListener("click", function () {
+    var c = document.querySelector('input[name="pred"]:checked'), fb = $("predFb");
+    fb.hidden = false;
+    if (!c) { fb.className = "fb no"; fb.textContent = "Pick one first."; return; }
+    pick = c.value; fb.className = "fb";
+    fb.textContent = "Locked in: " + pick + ". We'll see in Part 4 and Part 6 how your gut compares with the math.";
+  });
+
+  // Part 3
+  function mc(id, key, right, wrong) {
+    var fs = $(id), fb = fs.querySelector(".fb");
+    fs.querySelectorAll("input").forEach(function (r) {
+      r.addEventListener("change", function () {
+        var ok = Number(r.value) === key;
+        fs.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("right", "wrong"); });
+        r.closest(".opt").classList.add(ok ? "right" : "wrong");
+        fb.hidden = false; fb.className = "fb " + (ok ? "ok" : "no"); fb.textContent = ok ? right : wrong;
+      });
+    });
+  }
+  mc("mm1", 0, "Right. The best cases are 1,180, 740, and 260. Full expansion has the highest best case.", "Not quite. List each row's best payoff (1,180, 740, 260) and take the biggest.");
+  mc("mm2", 2, "Right. The worst cases are -610, -180, and +60. Defer is the only plan that never loses money.", "Not quite. List each row's worst payoff (-610, -180, 60) and take the least bad.");
+
+  // Part 4 entry
+  function check(inp, btn, fbId, key, tol, right, hint) {
+    $(btn).addEventListener("click", function () {
+      var v = parseFloat($(inp).value), fb = $(fbId); fb.hidden = false;
+      if (isNaN(v)) { fb.className = "fb no"; fb.textContent = "Enter a number first."; return; }
+      var ok = Math.abs(v - key) <= tol;
+      fb.className = "fb " + (ok ? "ok" : "no"); fb.textContent = ok ? right : hint;
+    });
+  }
+  check("emvIn", "emvBtn", "emvFb", 354.5, 0.1,
+    "Right. 0.30(1,180) + 0.45(340) + 0.25(-610) = 354 + 153 - 152.5 = 354.5.",
+    "Not quite. Multiply each payoff in the Full row by its probability, then add: 0.30 × 1,180, plus 0.45 × 340, plus 0.25 × (-610). Watch the minus sign.");
+
+  var pH = 0.30, pL = 0.25;
+  function emvs(p) { return PAY.map(function (r) { return r[0] * p[0] + r[1] * p[1] + r[2] * p[2]; }); }
+  function drawEmv() {
+    if (pH + pL > 1) { pL = Math.round((1 - pH) * 100) / 100; $("pL").value = pL; }
+    var p = [pH, 1 - pH - pL, pL], e = emvs(p), best = e.indexOf(Math.max.apply(null, e));
+    $("pHOut").textContent = Math.round(pH * 100) + "%"; $("pLOut").textContent = Math.round(pL * 100) + "%";
+    $("pMOut").textContent = Math.round(p[1] * 100) + "%";
+    e.forEach(function (v, i) { $("e" + i).textContent = k(v); $("ro" + i).className = "ro" + (i === best ? " hi" : ""); });
+    $("emvNote").textContent = "Highest EMV: " + NAMES[best] + " at $" + k(e[best]) + "K.";
+  }
+  $("pH").addEventListener("input", function () { pH = parseFloat(this.value); drawEmv(); });
+  $("pL").addEventListener("input", function () { pL = parseFloat(this.value); if (pH + pL > 1) { pH = Math.round((1 - pL) * 100) / 100; $("pH").value = pH; } drawEmv(); });
+  $("resetP").addEventListener("click", function () { pH = 0.30; pL = 0.25; $("pH").value = pH; $("pL").value = pL; drawEmv(); });
+  drawEmv();
+
+  // Part 5
+  check("evpiIn", "evpiBtn", "evpiFb", 192, 0.1,
+    "Right. 553.5 - 361.5 = 192. Perfect information is worth at most $192K to this board.",
+    "Not quite. EVPI = EVwPI (553.5) minus the best EMV (361.5).");
+
+  // Part 6
+  function drawGate() {
+    var p = parseFloat($("pOn").value), g = 354.5 - (1 - p) * LOSS;
+    $("pOnOut").textContent = (p * 100).toFixed(1) + "%"; $("gFull").textContent = k(g);
+    var vals = [g, 361.5, 178.5], best = vals.indexOf(Math.max.apply(null, vals));
+    $("gNote").textContent = "Full expansion: 354.5 - " + (1 - p).toFixed(3) + " × 1,020 = " + k(g) +
+      ". Best plan at this schedule reliability: " + NAMES[best] + "." +
+      (g < 178.5 ? " Full expansion now ranks below even deferring." : "");
+  }
+  $("pOn").addEventListener("input", drawGate); drawGate();
+
+  // Part 7
+  var msgFb = {
+    a: ["no", "This is the optimist talking. It ignores the $610K downside and the 14% chance of losing the contract."],
+    b: ["ok", "This is the strongest answer. It names the choice, the expected value, the worst case, and why the close runner-up loses once schedule risk is counted."],
+    c: ["no", "Accurate, but the board can't act on it. It gives numbers without the downside or a recommendation, and treats a $7K gap as decisive."]
+  };
+  document.querySelectorAll('input[name="msg"]').forEach(function (r) {
+    r.addEventListener("change", function () {
+      var m = msgFb[r.value], fb = $("msgFb");
+      fb.hidden = false; fb.className = "fb " + m[0]; fb.textContent = m[1];
+      document.querySelectorAll("#msg .opt").forEach(function (o) { o.classList.remove("right", "wrong"); });
+      r.closest(".opt").classList.add(m[0] === "ok" ? "right" : "wrong");
+    });
+  });
+
+  // Part 8 self-check
+  var qs = [
+    { q: "An option pays $200K if demand is strong (0.5) and loses $100K if it is weak (0.5). What is its EMV?",
+      o: ["$50K", "$100K", "$150K", "-$50K"], k: 0, e: "0.5(200) + 0.5(-100) = 100 - 50 = 50." },
+    { q: "Which rule ignores every probability and looks only at the worst cases?",
+      o: ["Maximin", "Maximax", "EMV", "EVPI"], k: 0, e: "Maximin is the pessimist: best of the worst cases." },
+    { q: "EVPI is $192K. A firm offers a near-perfect demand study for $150K. What can you say for sure?",
+      o: ["It might be worth it, but only if the study is very accurate; a real study is worth less than $192K", "It is definitely worth $192K", "It is never worth buying", "EVPI says nothing about research"], k: 0,
+      e: "$150K is under the ceiling, so it's possible. But imperfect information is worth less than EVPI, so check how accurate the study really is." },
+    { q: "In a decision tree, what do you do at a circle (chance node)?",
+      o: ["Take the probability-weighted average of the branches", "Pick the branch with the highest payoff", "Add all the branches", "Pick the safest branch"], k: 0,
+      e: "Circles are chance: average by probability. Squares are your choice: take the best branch." }
+  ];
+  var order = [[2, 0, 1, 3], [1, 3, 0, 2], [0, 1, 2, 3], [3, 0, 2, 1]];
+  var quiz = $("quiz"), html = "<h3>Quick check</h3>";
+  qs.forEach(function (it, i) {
+    html += '<fieldset data-q="' + i + '"><legend>' + (i + 1) + ". " + it.q + "</legend>";
+    order[i].forEach(function (j) { html += '<label class="opt"><input type="radio" name="q' + i + '" value="' + j + '"> ' + it.o[j] + "</label>"; });
+    html += '<p class="fb" hidden aria-live="polite"></p></fieldset>';
+  });
+  quiz.innerHTML = html;
+  quiz.querySelectorAll("fieldset").forEach(function (fs) {
+    var i = Number(fs.getAttribute("data-q")), it = qs[i], fb = fs.querySelector(".fb");
+    fs.querySelectorAll("input").forEach(function (r) {
+      r.addEventListener("change", function () {
+        var ok = Number(r.value) === it.k;
+        fs.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("right", "wrong"); });
+        r.closest(".opt").classList.add(ok ? "right" : "wrong");
+        fb.hidden = false; fb.className = "fb " + (ok ? "ok" : "no");
+        fb.textContent = (ok ? "Right. " : "Not quite. ") + it.e;
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

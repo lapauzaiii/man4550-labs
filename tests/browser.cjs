@@ -158,7 +158,7 @@ const http = require("node:http");
   assert.match(await text("feedback0"), /Correct/);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const w of [5, 6, 7, 8, 9, 10, "10/lesson", 11, 12, 13, 14]) {
+    for (const w of [5, 6, 7, 8, 9, 10, "10/lesson", 11, 12, 13, "13/lesson", 14]) {
       await go(w);
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth > innerWidth + 1,

@@ -1153,7 +1153,7 @@
           ["EVPI upper bound", dollars(d.evpi)],
         ]) +
         table(
-          ["Alternative", "EMV ($K)", "Worst payoff ($K)", "Max regret ($K)"],
+          ["Alternative", "EMV ($K)", "Worst payoff ($K)", "Max regret ($K, optional)"],
           M.payoffs.map(
             (r, i) =>
               '<tr class="' +
@@ -1170,6 +1170,7 @@
           ),
         ) +
         "<p>EMV = Σ probability × payoff. EVPI = expected value with perfect information - best current EMV. Perfect information allows a different best decision in each demand state.</p>" +
+        "<details class=\"cf-section\"><summary><strong>Go further (optional, not graded): regret</strong></summary><p>Regret = best payoff available in that demand state minus the payoff you chose. Minimax regret picks the plan whose largest regret is smallest.</p>" +
         table(
           ["Regret ($K)", "High", "Moderate", "Low"],
           d.regret.map(
@@ -1199,7 +1200,7 @@
             .map((r) => Math.max(...r))
             .indexOf(Math.min(...d.regret.map((r) => Math.max(...r))))
         ] +
-        ".</p>";
+        ".</p></details>";
       const adjusted = [adj, d.emv[1], d.emv[2]],
         best = adjusted.indexOf(Math.max(...adjusted));
       document.getElementById("tree-output").innerHTML =
