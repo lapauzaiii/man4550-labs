@@ -18,7 +18,7 @@ tracks. AI assignments and transcript submissions are retired.
 | 10 | `week10/` | Verified Logistics PERT network and beta-PERT simulation |
 | 10 | `week10/lesson/` | Self-paced lesson replacing the class session: variance, deadline probability, commitment dates, board message |
 | 11 | `week11/` | Simple regression: guided forecast and editable classroom sample |
-| 12 | `week12/` | Multiple regression: guided forecast, editable data and diagnostics |
+| 12 | `week12/` | Multiple regression: price a lease with Model B, build Models A to C, residuals, plain-English cards |
 | 13 | `week13/` | Canonical warehouse payoff table, EMV, EVPI, regret and tree rollback |
 | 14 | `week14/` | Exhaustive binary capital allocation and schedule-risk sensitivity |
 
@@ -36,8 +36,12 @@ available hosted sequence rather than creating empty destinations.
   shape weight 4 and recomputes paths each trial. These activity variances can
   differ from textbook PERT approximations. Fixed seeds reproduce samples.
 - Week 11 supplied equation: `8.40 + 22.50X`, X in thousands of square feet,
-  Y in thousands of annual dollars. Week 12: `14.20 + .018X1 + 2.85X2 - .31X3`,
-  raw square feet, location score, age; Y is annual dollars per square foot.
+  Y in thousands of annual dollars.
+- Week 12 uses 20 synthetic Cowford leases (`assets/js/week12.js`) in the same
+  units. Area alone reproduces Week 11 exactly (R² .780). Model B, area + age +
+  prime flag: `21.4746 + 18.3577 Area - 0.5386 Age + 8.4628 Prime`, R² .9056,
+  adjusted R² .8879 (published rounded as 21.47, 18.36, -0.54, 8.46). Model C
+  adds parking spaces: area coefficient 2.81, p .87, VIF 75.7, adjusted R² .8868.
 - Editable regression data are explicitly synthetic, separate from the
   supplied case equations and the unavailable original 35-lease dataset.
 - Week 13 EMVs: `354.5`, `361.5`, `178.5` ($K); EVPI `192` ($K).

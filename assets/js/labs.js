@@ -1499,7 +1499,7 @@
   }
   if (week === 9) scheduleLab();
   else if (week === 10) uncertaintyLab();
-  else if (week === 11 || week === 12) regressionLab(week === 12);
+  else if (week === 11) regressionLab(false);
   else if (week === 13) decisionLab();
   else if (week === 14) capitalLab();
 })();

@@ -75,3 +75,26 @@ assert.throws(
 console.log(
   "Verified PERT, path switching, invalid networks, reproducible simulation, EMV/EVPI, portfolios, regression and prediction intervals.",
 );
+// Week 12 contract: the 20 leases reproduce Week 11 exactly and give Models B and C.
+{
+  const src = require("node:fs").readFileSync(
+    require("node:path").join(__dirname, "../assets/js/week12.js"), "utf8");
+  const rows = JSON.parse(
+    "[" + src.split("const LEASES = [")[1].split("];")[0].replace(/,\s*$/, "") + "]");
+  assert.equal(rows.length, 20);
+  const a = M.regress(rows, [0]);
+  close(a.coef[0], 8.4, 0.005);
+  close(a.coef[1], 22.5, 0.005);
+  close(a.R2, 0.78, 0.0005);
+  const b = M.regress(rows, [0, 1, 2]);
+  close(b.coef[0], 21.4746, 0.0005);
+  close(b.coef[1], 18.3577, 0.0005);
+  close(b.coef[2], -0.5386, 0.0005);
+  close(b.coef[3], 8.4628, 0.0005);
+  close(b.R2, 0.9056, 0.0005);
+  close(b.adjust_R2, 0.8879, 0.0005);
+  const c = M.regress(rows, [0, 1, 2, 3]);
+  close(c.coef[1], 2.8128, 0.0005);
+  assert.ok(c.vif[0] > 70 && c.t.p[1] > 0.8 && c.adjust_R2 < b.adjust_R2);
+  console.log("Verified Week 12 lease data: Model A, B and C contracts.");
+}

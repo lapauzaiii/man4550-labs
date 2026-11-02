@@ -106,7 +106,7 @@ const http = require("node:http");
   await page.locator("#sdIn").fill("1.22");
   await page.locator("#sdBtn").click();
   assert.match(await text("sdFb"), /Right/);
-  for (const w of [11, 12]) {
+  for (const w of [11]) {
     await go(w);
     assert.equal(await text("error"), "");
     assert.match(await text("fit-output"), /Fitted equation/);
@@ -121,10 +121,15 @@ const http = require("node:http");
   await setRange("area", 4);
   assert.match(await text("sample-forecast"), /Extrapolation/);
   await go(12);
-  assert.match(await text("guided"), /65\.50/);
-  await page.locator("#correlated").click();
-  assert.equal(await text("error"), "");
-  await page.locator('[data-predictor="1"]').uncheck();
+  assert.match(await text("guided"), /58\.55/);
+  assert.match(await text("fit-output"), /0\.906/);
+  assert.match(await text("history"), /22\.50/);
+  assert.match(await text("history"), /18\.36/);
+  await page.locator("#preset-C").click();
+  assert.match(await text("coefficients"), /⚠/);
+  assert.match(await text("history"), /2\.81/);
+  await setRange("area", 3.5);
+  assert.match(await text("guided"), /Extrapolation/);
   assert.equal(await text("error"), "");
   await go(13);
   await page.locator("#reveal").click();

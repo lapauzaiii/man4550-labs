@@ -354,3 +354,23 @@ body .button {
     font-size: 22px;
   }
 }
+/* Week 12 lab */
+.w12-eq { font-size: 1.05rem; }
+.w12-toggle { display: flex; flex-wrap: wrap; gap: 4px 14px; padding-top: 6px; min-width: 0; }
+.w12-flag td { background: #fbf1e3; }
+.w12-svg { width: 100%; height: auto; font: 11px Arial, sans-serif; fill: var(--cf-muted); }
+.w12-grid { stroke: var(--cf-line); }
+.w12-line { stroke: var(--cf-blue); stroke-width: 2; stroke-dasharray: 6 4; }
+.w12-zero { stroke: var(--cf-ink); stroke-width: 1.2; }
+.w12-prime { fill: var(--cf-gold); stroke: #6b4a0f; stroke-width: 0.8; }
+.w12-sub { fill: #fff; stroke: var(--cf-green); stroke-width: 2; }
+.w12-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.w12-card { border: 1px solid var(--cf-line); border-left: 4px solid var(--cf-green); padding: 10px 14px; background: #f8fbfa; }
+.w12-card h3 { margin: 4px 0 6px; font-size: 1rem; }
+.w12-card p { margin: 0; }
+figure { margin: 0; }
+figcaption { font-size: 0.92rem; margin-bottom: 6px; }
+#predictors { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+#predictors label { white-space: nowrap; }
+fieldset.w12-toggle { border: 0; margin: 0; padding: 0; align-self: start; }
+fieldset.w12-toggle legend { font-weight: 600; padding: 0; margin-bottom: 8px; }
