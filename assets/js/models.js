@@ -229,7 +229,7 @@
     return { emv, evwpi, evpi, regret, best: emv.indexOf(Math.max(...emv)) };
   }
   const projects = [
-    { name: "Logistics", cost: 1050, npv: 430 },
+    { name: "Logistics", cost: 950, npv: 430 },
     { name: "Properties", cost: 880, npv: 355 },
     { name: "Professional Services", cost: 620, npv: 240 },
   ];

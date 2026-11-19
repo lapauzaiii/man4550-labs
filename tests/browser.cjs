@@ -148,7 +148,7 @@ const http = require("node:http");
     /Properties \+ Professional Services/,
   );
   await page.locator("#reset").click();
-  await setRange("budget", 2550);
+  await setRange("budget", 2450);
   assert.match(
     await text("capital-output"),
     /Logistics \+ Properties \+ Professional Services/,

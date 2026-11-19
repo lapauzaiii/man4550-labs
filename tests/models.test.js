@@ -46,9 +46,10 @@ const p = M.portfolio();
 assert.equal(p.best.mask, 3);
 close(p.logNpv, 289.24);
 close(p.best.npv, 644.24);
-close(2400 - p.best.cost, 470);
+close(2400 - p.best.cost, 570);
 assert.equal(M.portfolio(2400, 0.8).best.mask, 6);
-assert.equal(M.portfolio(2550).best.mask, 7);
+assert.equal(M.portfolio(2450).best.mask, 7);
+assert.equal(M.portfolio(2449).best.mask, 3);
 assert.equal(M.portfolio(0).best.mask, 0);
 const rows = Array.from({ length: 12 }, (_, i) => [
   i,

@@ -1362,7 +1362,7 @@
       ) +
       '</div><div class="cf-actions">' +
       reset +
-      '</div><div id="capital-output"></div></section><section class="cf-section"><h2>2. Compare every portfolio</h2><div id="portfolios"></div><p class="cf-note">Maximize [430 - (1-p) × loss] × LOG + 355 × PRP + 240 × PS, subject to 1050 × LOG + 880 × PRP + 620 × PS ≤ budget, with each variable binary. Schedule risk changes the objective coefficient; it does not change the project capital requirement.</p></section><section class="cf-section"><h2>3. Defend the recommendation</h2><div id="explain"></div><p>The $1,020K late-project effect is treated here as an incremental NPV-equivalent loss, excluded from the supplied $430K base NPV. For a real investment decision, discount the contract cash flows and test dependencies before subtracting them from NPV.</p><label for="recommendation">Committee note</label><textarea id="recommendation" placeholder="State the funded projects, budget use, expected value, and the assumption most likely to change your recommendation."></textarea><button id="export">Download committee note</button></section>';
+      '</div><div id="capital-output"></div></section><section class="cf-section"><h2>2. Compare every portfolio</h2><div id="portfolios"></div><p class="cf-note">Maximize [430 - (1-p) × loss] × LOG + 355 × PRP + 240 × PS, subject to 950 × LOG + 880 × PRP + 620 × PS ≤ budget, with each variable binary. Schedule risk changes the objective coefficient; it does not change the project capital requirement.</p></section><section class="cf-section"><h2>3. Defend the recommendation</h2><div id="explain"></div><p>The $1,020K late-project effect is treated here as an incremental NPV-equivalent loss, excluded from the supplied $430K base NPV. For a real investment decision, discount the contract cash flows and test dependencies before subtracting them from NPV.</p><label for="recommendation">Committee note</label><textarea id="recommendation" placeholder="State the funded projects, budget use, expected value, and the assumption most likely to change your recommendation."></textarea><button id="export">Download committee note</button></section>';
     function update() {
       const v = M.portfolio(budget, p, loss);
       document.getElementById("capital-output").innerHTML = metrics([
@@ -1404,7 +1404,7 @@
             f(threshold, 4) +
             ", provided both are feasible."
           : "With this loss amount there is no tie probability between 0 and 1 for these two portfolios.") +
-        " Funding all three requires $2,550K. Unspent budget is permitted when no additional indivisible project fits.</p>";
+        " Funding all three requires $2,450K. Unspent budget is permitted when no additional indivisible project fits.</p>";
     }
     bindSlider(
       "budget",
@@ -1490,7 +1490,7 @@
           "$644.24K exceeds $595K. Risk reduces the margin but does not reverse the recommendation.",
       },
       {
-        q: "Is leaving $470K unspent necessarily an error?",
+        q: "Is leaving $570K unspent necessarily an error?",
         options: ["Yes", "No"],
         answer: 1,
         explanation:
